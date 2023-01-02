@@ -1,0 +1,377 @@
+import argparse
+import os
+import pickle
+from copy import deepcopy
+from utils import *
+from model_trainer import ModelTrainer
+from datetime import datetime
+from methods import FairnessMethods
+{%if chart%}
+from charts import Charts
+{%endif%}
+{%include "components/libraries.jinja"%}
+
+base_metrics = {
+    {%if precision %}
+    'precision': [],
+    {%endif%}
+    {%if recall %}
+    'recall': [],
+    {%endif%}
+    {%if f1_score%}
+    'f1score': [],
+    {%endif%}
+    {%if auc%}
+    'auc': [],
+    {%endif%}
+    {% if statistical_parity %}
+    'stat_par': [],
+    {% endif %}
+    {% if equalized_odds %}
+    'eq_odds': [],
+    {% endif %}
+    {% if zero_one_loss %}
+    'zero_one_loss': [],
+    {% endif %}
+    {% if disparate_impact%}
+    'disp_imp': [],
+    {% endif %}
+    {% if average_odds %}
+    'ao': [],
+    {%endif%}
+    {% if true_positive_difference%}
+    'tpr_diff': [],
+    {% endif%}
+    {% if false_positive_difference%}
+    'fpr_diff': [],
+    {% endif%}
+    {% if accuracy %}
+    'acc': [],
+    {% endif %}
+    {% if harmonic_mean %}
+    'hmean': [],
+    {% endif %}
+    {% if max %}
+    'max': [],
+    {% endif %}
+    {% if min %}
+    'min': [],
+    {% endif %}
+    {% if statistical_mean %}
+    'mean': [],
+    {% endif %}
+}
+
+def _store_metrics(metrics, method, fairness, save_data, save_model, model_fair):
+    df_metrics = pd.DataFrame(metrics)
+    df_metrics = df_metrics.explode(list(df_metrics.columns))
+    df_metrics['model'] = method
+    df_metrics['fairness_method'] = fairness
+    if save_data:
+        os.makedirs('ris', exist_ok=True)
+        df_metrics.to_csv(os.path.join(
+            'ris', f'ris_{method}_{fairness}.csv'))
+    if save_model:
+        os.makedirs('ris', exist_ok=True)
+        pickle.dump(model_fair, open(os.path.join(
+            'ris', f'{method}_{fairness}_partial.pickle'), 'wb'))
+    return df_metrics
+
+
+
+def exec(data):
+    label = '{{name}}'
+    positive_label = {{positive_value}}
+    
+    {% if single_sensitive_var%}
+    unpriv_group = { '{{variable_name}}': {{unprivileged_value}} }
+    priv_group = { '{{variable_name}}': {{privileged_value}} }
+    sensitive_features = ['{{variable_name}}']
+    {% elif multiple_sensitive_vars %}
+    {% set variables = variable_names_comma_separated.split(',') %}
+    {% set privileged_values = privileged_values_comma_separated.split(',') %}
+    {% set unprivileged_values = unprivileged_values_comma_separated.split(',') %}
+    priv_group = {
+    {% for i in range(0, variables|count)%}
+    '{{variables[i]}}': {{privileged_values[i]}},
+    {% endfor %}
+    }
+    unpriv_group = {
+    {% for i in range(0, variables|count)%}
+    '{{variables[i]}}': {{unprivileged_values[i]}},
+    {% endfor %}
+    }
+    sensitive_features = [{{variables|map("tojson")|join(", ")}}]
+    {%else%}
+    unpriv_group = []
+    priv_group = []
+    sensitive_features = []
+    {% endif %}
+
+    save_data = {% if save_temporary_results == 'true' %} True {%else%} False {%endif%}
+
+    save_model = {% if save_trained_model == 'true' %} True {%else%} False {%endif%}
+    
+    ml_methods = {
+        {% if logistic__regression %}
+        'logreg': LogisticRegression(),
+        {%endif%}
+        {% if svc %}
+        'svm': SVC(),
+        {% endif %}
+        {% if gradient__boosting__classifier %}
+        'gradient_class': GradientBoostingClassifier(),
+        {%endif%}
+        {%if mlp__classifier%}
+        'mlp': MLPClassifier(),
+        {%endif%}
+        {% if gradient__descent__classifier %}
+        'sdgclass': SGDClassifier(),
+        {% endif %}
+        {% if decision__tree__classifier %}
+        'tree': DecisionTreeClassifier(),
+        {% endif %}
+        {% if random__forest__classifier%}
+        'forest': RandomForestClassifier(),
+        {% endif %}
+        {% if linear__regression%}
+        'linreg': LinearRegression(),
+        {%endif%}
+        {% if svr%}
+        'svr': SVR(),
+        {%endif%}
+        {%if gradient__descent__regressor%}
+        'sdgreg': SGDRegressor(),
+        {%endif%}
+        {% if gradient__boosting__regressor %}
+        'gradient_reg': GradientBoostingRegressor(),
+        {% endif %}
+        {%if mlp__regressor%}
+        'mlp_reg': MLPRegressor(),
+        {%endif%}
+        {%if decision__tree__regressor %}
+        'tree_reg': DecisionTreeRegressor(),
+        {%endif%}
+    }
+
+    fairness_methods = {
+        {%if no__method%}
+        'no_method': FairnessMethods.NO_ONE,
+        {%endif%}
+        {%if pre_processing%}
+        'preprocessing': [
+            {%if demv%}
+            FairnessMethods.DEMV,
+            {%endif%}
+            {%if reweighing%}
+            FairnessMethods.RW,
+            {%endif%}
+            {%if dir%}
+            FairnessMethods.DIR,
+            {%endif%}
+        ],
+        {%endif%}
+        {% if in_processing %} 
+        'inprocessing': [
+            {% if exponentiated_gradient %}
+            FairnessMethods.EG,
+            {% endif %}
+            {% if grid_search %}
+            FairnessMethods.GRID,
+            {% endif %}
+            {% if adversarial_debiasing %}
+            FairnessMethods.AD,
+            {% endif%}   
+            {% if gerry_fair_classifier %}
+            FairnessMethods.GERRY,
+            {%endif%}
+            {% if meta_fair_classifier%}
+            FairnessMethods.META,
+            {%endif%}
+            {% if prejudice_remover%}
+            FairnessMethods.PREJ,
+            {%endif%}
+        ],
+        {% endif %}
+        {% if post_processing %}
+        'postprocessing': [
+            {% if calibrated_eo%}
+            FairnessMethods.CAL_EO,
+            {%endif%}
+            {%if reject_option_classifier%}
+            FairnessMethods.REJ,
+            {%endif%}
+        ]
+        {% endif %}
+    }
+
+
+{%if harmonic_mean %}
+    agg_metric = 'hmean' 
+{%endif%}
+
+{%if max %}
+    agg_metric = 'max' 
+{%endif%}
+
+{%if min %}
+    agg_metric = 'min' 
+{%endif%}
+
+{%if statistical_mean %}
+    agg_metric = 'mean' 
+{%endif%}
+
+    dataset_label = {% if multi_class %} 'multi-class' {%else%} 'binary' {%endif%}
+
+    ris = pd.DataFrame()
+    for m in ml_methods.keys():
+        {%if scaler%}
+        model = Pipeline([
+            {{""}}{%include 'components/model_scalers.py.jinja'%}
+            ('classifier', ml_methods[m])
+        ])
+        {%else%}
+        model = ml_methods[m]
+        {%endif%}
+
+        {% if fairness%}
+        for f in fairness_methods.keys():
+            model = deepcopy(model)
+            data = data.copy()
+            if f == 'preprocessing':
+                for method in fairness_methods[f]:
+                    metrics = deepcopy(base_metrics)
+                    model_fair, ris_metrics = cross_val(classifier=model, data=data, unpriv_group=unpriv_group, priv_group=priv_group, label=label, metrics=metrics, positive_label=positive_label, sensitive_features=sensitive_features, preprocessor=method, n_splits={{K | default(10, true)}})
+                    df_metrics = _store_metrics(ris_metrics, m, method.name, save_data, save_model, model_fair)
+                    ris = ris.append(df_metrics)
+            elif f == 'inprocessing':
+                for method in fairness_methods[f]:
+                    metrics = deepcopy(base_metrics)
+                    model_fair, ris_metrics = cross_val(classifier=model, data=data, unpriv_group=unpriv_group, priv_group=priv_group, label=label, metrics=metrics, positive_label=positive_label, sensitive_features=sensitive_features, inprocessor=method, n_splits={{K | default(10,true)}})
+                    df_metrics = _store_metrics(
+                        ris_metrics, m, method.name, save_data, save_model, model_fair)
+                    ris = ris.append(df_metrics)
+            elif f == 'postprocessing':
+                for method in fairness_methods[f]:
+                    metrics = deepcopy(base_metrics)
+                    model_fair, ris_metrics = cross_val(classifier=model, data=data, unpriv_group=unpriv_group, priv_group=priv_group, label=label, metrics=metrics, positive_label=positive_label,sensitive_features=sensitive_features, postprocessor=method, n_splits={{K | default(10,true)}})
+                    df_metrics = _store_metrics(ris_metrics, m, method.name, save_data, save_model, model_fair)
+                    ris = ris.append(df_metrics)
+            else:
+                metrics = deepcopy(base_metrics)
+                model_fair, ris_metrics = cross_val(classifier=model, data=data, unpriv_group=unpriv_group, priv_group=priv_group, label=label, metrics=metrics, positive_label=positive_label,sensitive_features=sensitive_features, n_splits={{K | default(10,true)}})
+                df_metrics = _store_metrics(ris_metrics, m, FairnessMethods.NO_ONE.name, save_data, save_model, model_fair)
+                ris = ris.append(df_metrics)
+        {% else%}
+        model = deepcopy(model)
+        data = data.copy()
+        metrics = deepcopy(base_metrics)
+        model_fair, ris_metrics = cross_val(
+            classifier=model, data=data, unpriv_group=unpriv_group, priv_group=priv_group, 
+            label=label, metrics=metrics, 
+            positive_label=positive_label, 
+            sensitive_features=sensitive_features, 
+            n_splits={{K | default(10, true)}})
+        df_metrics = _store_metrics(ris_metrics, m, 'None', save_data, save_model, model_fair)
+        ris = ris.append(df_metrics)
+        {%endif%}
+
+    {%if fairness%}
+    report = ris.groupby(['fairness_method', 'model']).agg(
+        np.mean).sort_values(agg_metric, ascending=False).reset_index()
+    {%else%}
+    report = ris.groupby(['model']).agg(
+        np.mean).sort_values(agg_metric, ascending=False).reset_index()
+    {%endif%}
+    best_ris = report.iloc[0,:]
+    model = ml_methods[best_ris['model']]
+    {% if scaler %}
+    model = Pipeline([
+        {{''}}{%include 'components/model_scalers.py.jinja'%}
+        ('classifier', model)
+    ])
+    {% endif %}
+    {%if fairness%}
+    trainer = ModelTrainer(data, label, sensitive_features, positive_label)
+    if best_ris['fairness_method'] == FairnessMethods.NO_ONE.name:
+        return model, report
+    {%if demv%}
+    if best_ris['fairness_method'] == FairnessMethods.DEMV.name:
+        demv = trainer.use_demv(model)
+        return demv, report
+    {%endif%}
+    if best_ris['fairness_method'] == FairnessMethods.RW.name:
+        rw = trainer.use_rw(model)
+        return rw, report
+    elif best_ris['fairness_method'] == FairnessMethods.DIR.name:
+        dir = trainer.use_dir(model)
+        return dir, report
+    elif best_ris['fairness_method'] == FairnessMethods.EG.name:
+        eg = trainer.use_eg(model)
+        return eg, report
+    elif best_ris['fairness_method'] == FairnessMethods.GRID.name:
+        grid = trainer.use_grid(model)
+        return grid, report
+    elif best_ris['fairness_method'] == FairnessMethods.AD.name:
+        adv = trainer.use_adv()
+        return adv, report
+    elif best_ris['fairness_method'] == FairnessMethods.GERRY.name:
+        gerry = trainer.use_gerry()
+        return gerry, report
+    elif best_ris['fairness_method'] == FairnessMethods.META.name:
+        meta = trainer.use_meta()
+        return meta, report
+    elif best_ris['fairness_method'] == FairnessMethods.PREJ.name:
+        prej = trainer.use_prj()
+        return prej, report
+    elif best_ris['fairness_method'] == FairnessMethods.CAL_EO.name:
+        cal = trainer.use_cal_eo(model)
+        return cal, report 
+    else:
+        rej = trainer.use_rej_opt(model)
+        return rej, report
+    {%else%}
+    model.fit(data.drop(label,axis=1).values, data[label].values.ravel())
+    return report
+    {%endif%}
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Experiment file for fairness testing')
+    parser.add_argument('-d', '--dataset', type=str,
+                        help='Required argument: relative path of the dataset to process')
+    args = parser.parse_args()
+    
+    {%include "components/data_loader.jinja"%}
+
+    model, report = exec(data)
+    os.makedirs('ris', exist_ok=True)
+    dir_name = os.path.basename(os.path.dirname(__file__))
+    {%if tabular%}
+    report.round(3).to_csv(os.path.join('ris',f'report_{dir_name}.csv'))
+    {%endif%}
+    {%if chart%}
+    chart = Charts(report, os.path.join('ris','chart_'+dir_name))
+    {%if bar_plot%}
+    chart.make_barplot()
+    {%endif%}
+    {%if line_plot%}
+    chart.make_lineplot()
+    {%endif%}
+    {%if strip_plot%}
+    chart.make_stripplot()
+    {%endif%}
+    {%if box_plot%}
+    chart.make_boxplot()
+    {%endif%}
+    {%if point_plot%}
+    chart.make_pointplot()
+    {%endif%}
+    {%endif%}
+    {%if fairness%}
+    model_name = f"{report.loc[0,'model']}_{report.loc[0,'fairness_method']}"
+    {%else%}
+    model_name = f"{report.loc[0,'model']}"
+    {%endif%}
+    pickle.dump(model, open(os.path.join('ris',model_name+'_'+dir_name+'.pkl'), 'wb'))

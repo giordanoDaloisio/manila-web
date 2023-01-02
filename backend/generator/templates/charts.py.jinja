@@ -1,0 +1,40 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import os
+
+
+class Charts:
+
+  def __init__(self,dataset: pd.DataFrame, path: str) -> None:
+    self.data = dataset
+    self.data['combination'] = dataset['model'] + '+' + dataset['fairness_method']
+    self.data = self.data.drop(columns=['model', 'fairness_method'])
+    self.data = self.data.melt(id_vars=['combination'], var_name='metrics')
+    self.path = path
+    os.makedirs(self.path, exist_ok=True)
+  
+  def make_barplot(self):
+    plt.figure(figsize=(10,10))
+    sns.barplot(data=self.data, x='combination', y='value', hue='metrics')
+    plt.savefig(os.path.join(self.path,'barplot.png'))
+  
+  def make_lineplot(self):
+    plt.figure(figsize=(10, 10))
+    sns.lineplot(data=self.data, x='combination', y='value', hue='metrics')
+    plt.savefig(os.path.join(self.path,'lineplot.png'))
+  
+  def make_stripplot(self):
+    plt.figure(figsize=(10, 10))
+    sns.stripplot(data=self.data, x='combination', y='value', hue='metrics')
+    plt.savefig(os.path.join(self.path,'stripplot.png'))
+  
+  def make_boxplot(self):
+    plt.figure(figsize=(10, 10))
+    sns.boxplot(data=self.data, x='combination', y='value', hue='metrics')
+    plt.savefig(os.path.join(self.path,'boxplot.png'))
+  
+  def make_pointplot(self):
+    plt.figure(figsize=(10, 10))
+    sns.pointplot(data=self.data, x='combination', y='value', hue='metrics')
+    plt.savefig(os.path.join(self.path,'pointplot.png'))

@@ -1,0 +1,35 @@
+name: base_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+{%if exponentiated_gradient or grid_search%}
+  - fairlearn
+{%endif%}
+{%if excel%}
+  - openpyxl
+{%endif%}
+  - pandas
+  - python=3.9
+{%if demv%}
+  - imbalanced-learn
+{%endif%}
+{%if chart%}
+  - matplotlib
+  - seaborn
+{%endif%}
+{%if parquet%}
+  - pyarrow
+{%endif%}
+  - pip
+  - scikit-learn
+  - scipy
+  {%if hdf5 or reweighing or dir or lfr or optimized_preprocessing or lfr or correlation_remover or adversarial_debiasing or gerry_fair_classifier or meta_fair_classifier or prejudice_remover or calibrated_eo or reject_option_classifier%}
+  - pip:
+    {%if hdf5%}
+    - tables
+    {%endif%}
+    {%if reweighing or dir or lfr or optimized_preprocessing or lfr or correlation_remover or adversarial_debiasing or gerry_fair_classifier or meta_fair_classifier or prejudice_remover or calibrated_eo or reject_option_classifier%}
+    - aif360aif360[OptimPreproc, LFR, AdversarialDebiasing, DisparateImpactRemover, LIME, ART, Reductions]
+    {%endif%}
+{%endif%}

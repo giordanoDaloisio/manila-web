@@ -1,0 +1,25 @@
+{%if standard_scaler%}
+('scaler', StandardScaler()),
+{%endif%}
+{%if min_max_scaler%}
+('scaler', MinMaxScaler()),
+{%endif%}
+{%if max_abs_scaler%}
+('scaler', MaxAbsScaler()),
+{%endif%}
+{%if robust_scaler%}
+('scaler', RobustScaler()),
+{%endif%}
+{%if quantile_transformer_scaler%}
+('scaler', QuantileTransformer()),
+{%endif%}
+{%if power_transformer_scaler%}
+('scaler', PowerTransformer(
+        {%if yeo_johnson__method%}
+        method='yeo-johnson'
+        {%endif%}
+        {%if box_cox__method%}
+        method='box-cox'
+        {%endif%}
+        )),
+{%endif%}
