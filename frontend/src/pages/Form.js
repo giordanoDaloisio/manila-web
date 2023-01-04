@@ -1,6 +1,9 @@
 import { Box, Button, Heading } from "@chakra-ui/react";
 import { useState } from "react";
+import download from "downloadjs";
+import { generate } from "../api";
 import Dataset from "../components/Dataset";
+import Scaler from "../components/Scaler";
 
 function Form() {
   const [state, setState] = useState({
@@ -50,17 +53,28 @@ function Form() {
     setState(state_copy);
   };
 
-  console.log(state);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const ris = await generate(state);
+      console.log(ris.data);
+      download(ris.data, "experiment.zip");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <Box
-      as='form'
-      m='10px'
-      onSubmit={(e) => {
-        e.preventDefault();
-        console.log(state);
-      }}>
+    <Box as='form' m='10px' onSubmit={handleSubmit}>
       <Heading>Experiment Components</Heading>
       <Dataset
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        handleChangeRadio={handleChangeRadio}
+        handleChangeText={handleChangeText}
+      />
+      <Scaler
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}

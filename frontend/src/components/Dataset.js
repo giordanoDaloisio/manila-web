@@ -1,12 +1,8 @@
 import {
-  Card,
-  CardBody,
-  CardHeader,
   Checkbox,
   FormControl,
   FormHelperText,
   FormLabel,
-  Heading,
   HStack,
   Input,
   NumberDecrementStepper,
@@ -18,6 +14,7 @@ import {
   RadioGroup,
   VStack,
 } from "@chakra-ui/react";
+import Container from "./Container";
 
 function Dataset({
   state,
@@ -27,178 +24,169 @@ function Dataset({
   handleChangeText,
 }) {
   return (
-    <Card p='5px' m='10px'>
-      <CardHeader>
-        <Heading as='h2' size='lg'>
-          Dataset
-        </Heading>
-      </CardHeader>
-      <CardBody>
-        <VStack align='flex-start' spacing='10px'>
-          <FormControl as='fieldset'>
-            <FormLabel as='legend'>File Extension</FormLabel>
-            <RadioGroup defaultValue={state.extension} name='extension'>
-              <HStack spacing='24px'>
-                <Radio value='csv' onChange={(e) => handleChangeRadio(e)}>
-                  CSV
-                </Radio>
-                <Radio value='parquet' onChange={(e) => handleChangeRadio(e)}>
-                  Parquet
-                </Radio>
-                <Radio value='excel' onChange={(e) => handleChangeRadio(e)}>
-                  Excel
-                </Radio>
-                <Radio value='json' onChange={(e) => handleChangeRadio(e)}>
-                  JSON
-                </Radio>
-                <Radio value='text' onChange={(e) => handleChangeRadio(e)}>
-                  Text
-                </Radio>
-                <Radio value='html' onChange={(e) => handleChangeRadio(e)}>
-                  HTML
-                </Radio>
-                <Radio value='xml' onChange={(e) => handleChangeRadio(e)}>
-                  XML
-                </Radio>
-                <Radio value='hdf5' onChange={(e) => handleChangeRadio(e)}>
-                  HDF5
-                </Radio>
-              </HStack>
-            </RadioGroup>
+    <Container title='Dataset'>
+      <FormControl as='fieldset'>
+        <FormLabel as='legend'>File Extension</FormLabel>
+        <RadioGroup defaultValue={state.extension} name='extension'>
+          <HStack spacing='24px'>
+            <Radio value='csv' onChange={(e) => handleChangeRadio(e)}>
+              CSV
+            </Radio>
+            <Radio value='parquet' onChange={(e) => handleChangeRadio(e)}>
+              Parquet
+            </Radio>
+            <Radio value='excel' onChange={(e) => handleChangeRadio(e)}>
+              Excel
+            </Radio>
+            <Radio value='json' onChange={(e) => handleChangeRadio(e)}>
+              JSON
+            </Radio>
+            <Radio value='text' onChange={(e) => handleChangeRadio(e)}>
+              Text
+            </Radio>
+            <Radio value='html' onChange={(e) => handleChangeRadio(e)}>
+              HTML
+            </Radio>
+            <Radio value='xml' onChange={(e) => handleChangeRadio(e)}>
+              XML
+            </Radio>
+            <Radio value='hdf5' onChange={(e) => handleChangeRadio(e)}>
+              HDF5
+            </Radio>
+          </HStack>
+        </RadioGroup>
+      </FormControl>
+      <FormControl>
+        <FormLabel>Label</FormLabel>
+        <RadioGroup defaultValue={state.label} name='label'>
+          <HStack spacing='24px'>
+            <Radio value='binary' onChange={handleChangeRadio}>
+              Binary
+            </Radio>
+            <Radio value='multiclass' onChange={handleChangeRadio}>
+              MultiClass
+            </Radio>
+          </HStack>
+        </RadioGroup>
+      </FormControl>
+      <FormControl>
+        <FormLabel>Sensitive Variables</FormLabel>
+        <VStack align='flex-start'>
+          <Checkbox
+            value='single_sensitive_var'
+            disabled={state.multiple_sensitive_vars}
+            onChange={handleChangeCheckbox}>
+            Single Sensitive Variable
+          </Checkbox>
+          <FormControl isDisabled={!state.single_sensitive_var} isRequired>
+            <HStack spacing='5px'>
+              <VStack align='flex-start'>
+                <FormLabel>Variable Name</FormLabel>
+                <Input
+                  value={state.variable_name ? state.variable_name : ""}
+                  name='variable_name'
+                  onChange={handleChangeText}
+                  required
+                />
+              </VStack>
+              <VStack align='flex-start'>
+                <FormLabel>Unprivileged value</FormLabel>
+                <Input
+                  value={
+                    state.unprivileged_value ? state.unprivileged_value : ""
+                  }
+                  name='unprivileged_value'
+                  onChange={handleChangeText}
+                  required
+                />
+              </VStack>
+              <VStack align='flex-start'>
+                <FormLabel>Privileged value</FormLabel>
+                <Input
+                  value={state.privileged_value ? state.privileged_value : ""}
+                  name='privileged_value'
+                  onChange={handleChangeText}
+                  required
+                />
+              </VStack>
+            </HStack>
           </FormControl>
-          <FormControl>
-            <FormLabel>Label</FormLabel>
-            <RadioGroup defaultValue={state.label} name='label'>
-              <HStack spacing='24px'>
-                <Radio value='binary' onChange={handleChangeRadio}>
-                  Binary
-                </Radio>
-                <Radio value='multiclass' onChange={handleChangeRadio}>
-                  MultiClass
-                </Radio>
-              </HStack>
-            </RadioGroup>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Sensitive Variables</FormLabel>
-            <VStack align='flex-start'>
-              <Checkbox
-                value='single_sensitive_var'
-                disabled={state.multiple_sensitive_vars}
-                onChange={handleChangeCheckbox}>
-                Single Sensitive Variable
-              </Checkbox>
-              <FormControl isDisabled={!state.single_sensitive_var}>
-                <HStack spacing='5px'>
-                  <VStack align='flex-start'>
-                    <FormLabel>Variable Name:</FormLabel>
-                    <Input
-                      value={state.variable_name ? state.variable_name : ""}
-                      name='variable_name'
-                      onChange={handleChangeText}
-                      required
-                    />
-                  </VStack>
-                  <VStack align='flex-start'>
-                    <FormLabel>Unprivileged value:</FormLabel>
-                    <Input
-                      value={
-                        state.unprivileged_value ? state.unprivileged_value : ""
-                      }
-                      name='unprivileged_value'
-                      onChange={handleChangeText}
-                      required
-                    />
-                  </VStack>
-                  <VStack align='flex-start'>
-                    <FormLabel>Privileged value:</FormLabel>
-                    <Input
-                      value={
-                        state.privileged_value ? state.privileged_value : ""
-                      }
-                      name='privileged_value'
-                      onChange={handleChangeText}
-                      required
-                    />
-                  </VStack>
-                </HStack>
-              </FormControl>
-              <Checkbox
-                value='multiple_sensitive_vars'
-                disabled={state.single_sensitive_var}
-                onChange={handleChangeCheckbox}>
-                Multiple Sensitive Variables
-              </Checkbox>
-              <FormControl isDisabled={!state.multiple_sensitive_vars}>
-                <HStack spacing='5px' w='full' h='full'>
-                  <VStack align='flex-start' w='full' h='full'>
-                    <FormLabel>Variable Names</FormLabel>
-                    <Input
-                      value={state.variable_names ? state.variable_names : ""}
-                      name='variable_names'
-                      onChange={handleChangeText}
-                      required
-                      placeholder='Comma separated list of values'
-                    />
-                  </VStack>
-                  <VStack align='flex-start' w='full' h='full'>
-                    <FormLabel>Unprivileged values</FormLabel>
-                    <Input
-                      value={
-                        state.unprivileged_values
-                          ? state.unprivileged_values
-                          : ""
-                      }
-                      name='unprivileged_values'
-                      onChange={handleChangeText}
-                      required
-                      placeholder='Comma separated list of values'
-                    />
-                  </VStack>
-                  <VStack align='flex-start' w='full' h='full'>
-                    <FormLabel>Privileged values</FormLabel>
-                    <Input
-                      value={
-                        state.privileged_values ? state.privileged_values : ""
-                      }
-                      name='privileged_values'
-                      onChange={handleChangeText}
-                      required
-                      placeholder='Comma separated list of values'
-                    />
-                  </VStack>
-                </HStack>
-              </FormControl>
-            </VStack>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Index Column</FormLabel>
-            <NumberInput
-              name='index_col'
-              value={state.index_col}
-              onChange={(val) => setState({ ...state, index_col: val })}>
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-            <FormHelperText>
-              Add only if the index of the dataset is different from 0
-            </FormHelperText>
-          </FormControl>
-          <FormControl>
-            <Checkbox
-              value={state.has_header}
-              onChange={handleChangeCheckbox}
-              checked={state.has_header}>
-              Header
-            </Checkbox>
-            <FormHelperText>Check if the dataset has a header</FormHelperText>
+          <Checkbox
+            value='multiple_sensitive_vars'
+            disabled={state.single_sensitive_var}
+            onChange={handleChangeCheckbox}>
+            Multiple Sensitive Variables
+          </Checkbox>
+          <FormControl isDisabled={!state.multiple_sensitive_vars} isRequired>
+            <HStack spacing='5px' w='full' h='full'>
+              <VStack align='flex-start' w='full' h='full'>
+                <FormLabel>Variable Names</FormLabel>
+                <Input
+                  value={state.variable_names ? state.variable_names : ""}
+                  name='variable_names'
+                  onChange={handleChangeText}
+                  required
+                  placeholder='Comma separated list of values'
+                />
+              </VStack>
+              <VStack align='flex-start' w='full' h='full'>
+                <FormLabel>Unprivileged values</FormLabel>
+                <Input
+                  value={
+                    state.unprivileged_values ? state.unprivileged_values : ""
+                  }
+                  name='unprivileged_values'
+                  onChange={handleChangeText}
+                  required
+                  placeholder='Comma separated list of values'
+                />
+              </VStack>
+              <VStack align='flex-start' w='full' h='full'>
+                <FormLabel>Privileged values</FormLabel>
+                <Input
+                  value={state.privileged_values ? state.privileged_values : ""}
+                  name='privileged_values'
+                  onChange={handleChangeText}
+                  required
+                  placeholder='Comma separated list of values'
+                />
+              </VStack>
+            </HStack>
           </FormControl>
         </VStack>
-      </CardBody>
-    </Card>
+      </FormControl>
+      <FormControl>
+        <FormLabel>Index Column</FormLabel>
+        <NumberInput
+          name='index_col'
+          value={state.index_col}
+          onChange={(val) => setState({ ...state, index_col: val })}>
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+        <FormHelperText>
+          Add only if the index of the dataset is different from 0
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <Checkbox
+          value={state.has_header}
+          onChange={handleChangeCheckbox}
+          checked={state.has_header}>
+          Header
+        </Checkbox>
+        <FormHelperText>Check if the dataset has a header</FormHelperText>
+      </FormControl>
+      <Checkbox
+        value='strictly_positive_attributes'
+        onChange={handleChangeCheckbox}
+        checked={state.strictly_positive_attributes}>
+        Dataset has strictly positive attributes
+      </Checkbox>
+    </Container>
   );
 }
 
