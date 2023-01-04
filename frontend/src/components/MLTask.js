@@ -1,4 +1,6 @@
 import {
+  Card,
+  CardBody,
   Checkbox,
   FormControl,
   FormLabel,
@@ -10,13 +12,7 @@ import {
 } from "@chakra-ui/react";
 import Container from "./Container";
 
-function MLTask({
-  state,
-  setState,
-  handleChangeCheckbox,
-  handleChangeRadio,
-  handleChangeText,
-}) {
+function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
   return (
     <Container title='ML Task'>
       <RadioGroup defaultValue={state.ml__task} name='ml__task' w='full'>
@@ -37,58 +33,67 @@ function MLTask({
               }}>
               Classification
             </Radio>
-            <Container title='Classification'>
-              <FormControl isDisabled={state.ml__task === "regression"}>
-                <VStack spacing='5px' align='flex-start' w='full' h='full'>
-                  <Checkbox
-                    value='logistic__regression'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.logistic__regression !== undefined}>
-                    Logistic Regression
-                  </Checkbox>
-                  <Checkbox
-                    value='svc'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.svc !== undefined}>
-                    Support Vector Classifier
-                  </Checkbox>
-                  <Checkbox
-                    value='gradient__descent__classifier'
-                    onChange={handleChangeCheckbox}
-                    isChecked={
-                      state.gradient__descent__classifier !== undefined
-                    }>
-                    Gradient Descent Classifier
-                  </Checkbox>
-                  <Checkbox
-                    value='gradient__boosting__classifier'
-                    onChange={handleChangeCheckbox}
-                    isChecked={
-                      state.gradient__boosting__classifier !== undefined
-                    }>
-                    Gradient Boosting Classifier
-                  </Checkbox>
-                  <Checkbox
-                    value='mlp__classifier'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.mlp__classifier !== undefined}>
-                    MLP Classifier
-                  </Checkbox>
-                  <Checkbox
-                    value='decision__tree__classifier'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.decision__tree__classifier !== undefined}>
-                    Decision Tree Classifier
-                  </Checkbox>
-                  <Checkbox
-                    value='random__forest__classifier'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.random__forest__classifier !== undefined}>
-                    Random Forest Classifier
-                  </Checkbox>
-                </VStack>
-              </FormControl>
-            </Container>
+            <Card>
+              <CardBody>
+                <FormControl
+                  isDisabled={state.ml__task === "regression"}
+                  isRequired={state.ml__task === "classification"}>
+                  <FormLabel>Classification Methods</FormLabel>
+                  <VStack spacing='5px' align='flex-start' w='full' h='full'>
+                    <Checkbox
+                      value='logistic__regression'
+                      onChange={handleChangeCheckbox}
+                      isChecked={state.logistic__regression !== undefined}>
+                      Logistic Regression
+                    </Checkbox>
+                    <Checkbox
+                      value='svc'
+                      onChange={handleChangeCheckbox}
+                      isChecked={state.svc !== undefined}>
+                      Support Vector Classifier
+                    </Checkbox>
+                    <Checkbox
+                      value='gradient__descent__classifier'
+                      onChange={handleChangeCheckbox}
+                      isChecked={
+                        state.gradient__descent__classifier !== undefined
+                      }>
+                      Gradient Descent Classifier
+                    </Checkbox>
+                    <Checkbox
+                      value='gradient__boosting__classifier'
+                      onChange={handleChangeCheckbox}
+                      isChecked={
+                        state.gradient__boosting__classifier !== undefined
+                      }>
+                      Gradient Boosting Classifier
+                    </Checkbox>
+                    <Checkbox
+                      value='mlp__classifier'
+                      onChange={handleChangeCheckbox}
+                      isChecked={state.mlp__classifier !== undefined}>
+                      MLP Classifier
+                    </Checkbox>
+                    <Checkbox
+                      value='decision__tree__classifier'
+                      onChange={handleChangeCheckbox}
+                      isChecked={
+                        state.decision__tree__classifier !== undefined
+                      }>
+                      Decision Tree Classifier
+                    </Checkbox>
+                    <Checkbox
+                      value='random__forest__classifier'
+                      onChange={handleChangeCheckbox}
+                      isChecked={
+                        state.random__forest__classifier !== undefined
+                      }>
+                      Random Forest Classifier
+                    </Checkbox>
+                  </VStack>
+                </FormControl>
+              </CardBody>
+            </Card>
           </VStack>
           <VStack align='flex-start'>
             <Radio
@@ -107,52 +112,57 @@ function MLTask({
               }}>
               Regression
             </Radio>
-            <Container title='Regression'>
-              <FormControl isDisabled={state.ml__task === "classification"}>
-                <VStack spacing='5px' align='flex-start' w='full' h='full'>
-                  <Checkbox
-                    value='linear__regression'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.linear__regression !== undefined}>
-                    Linear Regression
-                  </Checkbox>
-                  <Checkbox
-                    value='svr'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.svr !== undefined}>
-                    Support Vector Regressor
-                  </Checkbox>
-                  <Checkbox
-                    value='gradient__descent__regressor'
-                    onChange={handleChangeCheckbox}
-                    isChecked={
-                      state.gradient__descent__regressor !== undefined
-                    }>
-                    Gradient Descent Regressor
-                  </Checkbox>
-                  <Checkbox
-                    value='gradient__boosting__regressor'
-                    onChange={handleChangeCheckbox}
-                    isChecked={
-                      state.gradient__boosting__regressor !== undefined
-                    }>
-                    Gradient Boosting Regressor
-                  </Checkbox>
-                  <Checkbox
-                    value='mlp__regressor'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.mlp__regressor !== undefined}>
-                    MLP Regressor
-                  </Checkbox>
-                  <Checkbox
-                    value='decision__tree__regressor'
-                    onChange={handleChangeCheckbox}
-                    isChecked={state.decision__tree__regressor !== undefined}>
-                    Decision Tree Regressor
-                  </Checkbox>
-                </VStack>
-              </FormControl>
-            </Container>
+            <Card>
+              <CardBody>
+                <FormControl
+                  isDisabled={state.ml__task === "classification"}
+                  isRequired={state.ml__task === "regression"}>
+                  <FormLabel>Regression Methods</FormLabel>
+                  <VStack spacing='5px' align='flex-start' w='full' h='full'>
+                    <Checkbox
+                      value='linear__regression'
+                      onChange={handleChangeCheckbox}
+                      isChecked={state.linear__regression !== undefined}>
+                      Linear Regression
+                    </Checkbox>
+                    <Checkbox
+                      value='svr'
+                      onChange={handleChangeCheckbox}
+                      isChecked={state.svr !== undefined}>
+                      Support Vector Regressor
+                    </Checkbox>
+                    <Checkbox
+                      value='gradient__descent__regressor'
+                      onChange={handleChangeCheckbox}
+                      isChecked={
+                        state.gradient__descent__regressor !== undefined
+                      }>
+                      Gradient Descent Regressor
+                    </Checkbox>
+                    <Checkbox
+                      value='gradient__boosting__regressor'
+                      onChange={handleChangeCheckbox}
+                      isChecked={
+                        state.gradient__boosting__regressor !== undefined
+                      }>
+                      Gradient Boosting Regressor
+                    </Checkbox>
+                    <Checkbox
+                      value='mlp__regressor'
+                      onChange={handleChangeCheckbox}
+                      isChecked={state.mlp__regressor !== undefined}>
+                      MLP Regressor
+                    </Checkbox>
+                    <Checkbox
+                      value='decision__tree__regressor'
+                      onChange={handleChangeCheckbox}
+                      isChecked={state.decision__tree__regressor !== undefined}>
+                      Decision Tree Regressor
+                    </Checkbox>
+                  </VStack>
+                </FormControl>
+              </CardBody>
+            </Card>
           </VStack>
         </HStack>
       </RadioGroup>

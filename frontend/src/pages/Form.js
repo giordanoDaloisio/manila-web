@@ -5,6 +5,7 @@ import { generate } from "../api";
 import Dataset from "../components/Dataset";
 import Scaler from "../components/Scaler";
 import MLTask from "../components/MLTask";
+import Fairness from "../components/Fairness";
 
 function Form() {
   const [state, setState] = useState({
@@ -87,8 +88,12 @@ function Form() {
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
-        handleChangeRadio={handleChangeRadio}
         handleChangeText={handleChangeText}
+      />
+      <Fairness
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
       />
       <Button type='submit'>Submit</Button>
     </Box>

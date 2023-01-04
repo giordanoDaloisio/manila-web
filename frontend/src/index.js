@@ -1,20 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import Home from './pages/Home';
-import { ChakraProvider } from '@chakra-ui/react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { ChakraProvider } from "@chakra-ui/react";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { HOME, FORM } from './routes';
-import Form from './pages/Form';
+import Form from "./pages/Form";
+import { HOME } from "./routes";
 
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ChakraProvider>
     <BrowserRouter>
       <Routes>
-        <Route path={HOME} element={<Home/>} />
-        <Route path={FORM} element={<Form/>}/>
+        <Route path={HOME} element={<Form />} />
       </Routes>
     </BrowserRouter>
   </ChakraProvider>

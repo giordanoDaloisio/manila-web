@@ -97,7 +97,7 @@ function Scaler({
             value='yeo_johnson_method'
             onChange={handleChangeCheckbox}
             isDisabled={
-              !state.quantile_transformer_scaler || state.box_cox_method
+              !state.power_transformer_scaler || state.box_cox_method
             }>
             Yeo Johnson Method
           </Checkbox>
@@ -105,7 +105,7 @@ function Scaler({
             value='box_cox_method'
             onChange={handleChangeCheckbox}
             isDisabled={
-              !state.quantile_transformer_scaler || state.yeo_johnson_method
+              !state.power_transformer_scaler || state.yeo_johnson_method
             }>
             Box Cox Method
           </Checkbox>

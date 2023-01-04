@@ -87,7 +87,7 @@ function Dataset({
           </FormControl>
         </HStack>
       </FormControl>
-      <FormControl>
+      <FormControl isRequired={state.fairness !== undefined}>
         <FormLabel>Sensitive Variables</FormLabel>
         <VStack align='flex-start'>
           <Checkbox
