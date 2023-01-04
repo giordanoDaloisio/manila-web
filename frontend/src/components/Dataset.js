@@ -28,7 +28,7 @@ function Dataset({
       <FormControl as='fieldset'>
         <FormLabel as='legend'>File Extension</FormLabel>
         <RadioGroup defaultValue={state.extension} name='extension'>
-          <HStack spacing='24px'>
+          <HStack spacing='34px'>
             <Radio value='csv' onChange={(e) => handleChangeRadio(e)}>
               CSV
             </Radio>
@@ -68,6 +68,24 @@ function Dataset({
             </Radio>
           </HStack>
         </RadioGroup>
+        <HStack m='1' spacing='1'>
+          <FormControl isRequired>
+            <FormLabel>Label Name</FormLabel>
+            <Input
+              name='label_name'
+              onChange={handleChangeText}
+              value={state.label_name}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Positive Value</FormLabel>
+            <Input
+              name='positive_value'
+              onChange={handleChangeText}
+              value={state.positive_value}
+            />
+          </FormControl>
+        </HStack>
       </FormControl>
       <FormControl>
         <FormLabel>Sensitive Variables</FormLabel>

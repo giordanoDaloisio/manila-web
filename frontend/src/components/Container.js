@@ -10,7 +10,7 @@ function Container({ title, children }) {
         </Heading>
       </CardHeader>
       <CardBody>
-        <VStack align='flex-start' spacing='10px'>
+        <VStack align='flex-start' spacing='20px'>
           {children}
         </VStack>
       </CardBody>

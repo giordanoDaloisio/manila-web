@@ -4,6 +4,7 @@ import download from "downloadjs";
 import { generate } from "../api";
 import Dataset from "../components/Dataset";
 import Scaler from "../components/Scaler";
+import MLTask from "../components/MLTask";
 
 function Form() {
   const [state, setState] = useState({
@@ -11,6 +12,8 @@ function Form() {
     label: "binary",
     index_col: 0,
     has_header: true,
+    ml__task: "classification",
+    train_size: 80,
   });
 
   const handleChangeCheckbox = (e) => {
@@ -57,7 +60,6 @@ function Form() {
     e.preventDefault();
     try {
       const ris = await generate(state);
-      console.log(ris.data);
       download(ris.data, "experiment.zip");
     } catch (e) {
       console.log(e);
@@ -75,6 +77,13 @@ function Form() {
         handleChangeText={handleChangeText}
       />
       <Scaler
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        handleChangeRadio={handleChangeRadio}
+        handleChangeText={handleChangeText}
+      />
+      <MLTask
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
