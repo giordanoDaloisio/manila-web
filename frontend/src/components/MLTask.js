@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Card,
   CardBody,
   Checkbox,
@@ -10,9 +13,20 @@ import {
   RadioGroup,
   VStack,
 } from "@chakra-ui/react";
+
+import { useOr } from "../hook/useOr";
 import Container from "./Container";
 
-function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
+function MLTask({
+  state,
+  setState,
+  handleChangeCheckbox,
+  handleChangeText,
+  setError,
+}) {
+  const [classCount, handleOrClass] = useOr(handleChangeCheckbox, setError);
+  const [regCount, handleOrReg] = useOr(handleChangeCheckbox, setError);
+
   return (
     <Container title='ML Task'>
       <RadioGroup defaultValue={state.ml__task} name='ml__task' w='full'>
@@ -33,28 +47,40 @@ function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
               }}>
               Classification
             </Radio>
-            <Card>
+            <Card w='full'>
               <CardBody>
                 <FormControl
                   isDisabled={state.ml__task === "regression"}
-                  isRequired={state.ml__task === "classification"}>
+                  isInvalid={
+                    state.ml__task === "classification" && classCount === 0
+                  }>
                   <FormLabel>Classification Methods</FormLabel>
                   <VStack spacing='5px' align='flex-start' w='full' h='full'>
+                    {state.ml__task === "classification" && classCount === 0 ? (
+                      <Alert status='error'>
+                        <AlertIcon />
+                        <AlertDescription>
+                          Select at least one classifier
+                        </AlertDescription>
+                      </Alert>
+                    ) : (
+                      ""
+                    )}
                     <Checkbox
                       value='logistic__regression'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrClass}
                       isChecked={state.logistic__regression !== undefined}>
                       Logistic Regression
                     </Checkbox>
                     <Checkbox
                       value='svc'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrClass}
                       isChecked={state.svc !== undefined}>
                       Support Vector Classifier
                     </Checkbox>
                     <Checkbox
                       value='gradient__descent__classifier'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrClass}
                       isChecked={
                         state.gradient__descent__classifier !== undefined
                       }>
@@ -62,7 +88,7 @@ function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
                     </Checkbox>
                     <Checkbox
                       value='gradient__boosting__classifier'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrClass}
                       isChecked={
                         state.gradient__boosting__classifier !== undefined
                       }>
@@ -70,13 +96,13 @@ function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
                     </Checkbox>
                     <Checkbox
                       value='mlp__classifier'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrClass}
                       isChecked={state.mlp__classifier !== undefined}>
                       MLP Classifier
                     </Checkbox>
                     <Checkbox
                       value='decision__tree__classifier'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrClass}
                       isChecked={
                         state.decision__tree__classifier !== undefined
                       }>
@@ -84,7 +110,7 @@ function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
                     </Checkbox>
                     <Checkbox
                       value='random__forest__classifier'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrClass}
                       isChecked={
                         state.random__forest__classifier !== undefined
                       }>
@@ -112,28 +138,38 @@ function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
               }}>
               Regression
             </Radio>
-            <Card>
+            <Card w='full'>
               <CardBody>
                 <FormControl
                   isDisabled={state.ml__task === "classification"}
-                  isRequired={state.ml__task === "regression"}>
+                  isInvalid={state.ml__task === "regression" && regCount === 0}>
                   <FormLabel>Regression Methods</FormLabel>
                   <VStack spacing='5px' align='flex-start' w='full' h='full'>
+                    {state.ml__task === "regression" && regCount === 0 ? (
+                      <Alert status='error'>
+                        <AlertIcon />
+                        <AlertDescription>
+                          Select at least one regressor
+                        </AlertDescription>
+                      </Alert>
+                    ) : (
+                      ""
+                    )}
                     <Checkbox
                       value='linear__regression'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrReg}
                       isChecked={state.linear__regression !== undefined}>
                       Linear Regression
                     </Checkbox>
                     <Checkbox
                       value='svr'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrReg}
                       isChecked={state.svr !== undefined}>
                       Support Vector Regressor
                     </Checkbox>
                     <Checkbox
                       value='gradient__descent__regressor'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrReg}
                       isChecked={
                         state.gradient__descent__regressor !== undefined
                       }>
@@ -141,7 +177,7 @@ function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
                     </Checkbox>
                     <Checkbox
                       value='gradient__boosting__regressor'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrReg}
                       isChecked={
                         state.gradient__boosting__regressor !== undefined
                       }>
@@ -149,13 +185,13 @@ function MLTask({ state, setState, handleChangeCheckbox, handleChangeText }) {
                     </Checkbox>
                     <Checkbox
                       value='mlp__regressor'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrReg}
                       isChecked={state.mlp__regressor !== undefined}>
                       MLP Regressor
                     </Checkbox>
                     <Checkbox
                       value='decision__tree__regressor'
-                      onChange={handleChangeCheckbox}
+                      onChange={handleOrReg}
                       isChecked={state.decision__tree__regressor !== undefined}>
                       Decision Tree Regressor
                     </Checkbox>

@@ -1,11 +1,12 @@
-import { Box, Button, Heading } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Button } from "@chakra-ui/react";
 import download from "downloadjs";
+import { useState } from "react";
 import { generate } from "../api";
 import Dataset from "../components/Dataset";
-import Scaler from "../components/Scaler";
-import MLTask from "../components/MLTask";
 import Fairness from "../components/Fairness";
+import Metrics from "../components/Metrics";
+import MLTask from "../components/MLTask";
+import Scaler from "../components/Scaler";
 
 function Form() {
   const [state, setState] = useState({
@@ -16,6 +17,10 @@ function Form() {
     ml__task: "classification",
     train_size: 80,
   });
+
+  const [errorModel, setErrorModel] = useState(false);
+  const [errorFair, setErrorFair] = useState(false);
+  const [errorMetric, setErrorMetric] = useState(false);
 
   const handleChangeCheckbox = (e) => {
     if (e.target.checked) {
@@ -69,7 +74,6 @@ function Form() {
 
   return (
     <Box as='form' m='10px' onSubmit={handleSubmit}>
-      <Heading>Experiment Components</Heading>
       <Dataset
         state={state}
         setState={setState}
@@ -89,13 +93,24 @@ function Form() {
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeText={handleChangeText}
+        setError={setErrorModel}
       />
       <Fairness
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
+        setError={setErrorFair}
       />
-      <Button type='submit'>Submit</Button>
+      <Metrics
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        handleChangeRadio={handleChangeRadio}
+        setError={setErrorMetric}
+      />
+      <Button type='submit' isDisabled={errorModel || errorMetric || errorFair}>
+        Submit
+      </Button>
     </Box>
   );
 }

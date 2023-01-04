@@ -205,23 +205,7 @@ def exec(data):
         {% endif %}
     }
 
-
-{%if harmonic_mean %}
-    agg_metric = 'hmean' 
-{%endif%}
-
-{%if max %}
-    agg_metric = 'max' 
-{%endif%}
-
-{%if min %}
-    agg_metric = 'min' 
-{%endif%}
-
-{%if statistical_mean %}
-    agg_metric = 'mean' 
-{%endif%}
-
+    agg_metric = {{agg_metric}}
     dataset_label = {% if multi_class %} 'multi-class' {%else%} 'binary' {%endif%}
 
     ris = pd.DataFrame()
