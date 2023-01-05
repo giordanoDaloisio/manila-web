@@ -8,11 +8,35 @@ import {
   Stack,
   VStack,
 } from "@chakra-ui/react";
-import { useOr } from "../hook/useOr";
 import Container from "./Container";
 
-function Fairness({ state, setState, handleChangeCheckbox, setError }) {
-  const [count, handleOr] = useOr(handleChangeCheckbox, setError);
+function Fairness({ state, setState, handleChangeCheckbox, errors }) {
+  // const [count, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
+  // useEffect(() => {
+  //   if (state.fairness) {
+  //     const sens_vars =
+  //       !state.single_sensitive_var && !state.multiple_sensitive_vars;
+  //     const methods = !(
+  //       state.no__method ||
+  //       state.reweighing ||
+  //       state.dir ||
+  //       state.demv ||
+  //       state.exponentiated_gradient ||
+  //       state.grid_search ||
+  //       state.adversarial_debiasing ||
+  //       state.gerry_fair_classifier ||
+  //       state.meta_fair_classifier ||
+  //       state.prejudice_remover ||
+  //       state.calibrated_eo ||
+  //       state.reject_option_classifier
+  //     );
+  //     setErrors({
+  //       ...errors,
+  //       errors_sensvars: sens_vars,
+  //       errors_fairmethods: methods,
+  //     });
+  //   }
+  // });
   return (
     <Container title='Quality Methods'>
       <Checkbox value='fairness' onChange={handleChangeCheckbox}>
@@ -21,15 +45,13 @@ function Fairness({ state, setState, handleChangeCheckbox, setError }) {
       {state.fairness ? (
         <Stack pl='6'>
           <FormControl
-            isDisabled={
-              !state.single_sensitive_var && !state.multiple_sensitive_vars
-            }
+            isDisabled={errors.error_sensvars === true}
             isInvalid={
               (state.single_sensitive_var || state.multiple_sensitive_vars) &&
-              count === 0
+              errors.errors_fairmethods
             }>
             {(state.single_sensitive_var || state.multiple_sensitive_vars) &&
-            count === 0 ? (
+            errors.errors_fairmethods ? (
               <Alert status='error'>
                 <AlertIcon />
                 <AlertDescription>
@@ -39,7 +61,7 @@ function Fairness({ state, setState, handleChangeCheckbox, setError }) {
             ) : (
               ""
             )}
-            {!state.single_sensitive_var && !state.multiple_sensitive_vars ? (
+            {errors.error_sensvars ? (
               <Alert status='error'>
                 <AlertIcon />
                 <AlertDescription>
@@ -52,7 +74,7 @@ function Fairness({ state, setState, handleChangeCheckbox, setError }) {
             <Checkbox
               value='no__method'
               isChecked={state.no__method !== undefined}
-              onChange={handleOr}>
+              onChange={handleChangeCheckbox}>
               No Method
             </Checkbox>
             <FormLabel size='md' m='10px 0px'>
@@ -61,19 +83,19 @@ function Fairness({ state, setState, handleChangeCheckbox, setError }) {
             <VStack pl='6' align='flex-start' spacing='10px'>
               <Checkbox
                 value='reweighing'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.reweighing !== undefined}>
                 Reweighing
               </Checkbox>
               <Checkbox
                 value='dir'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.dir !== undefined}>
                 DIR
               </Checkbox>
               <Checkbox
                 value='demv'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.demv !== undefined}>
                 DEMV
               </Checkbox>
@@ -84,43 +106,37 @@ function Fairness({ state, setState, handleChangeCheckbox, setError }) {
             <VStack pl='6' align='flex-start' spacing='10px'>
               <Checkbox
                 value='exponentiated_gradient'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.exponentiated_gradient !== undefined}>
                 Exponentiated Gradient
               </Checkbox>
               <Checkbox
                 value='grid_search'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.grid_search !== undefined}>
                 Grid Search
               </Checkbox>
               <Checkbox
                 value='adversarial_debiasing'
-                onChange={handleOr}
-                checked={state.adversarial_debiasing !== undefined}>
-                Adversarial Debiasing
-              </Checkbox>
-              <Checkbox
-                value='adversarial_debiasing'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.adversarial_debiasing !== undefined}>
                 Adversarial Debiasing
               </Checkbox>
               <Checkbox
                 value='gerry_fair_classifier'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 isChecked={state.gerry_fair_classifier !== undefined}>
                 GerryFair Classifier
               </Checkbox>
               <Checkbox
                 value='meta_fair_classifier'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.meta_fair_classifier !== undefined}>
                 MetaFair Classifier
               </Checkbox>
               <Checkbox
                 value='prejudice_remover'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 checked={state.prejudice_remover !== undefined}>
                 Prejudice Remover
               </Checkbox>
@@ -131,13 +147,13 @@ function Fairness({ state, setState, handleChangeCheckbox, setError }) {
             <VStack pl='6' align='flex-start' spacing='10px'>
               <Checkbox
                 value='calibrated_eo'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 isChecked={state.calibrated_eo !== undefined}>
                 Calibrated EO
               </Checkbox>
               <Checkbox
                 value='reject_option_classifier'
-                onChange={handleOr}
+                onChange={handleChangeCheckbox}
                 isChecked={state.reject_option_classifier !== undefined}>
                 Reject Option Classifier
               </Checkbox>

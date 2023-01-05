@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Checkbox,
   FormControl,
   FormLabel,
@@ -7,11 +10,21 @@ import {
 } from "@chakra-ui/react";
 import Container from "./Container";
 
-function Presentation({ state, handleChangeCheckbox }) {
+function Presentation({ state, handleChangeCheckbox, errors }) {
   return (
     <Container title='Result presentation'>
-      <FormControl>
+      <FormControl isInvalid={errors.pres_error}>
         <VStack align='flex-start' spacing='6'>
+          {errors.pres_error ? (
+            <Alert status='error'>
+              <AlertIcon />
+              <AlertDescription>
+                Select at least one presentation method
+              </AlertDescription>
+            </Alert>
+          ) : (
+            ""
+          )}
           <Checkbox
             value='tabular'
             onChange={handleChangeCheckbox}

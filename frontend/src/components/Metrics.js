@@ -12,7 +12,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
-import { useOr } from "../hook/useOr";
 import Container from "./Container";
 
 function Metrics({
@@ -20,11 +19,11 @@ function Metrics({
   setState,
   handleChangeCheckbox,
   handleChangeRadio,
-  setError,
+  errors,
 }) {
-  const [classCount, handleOrClass] = useOr(handleChangeCheckbox, setError);
-  const [regCount, handleOrReg] = useOr(handleChangeCheckbox, setError);
-  const [fairCount, handleOrFair] = useOr(handleChangeCheckbox, setError);
+  // const [classCount, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
+  // const [regCount, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
+  // const [fairCount, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
   return (
     <Container title='Metrics'>
       <HStack spacing='5' align='flex-start' w='full'>
@@ -33,9 +32,9 @@ function Metrics({
             <FormControl
               isDisabled={state.ml__task !== "classification"}
               isInvalid={
-                state.ml__task === "classification" && classCount === 0
+                state.ml__task === "classification" && errors.class_metrics
               }>
-              {state.ml__task === "classification" && classCount === 0 ? (
+              {state.ml__task === "classification" && errors.class_metrics ? (
                 <Alert status='error'>
                   <AlertIcon />
                   <AlertDescription>
@@ -49,37 +48,37 @@ function Metrics({
               <VStack align='flex-start'>
                 <Checkbox
                   value='accuracy'
-                  onChange={handleOrClass}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.accuracy !== undefined}>
                   Accuracy
                 </Checkbox>
                 <Checkbox
                   value='precision'
-                  onChange={handleOrClass}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.precision !== undefined}>
                   Precision
                 </Checkbox>
                 <Checkbox
                   value='recall'
-                  onChange={handleOrClass}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.recall !== undefined}>
                   Recall
                 </Checkbox>
                 <Checkbox
                   value='f1_score'
-                  onChange={handleOrClass}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.f1_score !== undefined}>
                   F1Score
                 </Checkbox>
                 <Checkbox
                   value='auc'
-                  onChange={handleOrClass}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.auc !== undefined}>
                   Area Under Curve
                 </Checkbox>
                 <Checkbox
                   value='zero_one_loss'
-                  onChange={handleOrClass}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.zero_one_loss !== undefined}>
                   Zero One Loss
                 </Checkbox>
@@ -91,8 +90,10 @@ function Metrics({
           <CardBody>
             <FormControl
               isDisabled={state.ml__task !== "regression"}
-              isInvalid={(state.ml__task === "regression") & (regCount === 0)}>
-              {state.ml__task === "regression" && regCount === 0 ? (
+              isInvalid={
+                state.ml__task === "regression" && errors.class_metrics
+              }>
+              {state.ml__task === "regression" && errors.class_metrics ? (
                 <Alert status='error'>
                   <AlertIcon />
                   <AlertDescription>
@@ -106,31 +107,31 @@ function Metrics({
               <VStack align='flex-start'>
                 <Checkbox
                   value='mean_squared_error'
-                  onChange={handleOrReg}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.mean_squared_error !== undefined}>
                   Mean Squared Error
                 </Checkbox>
                 <Checkbox
                   value='mean_absolute_error'
-                  onChange={handleOrReg}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.mean_absolute_error !== undefined}>
                   Mean Absolute Error
                 </Checkbox>
                 <Checkbox
                   value='r2_error'
-                  onChange={handleOrReg}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.r2_error !== undefined}>
                   R2 Error
                 </Checkbox>
                 <Checkbox
                   value='mean_squared_logaritmic_error'
-                  onChange={handleOrReg}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.mean_squared_logaritmic_error !== undefined}>
                   Mean Squared Logaritmic Error
                 </Checkbox>
                 <Checkbox
                   value='mean_absolute_percentage_error'
-                  onChange={handleOrReg}
+                  onChange={handleChangeCheckbox}
                   isChecked={
                     state.mean_absolute_percentage_error !== undefined
                   }>
@@ -144,8 +145,8 @@ function Metrics({
           <CardBody>
             <FormControl
               isDisabled={state.fairness === undefined}
-              isInvalid={state.fairness && fairCount === 0}>
-              {state.fairness && fairCount === 0 ? (
+              isInvalid={state.fairness && errors.fairmetrics}>
+              {state.fairness && errors.fairmetrics ? (
                 <Alert status='error'>
                   <AlertIcon />
                   <AlertDescription>
@@ -159,37 +160,37 @@ function Metrics({
               <VStack align='flex-start'>
                 <Checkbox
                   value='statistical_parity'
-                  onChange={handleOrFair}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.statistical_parity !== undefined}>
                   Statistical Parity
                 </Checkbox>
                 <Checkbox
                   value='disparate_impact'
-                  onChange={handleOrFair}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.disparate_impact !== undefined}>
                   Disparate Impact
                 </Checkbox>
                 <Checkbox
                   value='equalized_odds'
-                  onChange={handleOrFair}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.equalized_odds !== undefined}>
                   Equalized Odds
                 </Checkbox>
                 <Checkbox
                   value='average_odds'
-                  onChange={handleOrFair}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.average_odds !== undefined}>
                   Average Odds
                 </Checkbox>
                 <Checkbox
                   value='true_positive_difference'
-                  onChange={handleOrFair}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.true_positive_difference !== undefined}>
                   True Positive Difference
                 </Checkbox>
                 <Checkbox
                   value='false_positive_difference'
-                  onChange={handleOrFair}
+                  onChange={handleChangeCheckbox}
                   isChecked={state.false_positive_difference !== undefined}>
                   False Positive Difference
                 </Checkbox>
@@ -201,9 +202,19 @@ function Metrics({
       <HStack>
         <Card w='full'>
           <CardBody>
-            <FormControl isRequired={state.fairness || state.ml__task}>
+            <FormControl isInvalid={errors.aggr_metrics}>
               <FormLabel>Aggregation Metrics</FormLabel>
               <VStack align='flex-start' w='full' h='full'>
+                {errors.aggr_metrics ? (
+                  <Alert status='error'>
+                    <AlertIcon />
+                    <AlertDescription>
+                      Select at least one aggregation function
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  ""
+                )}
                 <Checkbox value='min' onChange={handleChangeCheckbox}>
                   Minimum
                 </Checkbox>
@@ -222,16 +233,17 @@ function Metrics({
             </FormControl>
           </CardBody>
         </Card>
-        <Select
-          placeholder='Ordering function'
-          required
-          name='agg_metric'
-          onChange={handleChangeRadio}>
-          <option value='min'>Minimum</option>
-          <option value='max'>Maximum</option>
-          <option value='statistical_mean'>Statistical Mean</option>
-          <option value='harmonic mean'>Harmonic Mean</option>
-        </Select>
+        <FormControl isRequired>
+          <VStack align='flex-start'>
+            <FormLabel>Select an ordering function</FormLabel>
+            <Select name='agg_metric' onChange={handleChangeRadio}>
+              <option value='min'>Minimum</option>
+              <option value='max'>Maximum</option>
+              <option value='statistical_mean'>Statistical Mean</option>
+              <option value='harmonic_mean'>Harmonic Mean</option>
+            </Select>
+          </VStack>
+        </FormControl>
       </HStack>
     </Container>
   );

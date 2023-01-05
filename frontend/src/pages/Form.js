@@ -9,6 +9,7 @@ import MLTask from "../components/MLTask";
 import Presentation from "../components/Presentation";
 import Scaler from "../components/Scaler";
 import Validation from "../components/Validation";
+import { useValidation } from "../hook/useValidation";
 
 function Form() {
   const [state, setState] = useState({
@@ -22,7 +23,7 @@ function Form() {
     k: 10,
   });
 
-  const [errors, setErrors] = useState({});
+  const errors = useValidation(state);
 
   const handleChangeCheckbox = (e) => {
     if (e.target.checked) {
@@ -67,6 +68,11 @@ function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // const new_state = Object.keys(state).filter(
+      //   (v) =>
+      //     !document.querySelector("[value=" + v + "]").hasAttribute("disabled")
+      // );
+      // console.log(new_state);
       const ris = await generate(state);
       download(ris.data, "experiment.zip");
     } catch (e) {
@@ -83,7 +89,6 @@ function Form() {
         handleChangeRadio={handleChangeRadio}
         handleChangeText={handleChangeText}
         errors={errors}
-        setErrors={setErrors}
       />
       <Scaler
         state={state}
@@ -92,7 +97,6 @@ function Form() {
         handleChangeRadio={handleChangeRadio}
         handleChangeText={handleChangeText}
         errors={errors}
-        setErrors={setErrors}
       />
       <MLTask
         state={state}
@@ -100,14 +104,12 @@ function Form() {
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeText={handleChangeText}
         errors={errors}
-        setErrors={setErrors}
       />
       <Fairness
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
         errors={errors}
-        setErrors={setErrors}
       />
       <Metrics
         state={state}
@@ -115,14 +117,17 @@ function Form() {
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeRadio={handleChangeRadio}
         errors={errors}
-        setErrors={setErrors}
       />
       <Validation
         state={state}
         handleChangeRadio={handleChangeRadio}
         setState={setState}
       />
-      <Presentation state={state} handleChangeCheckbox={handleChangeCheckbox} />
+      <Presentation
+        state={state}
+        handleChangeCheckbox={handleChangeCheckbox}
+        errors={errors}
+      />
       <Button
         type='submit'
         isDisabled={

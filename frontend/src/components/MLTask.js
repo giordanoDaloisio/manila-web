@@ -14,7 +14,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { useOr } from "../hook/useOr";
 import Container from "./Container";
 
 function MLTask({
@@ -22,11 +21,8 @@ function MLTask({
   setState,
   handleChangeCheckbox,
   handleChangeText,
-  setError,
+  errors,
 }) {
-  const [classCount, handleOrClass] = useOr(handleChangeCheckbox, setError);
-  const [regCount, handleOrReg] = useOr(handleChangeCheckbox, setError);
-
   return (
     <Container title='ML Task'>
       <RadioGroup defaultValue={state.ml__task} name='ml__task' w='full'>
@@ -43,6 +39,11 @@ function MLTask({
                 delete state_copy["gradient__boosting__regressor"];
                 delete state_copy["mlp__regressor"];
                 delete state_copy["decision__tree__regressor"];
+                delete state_copy["mean_squared_error"];
+                delete state_copy["mean_absolute_error"];
+                delete state_copy["r2_error"];
+                delete state_copy["mean_squared_logaritmic_error"];
+                delete state_copy["mean_absolute_percentage_error"];
                 setState(state_copy);
               }}>
               Classification
@@ -52,11 +53,13 @@ function MLTask({
                 <FormControl
                   isDisabled={state.ml__task === "regression"}
                   isInvalid={
-                    state.ml__task === "classification" && classCount === 0
+                    state.ml__task === "classification" &&
+                    errors.error_model === true
                   }>
                   <FormLabel>Classification Methods</FormLabel>
                   <VStack spacing='5px' align='flex-start' w='full' h='full'>
-                    {state.ml__task === "classification" && classCount === 0 ? (
+                    {state.ml__task === "classification" &&
+                    errors.error_model === true ? (
                       <Alert status='error'>
                         <AlertIcon />
                         <AlertDescription>
@@ -68,19 +71,19 @@ function MLTask({
                     )}
                     <Checkbox
                       value='logistic__regression'
-                      onChange={handleOrClass}
+                      onChange={handleChangeCheckbox}
                       isChecked={state.logistic__regression !== undefined}>
                       Logistic Regression
                     </Checkbox>
                     <Checkbox
                       value='svc'
-                      onChange={handleOrClass}
+                      onChange={handleChangeCheckbox}
                       isChecked={state.svc !== undefined}>
                       Support Vector Classifier
                     </Checkbox>
                     <Checkbox
                       value='gradient__descent__classifier'
-                      onChange={handleOrClass}
+                      onChange={handleChangeCheckbox}
                       isChecked={
                         state.gradient__descent__classifier !== undefined
                       }>
@@ -88,7 +91,7 @@ function MLTask({
                     </Checkbox>
                     <Checkbox
                       value='gradient__boosting__classifier'
-                      onChange={handleOrClass}
+                      onChange={handleChangeCheckbox}
                       isChecked={
                         state.gradient__boosting__classifier !== undefined
                       }>
@@ -96,13 +99,13 @@ function MLTask({
                     </Checkbox>
                     <Checkbox
                       value='mlp__classifier'
-                      onChange={handleOrClass}
+                      onChange={handleChangeCheckbox}
                       isChecked={state.mlp__classifier !== undefined}>
                       MLP Classifier
                     </Checkbox>
                     <Checkbox
                       value='decision__tree__classifier'
-                      onChange={handleOrClass}
+                      onChange={handleChangeCheckbox}
                       isChecked={
                         state.decision__tree__classifier !== undefined
                       }>
@@ -110,7 +113,7 @@ function MLTask({
                     </Checkbox>
                     <Checkbox
                       value='random__forest__classifier'
-                      onChange={handleOrClass}
+                      onChange={handleChangeCheckbox}
                       isChecked={
                         state.random__forest__classifier !== undefined
                       }>
@@ -134,6 +137,12 @@ function MLTask({
                 delete state_copy["mlp__classifier"];
                 delete state_copy["decision__tree__classifier"];
                 delete state_copy["random__forest__classifier"];
+                delete state_copy["accuracy"];
+                delete state_copy["precision"];
+                delete state_copy["recall"];
+                delete state_copy["f1_score"];
+                delete state_copy["auc"];
+                delete state_copy["zero_one_loss"];
                 setState(state_copy);
               }}>
               Regression
@@ -142,10 +151,14 @@ function MLTask({
               <CardBody>
                 <FormControl
                   isDisabled={state.ml__task === "classification"}
-                  isInvalid={state.ml__task === "regression" && regCount === 0}>
+                  isInvalid={
+                    state.ml__task === "regression" &&
+                    errors.error_model === true
+                  }>
                   <FormLabel>Regression Methods</FormLabel>
                   <VStack spacing='5px' align='flex-start' w='full' h='full'>
-                    {state.ml__task === "regression" && regCount === 0 ? (
+                    {state.ml__task === "regression" &&
+                    errors.error_model === true ? (
                       <Alert status='error'>
                         <AlertIcon />
                         <AlertDescription>
@@ -157,19 +170,19 @@ function MLTask({
                     )}
                     <Checkbox
                       value='linear__regression'
-                      onChange={handleOrReg}
+                      onChange={handleChangeCheckbox}
                       isChecked={state.linear__regression !== undefined}>
                       Linear Regression
                     </Checkbox>
                     <Checkbox
                       value='svr'
-                      onChange={handleOrReg}
+                      onChange={handleChangeCheckbox}
                       isChecked={state.svr !== undefined}>
                       Support Vector Regressor
                     </Checkbox>
                     <Checkbox
                       value='gradient__descent__regressor'
-                      onChange={handleOrReg}
+                      onChange={handleChangeCheckbox}
                       isChecked={
                         state.gradient__descent__regressor !== undefined
                       }>
@@ -177,7 +190,7 @@ function MLTask({
                     </Checkbox>
                     <Checkbox
                       value='gradient__boosting__regressor'
-                      onChange={handleOrReg}
+                      onChange={handleChangeCheckbox}
                       isChecked={
                         state.gradient__boosting__regressor !== undefined
                       }>
@@ -185,13 +198,13 @@ function MLTask({
                     </Checkbox>
                     <Checkbox
                       value='mlp__regressor'
-                      onChange={handleOrReg}
+                      onChange={handleChangeCheckbox}
                       isChecked={state.mlp__regressor !== undefined}>
                       MLP Regressor
                     </Checkbox>
                     <Checkbox
                       value='decision__tree__regressor'
-                      onChange={handleOrReg}
+                      onChange={handleChangeCheckbox}
                       isChecked={state.decision__tree__regressor !== undefined}>
                       Decision Tree Regressor
                     </Checkbox>
