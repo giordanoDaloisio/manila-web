@@ -1,4 +1,4 @@
-import { Checkbox, FormControl, Stack } from "@chakra-ui/react";
+import { Checkbox, FormControl, FormHelperText, Stack } from "@chakra-ui/react";
 import React from "react";
 import Container from "./Container";
 
@@ -8,6 +8,7 @@ function Scaler({
   handleChangeCheckbox,
   handleChangeRadio,
   handleChangeText,
+  errors,
 }) {
   return (
     <Container title='Scaler'>
@@ -105,10 +106,19 @@ function Scaler({
             value='box_cox_method'
             onChange={handleChangeCheckbox}
             isDisabled={
-              !state.power_transformer_scaler || state.yeo_johnson_method
+              !state.power_transformer_scaler ||
+              state.yeo_johnson_method ||
+              !state.strictly_positive_attributes
             }>
             Box Cox Method
           </Checkbox>
+          {errors.box_cox_err || !state.strictly_positive_attributes ? (
+            <FormHelperText>
+              Box Cox requires dataset with strictly positive attributes
+            </FormHelperText>
+          ) : (
+            ""
+          )}
         </Stack>
       </FormControl>
     </Container>

@@ -72,6 +72,7 @@ export const useValidation = (state) => {
       state.statistical_mean ||
       state.harmonic_mean
     );
+    // TODO: add fairness metric eval
     // At least one presentation must be selected
     const pres_error = !(
       state.tabular ||
@@ -81,6 +82,38 @@ export const useValidation = (state) => {
       state.box_plot ||
       state.point_plot
     );
+    // eg or grid => !mlp_class and !mlp_regr
+    const eg_grid_error =
+      (state.exponentiated_gradient || state.grid_search) &&
+      (state.mlp__classifier || state.mlp__regressor || state.reweighing);
+    // box cox => strictly pos
+    const box_cox_err =
+      state.box_cox_method && !state.strictly_positive_attributes;
+    // methods not compatible with multi sensitive vars
+    const multi_vars_err =
+      state.multiple_sensitive_vars &&
+      (state.dir || state.calibrated_eo || state.reject_option_classifier);
+    // methods not compatible with multiclass labels
+    const multiclass_err =
+      state.label === "multiclass" &&
+      (state.reweighing ||
+        state.dir ||
+        state.adversarial_debiasing ||
+        state.gerry_fair_classifier ||
+        state.meta_fair_classifier ||
+        state.prejudice_remover ||
+        state.calibrated_eo ||
+        state.reject_option_classifier ||
+        state.auc);
+    // svc => !cal eo and !rej opt
+    const svc_error =
+      state.svc && (state.calibrated_eo || state.reject_option_classifier);
+    // regression => not fairness
+    const regr_error = state.fairness && state.ml__task === "regression";
+    // gradient descent => not post processing
+    const grad_desc_error =
+      state.gradient__descent__classifier &&
+      (state.calibrated_eo || state.reject_option_classifier);
     setErrors({
       error_model,
       error_sensvars: sens_error,
@@ -88,6 +121,13 @@ export const useValidation = (state) => {
       class_metrics: metric_error,
       aggr_metrics: aggr_error,
       pres_error,
+      eg_grid_error,
+      box_cox_err,
+      multi_vars_err,
+      multiclass_err,
+      svc_error,
+      regr_error,
+      grad_desc_error,
     });
   }, [state]);
   return errors;

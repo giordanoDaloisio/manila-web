@@ -6,6 +6,7 @@ import {
   CardBody,
   Checkbox,
   FormControl,
+  FormHelperText,
   FormLabel,
   HStack,
   Select,
@@ -73,9 +74,17 @@ function Metrics({
                 <Checkbox
                   value='auc'
                   onChange={handleChangeCheckbox}
-                  isChecked={state.auc !== undefined}>
+                  isChecked={state.auc !== undefined}
+                  isDisabled={state.label === "multiclass"}>
                   Area Under Curve
                 </Checkbox>
+                {state.label === "multiclass" ? (
+                  <FormHelperText color='darkorange'>
+                    Not compatible with Multi Class label
+                  </FormHelperText>
+                ) : (
+                  ""
+                )}
                 <Checkbox
                   value='zero_one_loss'
                   onChange={handleChangeCheckbox}

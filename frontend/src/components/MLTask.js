@@ -6,6 +6,8 @@ import {
   CardBody,
   Checkbox,
   FormControl,
+  FormErrorMessage,
+  FormHelperText,
   FormLabel,
   HStack,
   Input,
@@ -78,17 +80,43 @@ function MLTask({
                     <Checkbox
                       value='svc'
                       onChange={handleChangeCheckbox}
-                      isChecked={state.svc !== undefined}>
+                      isChecked={state.svc !== undefined}
+                      isDisabled={
+                        state.ml__task === "regression" ||
+                        state.calibrated_eo !== undefined ||
+                        state.reject_option_classifier !== undefined
+                      }>
                       Support Vector Classifier
                     </Checkbox>
+                    {state.calibrated_eo || state.reject_option_classifier ? (
+                      <FormHelperText color='darkorange'>
+                        Not compatible with Calibrated EO or Reject Option
+                        Classifier
+                      </FormHelperText>
+                    ) : (
+                      ""
+                    )}
                     <Checkbox
                       value='gradient__descent__classifier'
                       onChange={handleChangeCheckbox}
                       isChecked={
                         state.gradient__descent__classifier !== undefined
+                      }
+                      isDisabled={
+                        state.ml__task === "regression" ||
+                        state.calibrated_eo !== undefined ||
+                        state.reject_option_classifier !== undefined
                       }>
                       Gradient Descent Classifier
                     </Checkbox>
+                    {state.calibrated_eo || state.reject_option_classifier ? (
+                      <FormHelperText color='darkorange'>
+                        Not compatible with Calibrated EO or Reject Option
+                        Classifier
+                      </FormHelperText>
+                    ) : (
+                      ""
+                    )}
                     <Checkbox
                       value='gradient__boosting__classifier'
                       onChange={handleChangeCheckbox}
@@ -100,9 +128,35 @@ function MLTask({
                     <Checkbox
                       value='mlp__classifier'
                       onChange={handleChangeCheckbox}
-                      isChecked={state.mlp__classifier !== undefined}>
+                      isChecked={state.mlp__classifier !== undefined}
+                      isInvalid={errors.eg_grid_error}
+                      isDisabled={
+                        state.ml__task === "regression" ||
+                        state.exponentiated_gradient !== undefined ||
+                        state.grid_search !== undefined ||
+                        state.reweighing !== undefined
+                      }>
                       MLP Classifier
                     </Checkbox>
+                    {state.ml__task === "classification" &&
+                    (state.exponentiated_gradient !== undefined ||
+                      state.grid_search !== undefined ||
+                      state.reweighing !== undefined) ? (
+                      <FormHelperText color='darkorange'>
+                        Not compatible with Reweighing or Exponentiated Gradient
+                        or Grid Search
+                      </FormHelperText>
+                    ) : (
+                      ""
+                    )}
+                    {errors.eg_grid_error ? (
+                      <FormErrorMessage>
+                        Reweighing or Exponentiated Gradient or Grid Search are
+                        selected
+                      </FormErrorMessage>
+                    ) : (
+                      ""
+                    )}
                     <Checkbox
                       value='decision__tree__classifier'
                       onChange={handleChangeCheckbox}
@@ -125,28 +179,40 @@ function MLTask({
             </Card>
           </VStack>
           <VStack align='flex-start'>
-            <Radio
-              value='regression'
-              onChange={(e) => {
-                const state_copy = { ...state };
-                state_copy.ml__task = e.target.value;
-                delete state_copy["logistic__regression"];
-                delete state_copy["svc"];
-                delete state_copy["gradient__descent__classifier"];
-                delete state_copy["gradient__boosting__classifier"];
-                delete state_copy["mlp__classifier"];
-                delete state_copy["decision__tree__classifier"];
-                delete state_copy["random__forest__classifier"];
-                delete state_copy["accuracy"];
-                delete state_copy["precision"];
-                delete state_copy["recall"];
-                delete state_copy["f1_score"];
-                delete state_copy["auc"];
-                delete state_copy["zero_one_loss"];
-                setState(state_copy);
-              }}>
-              Regression
-            </Radio>
+            <FormControl isDisabled={state.fairness}>
+              <Radio
+                value='regression'
+                onChange={(e) => {
+                  const state_copy = { ...state };
+                  state_copy.ml__task = e.target.value;
+                  delete state_copy["logistic__regression"];
+                  delete state_copy["svc"];
+                  delete state_copy["gradient__descent__classifier"];
+                  delete state_copy["gradient__boosting__classifier"];
+                  delete state_copy["mlp__classifier"];
+                  delete state_copy["decision__tree__classifier"];
+                  delete state_copy["random__forest__classifier"];
+                  delete state_copy["accuracy"];
+                  delete state_copy["precision"];
+                  delete state_copy["recall"];
+                  delete state_copy["f1_score"];
+                  delete state_copy["auc"];
+                  delete state_copy["zero_one_loss"];
+                  setState(state_copy);
+                }}>
+                Regression
+              </Radio>
+              {state.fairness ? (
+                <Alert status='error'>
+                  <AlertIcon />{" "}
+                  <AlertDescription>
+                    Regression task is not compatible with fairness methods
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                ""
+              )}
+            </FormControl>
             <Card w='full'>
               <CardBody>
                 <FormControl
@@ -199,9 +265,35 @@ function MLTask({
                     <Checkbox
                       value='mlp__regressor'
                       onChange={handleChangeCheckbox}
-                      isChecked={state.mlp__regressor !== undefined}>
+                      isChecked={state.mlp__regressor !== undefined}
+                      isInvalid={errors.eg_grid_error}
+                      isDisabled={
+                        state.ml__task === "classification" ||
+                        state.exponentiated_gradient !== undefined ||
+                        state.grid_search !== undefined ||
+                        state.reweighing !== undefined
+                      }>
                       MLP Regressor
                     </Checkbox>
+                    {state.ml__task === "regression" &&
+                    (state.exponentiated_gradient !== undefined ||
+                      state.grid_search !== undefined ||
+                      state.reweighing !== undefined) ? (
+                      <FormHelperText color='darkorange'>
+                        Not compatible with Reweighing or Exponentiated Gradient
+                        or Grid Search
+                      </FormHelperText>
+                    ) : (
+                      ""
+                    )}
+                    {errors.eg_grid_error ? (
+                      <FormErrorMessage>
+                        Reweighing or Exponentiated Gradient or Grid Search are
+                        selected
+                      </FormErrorMessage>
+                    ) : (
+                      ""
+                    )}
                     <Checkbox
                       value='decision__tree__regressor'
                       onChange={handleChangeCheckbox}

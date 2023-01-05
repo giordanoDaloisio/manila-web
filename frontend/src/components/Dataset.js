@@ -22,6 +22,7 @@ function Dataset({
   handleChangeCheckbox,
   handleChangeRadio,
   handleChangeText,
+  errors,
 }) {
   return (
     <Container title='Dataset'>
@@ -63,9 +64,39 @@ function Dataset({
             <Radio value='binary' onChange={handleChangeRadio}>
               Binary
             </Radio>
-            <Radio value='multiclass' onChange={handleChangeRadio}>
+            <Radio
+              value='multiclass'
+              onChange={handleChangeRadio}
+              isDisabled={
+                state.reweighing ||
+                state.dir ||
+                state.adversarial_debiasing ||
+                state.gerry_fair_classifier ||
+                state.meta_fair_classifier ||
+                state.prejudice_remover ||
+                state.calibrated_eo ||
+                state.reject_option_classifier ||
+                state.auc
+              }>
               MultiClass
             </Radio>
+            {state.reweighing ||
+            state.dir ||
+            state.adversarial_debiasing ||
+            state.gerry_fair_classifier ||
+            state.meta_fair_classifier ||
+            state.prejudice_remover ||
+            state.calibrated_eo ||
+            state.reject_option_classifier ||
+            state.auc ? (
+              <FormHelperText color='darkorange'>
+                Not compatible with Reweighing, DIR, Adversarial Debiasing,
+                Gerry Fair, Meta Fair, Prejudice Remover, Calibrated EO, Reject
+                Option Classifier and with AUC metric
+              </FormHelperText>
+            ) : (
+              ""
+            )}
           </HStack>
         </RadioGroup>
         <HStack m='1' spacing='1'>
@@ -127,10 +158,24 @@ function Dataset({
           </FormControl>
           <Checkbox
             value='multiple_sensitive_vars'
-            disabled={state.single_sensitive_var}
+            disabled={
+              state.single_sensitive_var ||
+              state.dir ||
+              state.calibrated_eo ||
+              state.reject_option_classifier
+            }
             onChange={handleChangeCheckbox}>
             Multiple Sensitive Variables
           </Checkbox>
+          {state.dir ||
+          state.calibrated_eo ||
+          state.reject_option_classifier ? (
+            <FormHelperText color='darkorange'>
+              Not compatible with DIR, CalibratedEO and Reject Option Classifier
+            </FormHelperText>
+          ) : (
+            ""
+          )}
           <FormControl isDisabled={!state.multiple_sensitive_vars} isRequired>
             <HStack spacing='5px' w='full' h='full'>
               <VStack align='flex-start' w='full' h='full'>

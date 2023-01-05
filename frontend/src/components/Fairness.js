@@ -4,6 +4,8 @@ import {
   AlertIcon,
   Checkbox,
   FormControl,
+  FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Stack,
   VStack,
@@ -11,37 +13,26 @@ import {
 import Container from "./Container";
 
 function Fairness({ state, setState, handleChangeCheckbox, errors }) {
-  // const [count, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
-  // useEffect(() => {
-  //   if (state.fairness) {
-  //     const sens_vars =
-  //       !state.single_sensitive_var && !state.multiple_sensitive_vars;
-  //     const methods = !(
-  //       state.no__method ||
-  //       state.reweighing ||
-  //       state.dir ||
-  //       state.demv ||
-  //       state.exponentiated_gradient ||
-  //       state.grid_search ||
-  //       state.adversarial_debiasing ||
-  //       state.gerry_fair_classifier ||
-  //       state.meta_fair_classifier ||
-  //       state.prejudice_remover ||
-  //       state.calibrated_eo ||
-  //       state.reject_option_classifier
-  //     );
-  //     setErrors({
-  //       ...errors,
-  //       errors_sensvars: sens_vars,
-  //       errors_fairmethods: methods,
-  //     });
-  //   }
-  // });
   return (
     <Container title='Quality Methods'>
-      <Checkbox value='fairness' onChange={handleChangeCheckbox}>
-        Fairness
-      </Checkbox>
+      <FormControl>
+        <Checkbox
+          value='fairness'
+          onChange={handleChangeCheckbox}
+          isDisabled={state.ml__task === "regression"}>
+          Fairness
+        </Checkbox>
+        {state.ml__task === "regression" ? (
+          <Alert status='error'>
+            <AlertIcon />
+            <AlertDescription>
+              Fairness Methods are not compatible with regression tasks
+            </AlertDescription>
+          </Alert>
+        ) : (
+          ""
+        )}
+      </FormControl>
       {state.fairness ? (
         <Stack pl='6'>
           <FormControl
@@ -84,15 +75,63 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='reweighing'
                 onChange={handleChangeCheckbox}
-                checked={state.reweighing !== undefined}>
+                checked={state.reweighing !== undefined}
+                isInvalid={errors.eg_grid_error}
+                isDisabled={
+                  errors.error_sensvars === true ||
+                  state.mlp__classifier !== undefined ||
+                  state.mlp__regressor !== undefined ||
+                  state.label === "multiclass"
+                }>
                 Reweighing
               </Checkbox>
+              {state.mlp__classifier !== undefined ||
+              state.mlp__regressor !== undefined ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with MLP Classifier or MLP Regressor
+                </FormHelperText>
+              ) : (
+                ""
+              )}
+              {state.label === "multiclass" ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with Multi Class label
+                </FormHelperText>
+              ) : (
+                ""
+              )}
+              {errors.eg_grid_error ? (
+                <FormErrorMessage>
+                  MLP Classifier or MLP Regressor are selected
+                </FormErrorMessage>
+              ) : (
+                ""
+              )}
               <Checkbox
                 value='dir'
                 onChange={handleChangeCheckbox}
-                checked={state.dir !== undefined}>
+                checked={state.dir !== undefined}
+                isDisabled={
+                  errors.error_sensvars === true ||
+                  state.multiple_sensitive_vars ||
+                  state.label === "multiclass"
+                }>
                 DIR
               </Checkbox>
+              {state.label === "multiclass" ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with Multi Class label
+                </FormHelperText>
+              ) : (
+                ""
+              )}
+              {state.multiple_sensitive_vars ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with multiple sensitive variables
+                </FormHelperText>
+              ) : (
+                ""
+              )}
               <Checkbox
                 value='demv'
                 onChange={handleChangeCheckbox}
@@ -107,57 +146,181 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='exponentiated_gradient'
                 onChange={handleChangeCheckbox}
-                checked={state.exponentiated_gradient !== undefined}>
+                checked={state.exponentiated_gradient !== undefined}
+                isInvalid={errors.eg_grid_error}
+                isDisabled={
+                  errors.error_sensvars === true ||
+                  state.mlp__classifier !== undefined ||
+                  state.mlp__regressor !== undefined
+                }>
                 Exponentiated Gradient
               </Checkbox>
+              {state.mlp__classifier !== undefined ||
+              state.mlp__regressor !== undefined ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with MLP Classifier or MLP Regressor
+                </FormHelperText>
+              ) : (
+                ""
+              )}
+              {errors.eg_grid_error ? (
+                <FormErrorMessage>
+                  MLP Classifier or MLP Regressor are selected
+                </FormErrorMessage>
+              ) : (
+                ""
+              )}
               <Checkbox
                 value='grid_search'
                 onChange={handleChangeCheckbox}
-                checked={state.grid_search !== undefined}>
+                checked={state.grid_search !== undefined}
+                isInvalid={errors.eg_grid_error}
+                isDisabled={
+                  errors.error_sensvars === true ||
+                  state.mlp__classifier !== undefined ||
+                  state.mlp__regressor !== undefined
+                }>
                 Grid Search
               </Checkbox>
+              {state.mlp__classifier !== undefined ||
+              state.mlp__regressor !== undefined ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with MLP Classifier or MLP Regressor
+                </FormHelperText>
+              ) : (
+                ""
+              )}
+              {errors.eg_grid_error ? (
+                <FormErrorMessage>
+                  MLP Classifier or MLP Regressor are selected
+                </FormErrorMessage>
+              ) : (
+                ""
+              )}
               <Checkbox
                 value='adversarial_debiasing'
                 onChange={handleChangeCheckbox}
-                checked={state.adversarial_debiasing !== undefined}>
+                isChecked={state.adversarial_debiasing !== undefined}
+                isDisabled={
+                  errors.error_sensvars === true || state.label === "multiclass"
+                }>
                 Adversarial Debiasing
               </Checkbox>
+              {state.label === "multiclass" ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with Multi Class label
+                </FormHelperText>
+              ) : (
+                ""
+              )}
               <Checkbox
                 value='gerry_fair_classifier'
                 onChange={handleChangeCheckbox}
-                isChecked={state.gerry_fair_classifier !== undefined}>
+                isChecked={state.gerry_fair_classifier !== undefined}
+                isDisabled={
+                  state.label === "multiclass" || errors.error_sensvars === true
+                }>
                 GerryFair Classifier
               </Checkbox>
+              {state.label === "multiclass" ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with Multi Class label
+                </FormHelperText>
+              ) : (
+                ""
+              )}
               <Checkbox
                 value='meta_fair_classifier'
                 onChange={handleChangeCheckbox}
-                checked={state.meta_fair_classifier !== undefined}>
+                checked={state.meta_fair_classifier !== undefined}
+                isDisabled={
+                  state.label === "multiclass" || errors.error_sensvars === true
+                }>
                 MetaFair Classifier
               </Checkbox>
+              {state.label === "multiclass" ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with Multi Class label
+                </FormHelperText>
+              ) : (
+                ""
+              )}
               <Checkbox
                 value='prejudice_remover'
                 onChange={handleChangeCheckbox}
-                checked={state.prejudice_remover !== undefined}>
+                checked={state.prejudice_remover !== undefined}
+                isDisabled={
+                  state.label === "multiclass" || errors.error_sensvars === true
+                }>
                 Prejudice Remover
               </Checkbox>
+              {state.label === "multiclass" ? (
+                <FormHelperText color='darkorange'>
+                  Not compatible with Multi Class label
+                </FormHelperText>
+              ) : (
+                ""
+              )}
             </VStack>
-            <FormLabel size='md' m='10px 0px'>
-              Post Processing
-            </FormLabel>
-            <VStack pl='6' align='flex-start' spacing='10px'>
-              <Checkbox
-                value='calibrated_eo'
-                onChange={handleChangeCheckbox}
-                isChecked={state.calibrated_eo !== undefined}>
-                Calibrated EO
-              </Checkbox>
-              <Checkbox
-                value='reject_option_classifier'
-                onChange={handleChangeCheckbox}
-                isChecked={state.reject_option_classifier !== undefined}>
-                Reject Option Classifier
-              </Checkbox>
-            </VStack>
+            <FormControl
+              isDisabled={
+                !state.single_sensitive_var ||
+                state.label === "multiclass" ||
+                state.svc ||
+                state.gradient__descent__classifier ||
+                errors.error_sensvars === true
+              }
+              isInvalid={
+                (state.single_sensitive_var || state.multiple_sensitive_vars) &&
+                errors.errors_fairmethods
+              }>
+              <FormLabel size='md' m='10px 0px'>
+                Post Processing
+              </FormLabel>
+              <VStack pl='6' align='flex-start' spacing='10px'>
+                <Checkbox
+                  value='calibrated_eo'
+                  onChange={handleChangeCheckbox}
+                  isChecked={state.calibrated_eo !== undefined}>
+                  Calibrated EO
+                </Checkbox>
+                {state.multiple_sensitive_vars ? (
+                  <FormHelperText color='darkorange'>
+                    Not compatible with multiple sensitive variables
+                  </FormHelperText>
+                ) : (
+                  ""
+                )}
+                <Checkbox
+                  value='reject_option_classifier'
+                  onChange={handleChangeCheckbox}
+                  isChecked={state.reject_option_classifier !== undefined}>
+                  Reject Option Classifier
+                </Checkbox>
+                {state.multiple_sensitive_vars ? (
+                  <FormHelperText color='darkorange'>
+                    Not compatible with multiple sensitive variables
+                  </FormHelperText>
+                ) : (
+                  ""
+                )}
+                {state.label === "multiclass" ? (
+                  <FormHelperText color='darkorange'>
+                    Not compatible with Multi Class label
+                  </FormHelperText>
+                ) : (
+                  ""
+                )}
+                {state.svc || state.gradient__descent__classifier ? (
+                  <FormHelperText color='darkorange'>
+                    Not compatible with Support Vector Classifier and Gradient
+                    Descent Classifier
+                  </FormHelperText>
+                ) : (
+                  ""
+                )}
+              </VStack>
+            </FormControl>
           </FormControl>
         </Stack>
       ) : (
