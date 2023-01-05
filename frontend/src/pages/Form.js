@@ -6,7 +6,9 @@ import Dataset from "../components/Dataset";
 import Fairness from "../components/Fairness";
 import Metrics from "../components/Metrics";
 import MLTask from "../components/MLTask";
+import Presentation from "../components/Presentation";
 import Scaler from "../components/Scaler";
+import Validation from "../components/Validation";
 
 function Form() {
   const [state, setState] = useState({
@@ -16,11 +18,11 @@ function Form() {
     has_header: true,
     ml__task: "classification",
     train_size: 80,
+    validation: "k_fold",
+    k: 10,
   });
 
-  const [errorModel, setErrorModel] = useState(false);
-  const [errorFair, setErrorFair] = useState(false);
-  const [errorMetric, setErrorMetric] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChangeCheckbox = (e) => {
     if (e.target.checked) {
@@ -80,6 +82,8 @@ function Form() {
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeRadio={handleChangeRadio}
         handleChangeText={handleChangeText}
+        errors={errors}
+        setErrors={setErrors}
       />
       <Scaler
         state={state}
@@ -87,28 +91,43 @@ function Form() {
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeRadio={handleChangeRadio}
         handleChangeText={handleChangeText}
+        errors={errors}
+        setErrors={setErrors}
       />
       <MLTask
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeText={handleChangeText}
-        setError={setErrorModel}
+        errors={errors}
+        setErrors={setErrors}
       />
       <Fairness
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
-        setError={setErrorFair}
+        errors={errors}
+        setErrors={setErrors}
       />
       <Metrics
         state={state}
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeRadio={handleChangeRadio}
-        setError={setErrorMetric}
+        errors={errors}
+        setErrors={setErrors}
       />
-      <Button type='submit' isDisabled={errorModel || errorMetric || errorFair}>
+      <Validation
+        state={state}
+        handleChangeRadio={handleChangeRadio}
+        setState={setState}
+      />
+      <Presentation state={state} handleChangeCheckbox={handleChangeCheckbox} />
+      <Button
+        type='submit'
+        isDisabled={
+          Object.values(errors).filter((v) => v === true).length !== 0
+        }>
         Submit
       </Button>
     </Box>

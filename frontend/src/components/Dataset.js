@@ -71,11 +71,7 @@ function Dataset({
         <HStack m='1' spacing='1'>
           <FormControl isRequired>
             <FormLabel>Label Name</FormLabel>
-            <Input
-              name='label_name'
-              onChange={handleChangeText}
-              value={state.label_name}
-            />
+            <Input name='name' onChange={handleChangeText} value={state.name} />
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Positive Value</FormLabel>

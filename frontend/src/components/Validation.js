@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   FormControl,
   FormLabel,
   HStack,
@@ -51,6 +52,11 @@ function Validation({ state, handleChangeRadio, setState }) {
           </NumberInput>
         </HStack>
       </FormControl>
+      <Checkbox
+        onChange={(e) => setState({ ...state, save_temporary_results: true })}
+        isChecked={state.save_temporary_results}>
+        Save Temporary Results
+      </Checkbox>
     </Container>
   );
 }
