@@ -1,21 +1,21 @@
 import numpy as np
 import pandas as pd
-{%if k_fold or not validation%}
+{%if validation=='k_fold' or not use_validation%}
 from sklearn.model_selection import KFold
 {%endif%}
-{%if leave_one_out%}
+{%if validation=='leave_one_out'%}
 from sklearn.model_selection import LeaveOneOut
 {%endif%}
-{%if leave_p_out%}
+{%if validation=='leave_p_out'%}
 from sklearn.model_selection import LeavePOut
 {%endif%}
-{%if stratified_k_fold%}
+{%if validation=='stratified_k_fold'%}
 from sklearn.model_selection import StratifiedKFold
 {%endif%}
-{%if group_k_fold%}
+{%if validation=='group_k_fold'%}
 from sklearn.model_selection import GroupKFold
 {%endif%}
-{%if stratified_group_k_fold%}
+{%if validation=='stratified_group_k_fold'%}
 from sklearn.model_selection import StratifiedGroupKFold
 {%endif%}
 {%if exponentiated_gradient or grid_search%}

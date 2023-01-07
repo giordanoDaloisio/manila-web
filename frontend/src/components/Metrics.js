@@ -245,8 +245,8 @@ function Metrics({
             <Select name='agg_metric' onChange={handleChangeRadio}>
               <option value='min'>Minimum</option>
               <option value='max'>Maximum</option>
-              <option value='statistical_mean'>Statistical Mean</option>
-              <option value='harmonic_mean'>Harmonic Mean</option>
+              <option value='mean'>Statistical Mean</option>
+              <option value='hmean'>Harmonic Mean</option>
             </Select>
           </VStack>
         </FormControl>

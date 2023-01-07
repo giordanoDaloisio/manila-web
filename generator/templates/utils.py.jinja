@@ -4,27 +4,29 @@ from methods import FairnessMethods
 # TRAINING FUNCTIONS
 
 def cross_val(classifier, data, label, unpriv_group, priv_group, sensitive_features, positive_label, metrics, n_splits=10, preprocessor=None, inprocessor=None, postprocessor=None):
-    {%if not validation%}
+    {%if not use_validation%}
     n_splits = 2
     {%endif%}
     data_start = data.copy()
-    {%if k_fold or not validation%}
+    {%if validation == 'k_fold' or not use_validation%}
     fold = KFold(n_splits=n_splits, shuffle=True, random_state=2)
     {%endif%}
-    {%if leave_one_out%}
+    {%if use_validation%}
+    {%if validation=='leave_one_out'%}
     fold = LeaveOneOut()
     {%endif%}
-    {%if leave_p_out%}
-    fold = LeavePOut(p={{P | default(30, true)}})
+    {%if validation=='leave_p_out'%}
+    fold = LeavePOut(p=n_splits)
     {%endif%}
-    {%if stratified_k_fold%}
+    {%if validation=='stratified_k_fold'%}
     fold = StratifiedKFold(n_splits=n_splits)
     {%endif%}
-    {%if group_k_fold%}
+    {%if validation=='group_k_fold'%}
     fold = GroupKFold(n_splits=n_splits)
     {%endif%}
-    {%if stratified_group_k_fold%}
+    {%if validation=='stratified_group_k_fold'%}
     fold = StratifiedGroupKFold(n_splits=n_splits)
+    {%endif%}
     {%endif%}
     for train, test in fold.split(data_start):
         weights = None

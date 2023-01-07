@@ -158,7 +158,6 @@ def exec(data):
         {%if no__method%}
         'no_method': FairnessMethods.NO_ONE,
         {%endif%}
-        {%if pre_processing%}
         'preprocessing': [
             {%if demv%}
             FairnessMethods.DEMV,
@@ -170,8 +169,6 @@ def exec(data):
             FairnessMethods.DIR,
             {%endif%}
         ],
-        {%endif%}
-        {% if in_processing %} 
         'inprocessing': [
             {% if exponentiated_gradient %}
             FairnessMethods.EG,
@@ -192,8 +189,6 @@ def exec(data):
             FairnessMethods.PREJ,
             {%endif%}
         ],
-        {% endif %}
-        {% if post_processing %}
         'postprocessing': [
             {% if calibrated_eo%}
             FairnessMethods.CAL_EO,
@@ -202,7 +197,6 @@ def exec(data):
             FairnessMethods.REJ,
             {%endif%}
         ]
-        {% endif %}
     }
 
     agg_metric = '{{agg_metric}}'

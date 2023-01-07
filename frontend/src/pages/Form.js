@@ -20,7 +20,7 @@ function Form() {
     ml__task: "classification",
     train_size: 80,
     validation: "k_fold",
-    k: 10,
+    K: 10,
   });
 
   const errors = useValidation(state);
