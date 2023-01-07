@@ -22,9 +22,6 @@ function Metrics({
   handleChangeRadio,
   errors,
 }) {
-  // const [classCount, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
-  // const [regCount, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
-  // const [fairCount, handleChangeCheckbox] = useOr(handleChangeCheckbox, setErrors);
   return (
     <Container title='Metrics'>
       <HStack spacing='5' align='flex-start' w='full'>
@@ -35,6 +32,7 @@ function Metrics({
               isInvalid={
                 state.ml__task === "classification" && errors.class_metrics
               }>
+              <FormLabel>Classification Metrics</FormLabel>
               {state.ml__task === "classification" && errors.class_metrics ? (
                 <Alert status='error'>
                   <AlertIcon />
@@ -45,7 +43,6 @@ function Metrics({
               ) : (
                 ""
               )}
-              <FormLabel>Classification Metrics</FormLabel>
               <VStack align='flex-start'>
                 <Checkbox
                   value='accuracy'
@@ -102,6 +99,7 @@ function Metrics({
               isInvalid={
                 state.ml__task === "regression" && errors.class_metrics
               }>
+              <FormLabel>Regression Metrics</FormLabel>
               {state.ml__task === "regression" && errors.class_metrics ? (
                 <Alert status='error'>
                   <AlertIcon />
@@ -112,7 +110,6 @@ function Metrics({
               ) : (
                 ""
               )}
-              <FormLabel>Regression Metrics</FormLabel>
               <VStack align='flex-start'>
                 <Checkbox
                   value='mean_squared_error'
@@ -154,8 +151,9 @@ function Metrics({
           <CardBody>
             <FormControl
               isDisabled={state.fairness === undefined}
-              isInvalid={state.fairness && errors.fairmetrics}>
-              {state.fairness && errors.fairmetrics ? (
+              isInvalid={errors.fair_metric_err}>
+              <FormLabel>Fairness Metrics</FormLabel>
+              {errors.fair_metric_err ? (
                 <Alert status='error'>
                   <AlertIcon />
                   <AlertDescription>
@@ -165,7 +163,6 @@ function Metrics({
               ) : (
                 ""
               )}
-              <FormLabel>Fairness Metrics</FormLabel>
               <VStack align='flex-start'>
                 <Checkbox
                   value='statistical_parity'

@@ -68,11 +68,6 @@ function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const new_state = Object.keys(state).filter(
-      //   (v) =>
-      //     !document.querySelector("[value=" + v + "]").hasAttribute("disabled")
-      // );
-      // console.log(new_state);
       const ris = await generate(state);
       download(ris.data, "experiment.zip");
     } catch (e) {
@@ -81,60 +76,63 @@ function Form() {
   };
 
   return (
-    <Box as='form' m='10px' onSubmit={handleSubmit}>
-      <Dataset
-        state={state}
-        setState={setState}
-        handleChangeCheckbox={handleChangeCheckbox}
-        handleChangeRadio={handleChangeRadio}
-        handleChangeText={handleChangeText}
-        errors={errors}
-      />
-      <Scaler
-        state={state}
-        setState={setState}
-        handleChangeCheckbox={handleChangeCheckbox}
-        handleChangeRadio={handleChangeRadio}
-        handleChangeText={handleChangeText}
-        errors={errors}
-      />
-      <MLTask
-        state={state}
-        setState={setState}
-        handleChangeCheckbox={handleChangeCheckbox}
-        handleChangeText={handleChangeText}
-        errors={errors}
-      />
-      <Fairness
-        state={state}
-        setState={setState}
-        handleChangeCheckbox={handleChangeCheckbox}
-        errors={errors}
-      />
-      <Metrics
-        state={state}
-        setState={setState}
-        handleChangeCheckbox={handleChangeCheckbox}
-        handleChangeRadio={handleChangeRadio}
-        errors={errors}
-      />
-      <Validation
-        state={state}
-        handleChangeRadio={handleChangeRadio}
-        setState={setState}
-      />
-      <Presentation
-        state={state}
-        handleChangeCheckbox={handleChangeCheckbox}
-        errors={errors}
-      />
-      <Button
-        type='submit'
-        isDisabled={
-          Object.values(errors).filter((v) => v === true).length !== 0
-        }>
-        Submit
-      </Button>
+    <Box>
+      <Box as='form' m='30px' onSubmit={handleSubmit}>
+        <Dataset
+          state={state}
+          setState={setState}
+          handleChangeCheckbox={handleChangeCheckbox}
+          handleChangeRadio={handleChangeRadio}
+          handleChangeText={handleChangeText}
+          errors={errors}
+        />
+        <Scaler
+          state={state}
+          setState={setState}
+          handleChangeCheckbox={handleChangeCheckbox}
+          handleChangeRadio={handleChangeRadio}
+          handleChangeText={handleChangeText}
+          errors={errors}
+        />
+        <MLTask
+          state={state}
+          setState={setState}
+          handleChangeCheckbox={handleChangeCheckbox}
+          handleChangeText={handleChangeText}
+          errors={errors}
+        />
+        <Fairness
+          state={state}
+          setState={setState}
+          handleChangeCheckbox={handleChangeCheckbox}
+          errors={errors}
+        />
+        <Metrics
+          state={state}
+          setState={setState}
+          handleChangeCheckbox={handleChangeCheckbox}
+          handleChangeRadio={handleChangeRadio}
+          errors={errors}
+        />
+        <Validation
+          state={state}
+          handleChangeRadio={handleChangeRadio}
+          setState={setState}
+        />
+        <Presentation
+          state={state}
+          handleChangeCheckbox={handleChangeCheckbox}
+          errors={errors}
+        />
+        <Button
+          type='submit'
+          isDisabled={
+            Object.values(errors).filter((v) => v === true).length !== 0
+          }
+          ml='2'>
+          Generate Code
+        </Button>
+      </Box>
     </Box>
   );
 }

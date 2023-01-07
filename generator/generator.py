@@ -1,5 +1,6 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 import zipfile
+import io
 
 def generate(params):
   env = Environment(loader=PackageLoader('generator'),
@@ -14,14 +15,17 @@ def generate(params):
   trainer = env.get_template('model_trainer.py.jinja')
   methods = env.get_template('methods.py.jinja')
   charts = env.get_template('charts.py.jinja')
-  with zipfile.ZipFile('experiment.zip', 'w', compression=zipfile.ZIP_STORED) as zip:
+  mem_file = io.BytesIO()
+  with zipfile.ZipFile(mem_file, 'w', compression=zipfile.ZIP_STORED) as zip:
     zip.writestr(zinfo_or_arcname='main.py', data=main.render(params))
     zip.writestr(zinfo_or_arcname='utils.py', data=utils.render(params))
     zip.writestr(zinfo_or_arcname='environment.yml', data=environment.render(params))
     zip.writestr(zinfo_or_arcname='metrics.py', data=metrics.render(params))
-    zip.writestr(zinfo_or_arcname='trainer.py', data=trainer.render(params))
+    zip.writestr(zinfo_or_arcname='model_trainer.py', data=trainer.render(params))
     zip.writestr(zinfo_or_arcname='methods.py', data=methods.render(params))
     if('demv' in params):
       zip.writestr(zinfo_or_arcname='demv.py', data=demv.render(params))
     if('chart' in params):
       zip.writestr(zinfo_or_arcname='charts.py', data=charts.render(params))
+  mem_file.seek(0)
+  return mem_file

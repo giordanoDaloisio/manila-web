@@ -72,7 +72,16 @@ export const useValidation = (state) => {
       state.statistical_mean ||
       state.harmonic_mean
     );
-    // TODO: add fairness metric eval
+    const fair_metric_err =
+      state.fairness &&
+      !(
+        state.statistical_parity ||
+        state.disparate_impact ||
+        state.equalized_odds ||
+        state.average_odds ||
+        state.true_positive_difference ||
+        state.false_positive_difference
+      );
     // At least one presentation must be selected
     const pres_error = !(
       state.tabular ||
@@ -128,6 +137,7 @@ export const useValidation = (state) => {
       svc_error,
       regr_error,
       grad_desc_error,
+      fair_metric_err,
     });
   }, [state]);
   return errors;

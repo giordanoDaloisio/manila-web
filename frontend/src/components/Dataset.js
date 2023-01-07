@@ -234,7 +234,7 @@ function Dataset({
         <Checkbox
           value={state.has_header}
           onChange={handleChangeCheckbox}
-          checked={state.has_header}>
+          isChecked={state.has_header}>
           Header
         </Checkbox>
         <FormHelperText>Check if the dataset has a header</FormHelperText>

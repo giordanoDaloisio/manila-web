@@ -41,12 +41,6 @@ function Presentation({ state, handleChangeCheckbox, errors }) {
             BarPlot
           </Checkbox>
           <Checkbox
-            value='bar_plot'
-            onChange={handleChangeCheckbox}
-            isChecked={state.bar_plot}>
-            BarPlot
-          </Checkbox>
-          <Checkbox
             value='line_plot'
             onChange={handleChangeCheckbox}
             isChecked={state.line_plot}>
