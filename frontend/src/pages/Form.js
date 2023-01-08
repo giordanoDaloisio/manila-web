@@ -1,4 +1,10 @@
-import { Box, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Stack,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import download from "downloadjs";
 import { useState } from "react";
 import { generate } from "../api";
@@ -76,63 +82,67 @@ function Form() {
   };
 
   return (
-    <Box>
-      <Box as='form' m='30px' onSubmit={handleSubmit}>
-        <Dataset
-          state={state}
-          setState={setState}
-          handleChangeCheckbox={handleChangeCheckbox}
-          handleChangeRadio={handleChangeRadio}
-          handleChangeText={handleChangeText}
-          errors={errors}
-        />
-        <Scaler
-          state={state}
-          setState={setState}
-          handleChangeCheckbox={handleChangeCheckbox}
-          handleChangeRadio={handleChangeRadio}
-          handleChangeText={handleChangeText}
-          errors={errors}
-        />
-        <MLTask
-          state={state}
-          setState={setState}
-          handleChangeCheckbox={handleChangeCheckbox}
-          handleChangeText={handleChangeText}
-          errors={errors}
-        />
-        <Fairness
-          state={state}
-          setState={setState}
-          handleChangeCheckbox={handleChangeCheckbox}
-          errors={errors}
-        />
-        <Metrics
-          state={state}
-          setState={setState}
-          handleChangeCheckbox={handleChangeCheckbox}
-          handleChangeRadio={handleChangeRadio}
-          errors={errors}
-        />
-        <Validation
-          state={state}
-          handleChangeRadio={handleChangeRadio}
-          setState={setState}
-        />
-        <Presentation
-          state={state}
-          handleChangeCheckbox={handleChangeCheckbox}
-          errors={errors}
-        />
-        <Button
-          type='submit'
-          isDisabled={
-            Object.values(errors).filter((v) => v === true).length !== 0
-          }
-          ml='2'>
-          Generate Code
-        </Button>
-      </Box>
+    <Box
+      as='form'
+      p='30px'
+      onSubmit={handleSubmit}
+      minH={"100vh"}
+      justify={"center"}
+      bg={useColorModeValue("gray.50", "gray.800")}>
+      <Dataset
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        handleChangeRadio={handleChangeRadio}
+        handleChangeText={handleChangeText}
+        errors={errors}
+      />
+      <Scaler
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        handleChangeRadio={handleChangeRadio}
+        handleChangeText={handleChangeText}
+        errors={errors}
+      />
+      <MLTask
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        handleChangeText={handleChangeText}
+        errors={errors}
+      />
+      <Fairness
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        errors={errors}
+      />
+      <Metrics
+        state={state}
+        setState={setState}
+        handleChangeCheckbox={handleChangeCheckbox}
+        handleChangeRadio={handleChangeRadio}
+        errors={errors}
+      />
+      <Validation
+        state={state}
+        handleChangeRadio={handleChangeRadio}
+        setState={setState}
+      />
+      <Presentation
+        state={state}
+        handleChangeCheckbox={handleChangeCheckbox}
+        errors={errors}
+      />
+      <Button
+        type='submit'
+        isDisabled={
+          Object.values(errors).filter((v) => v === true).length !== 0
+        }
+        ml='2'>
+        Generate Code
+      </Button>
     </Box>
   );
 }

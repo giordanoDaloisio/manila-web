@@ -1,9 +1,20 @@
-import { Card, CardBody, CardHeader, Heading, VStack } from "@chakra-ui/react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Heading,
+  useColorModeValue,
+  VStack,
+} from "@chakra-ui/react";
 import React from "react";
 
 function Container({ title, children }) {
   return (
-    <Card p='5px' m='10px'>
+    <Card
+      p='5px'
+      m='10px'
+      bg={useColorModeValue("white", "gray.700")}
+      boxShadow={"lg"}>
       <CardHeader>
         <Heading as='h2' size='lg'>
           {title}
