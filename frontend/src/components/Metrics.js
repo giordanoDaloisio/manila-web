@@ -8,8 +8,8 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  HStack,
-  Select,
+  Radio,
+  Stack,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
@@ -22,9 +22,37 @@ function Metrics({
   handleChangeRadio,
   errors,
 }) {
+  const handleChangeMetrics = (e) => {
+    const state_copy = { ...state };
+    const value = e.target.value;
+    if (e.target.checked) {
+      state_copy[value] = value;
+      if (value === "statistical_mean") {
+        state_copy["agg_metric"] = "mean";
+      } else if (value === "harmonic_mean") {
+        state_copy["agg_metric"] = "hmean";
+      } else {
+        state_copy["agg_metric"] = value;
+      }
+    } else {
+      delete state_copy[e.target.value];
+      if (
+        value === state_copy["agg_metric"] ||
+        (value === "statistical_mean" && state_copy["agg_metric"] === "mean") ||
+        (value === "harmonic_mean" && state_copy["agg_metric"] === "hmean")
+      ) {
+        delete state_copy["agg_metric"];
+      }
+    }
+    setState(state_copy);
+  };
   return (
     <Container title='Metrics'>
-      <HStack spacing='5' align='flex-start' w='full'>
+      <Stack
+        spacing='5'
+        align='flex-start'
+        w='full'
+        direction={{ base: "column", lg: "row" }}>
         <Card w='full'>
           <CardBody>
             <FormControl
@@ -204,8 +232,8 @@ function Metrics({
             </FormControl>
           </CardBody>
         </Card>
-      </HStack>
-      <HStack>
+      </Stack>
+      <Stack direction={{ base: "column", lg: "row" }}>
         <Card w='full'>
           <CardBody>
             <FormControl isInvalid={errors.aggr_metrics}>
@@ -221,25 +249,71 @@ function Metrics({
                 ) : (
                   ""
                 )}
-                <Checkbox value='min' onChange={handleChangeCheckbox}>
+                <Checkbox
+                  value='min'
+                  onChange={handleChangeMetrics}
+                  isChecked={state.min !== undefined}>
                   Minimum
                 </Checkbox>
-                <Checkbox value='max' onChange={handleChangeCheckbox}>
+                <Radio
+                  name='agg_metric'
+                  value='min'
+                  onChange={handleChangeRadio}
+                  isChecked={state.agg_metric === "min"}
+                  isDisabled={state.min === undefined}
+                  pl='6'>
+                  Order metrics with this function
+                </Radio>
+                <Checkbox
+                  value='max'
+                  onChange={handleChangeMetrics}
+                  isChecked={state.max !== undefined}>
                   Maximum
                 </Checkbox>
+                <Radio
+                  name='agg_metric'
+                  value='max'
+                  onChange={handleChangeRadio}
+                  isDisabled={state.max === undefined}
+                  isChecked={state.agg_metric === "max"}
+                  pl='6'>
+                  Order metrics with this function
+                </Radio>
                 <Checkbox
                   value='statistical_mean'
-                  onChange={handleChangeCheckbox}>
+                  onChange={handleChangeMetrics}
+                  isChecked={state.statistical_mean !== undefined}>
                   Statistical Mean
                 </Checkbox>
-                <Checkbox value='harmonic_mean' onChange={handleChangeCheckbox}>
+                <Radio
+                  name='agg_metric'
+                  value='mean'
+                  onChange={handleChangeRadio}
+                  isChecked={state.agg_metric === "mean"}
+                  isDisabled={state.statistical_mean === undefined}
+                  pl='6'>
+                  Order metrics with this function
+                </Radio>
+                <Checkbox
+                  value='harmonic_mean'
+                  onChange={handleChangeMetrics}
+                  isChecked={state.harmonic_mean !== undefined}>
                   Harmonic Mean
                 </Checkbox>
+                <Radio
+                  name='agg_metric'
+                  value='hmean'
+                  onChange={handleChangeRadio}
+                  isChecked={state.agg_metric === "hmean"}
+                  isDisabled={state.harmonic_mean === undefined}
+                  pl='6'>
+                  Order metrics with this function
+                </Radio>
               </VStack>
             </FormControl>
           </CardBody>
         </Card>
-        <FormControl isRequired>
+        {/* <FormControl isRequired>
           <VStack align='flex-start'>
             <FormLabel>Select an ordering function</FormLabel>
             <Select name='agg_metric' onChange={handleChangeRadio}>
@@ -249,8 +323,8 @@ function Metrics({
               <option value='hmean'>Harmonic Mean</option>
             </Select>
           </VStack>
-        </FormControl>
-      </HStack>
+        </FormControl> */}
+      </Stack>
     </Container>
   );
 }

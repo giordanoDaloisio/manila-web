@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://manila.deta.dev/",
+  baseURL: "http://127.0.0.1:5000",
 });
 
 export const generate = async (data) => {

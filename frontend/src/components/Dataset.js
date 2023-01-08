@@ -3,7 +3,6 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  HStack,
   Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -12,6 +11,7 @@ import {
   NumberInputStepper,
   Radio,
   RadioGroup,
+  Stack,
   VStack,
 } from "@chakra-ui/react";
 import Container from "./Container";
@@ -29,7 +29,7 @@ function Dataset({
       <FormControl as='fieldset'>
         <FormLabel as='legend'>File Extension</FormLabel>
         <RadioGroup defaultValue={state.extension} name='extension'>
-          <HStack spacing='34px'>
+          <Stack spacing='34px' direction={{ base: "column", lg: "row" }}>
             <Radio value='csv' onChange={(e) => handleChangeRadio(e)}>
               CSV
             </Radio>
@@ -54,13 +54,13 @@ function Dataset({
             <Radio value='hdf5' onChange={(e) => handleChangeRadio(e)}>
               HDF5
             </Radio>
-          </HStack>
+          </Stack>
         </RadioGroup>
       </FormControl>
       <FormControl>
         <FormLabel>Label</FormLabel>
         <RadioGroup defaultValue={state.label} name='label'>
-          <HStack spacing='24px'>
+          <Stack spacing='24px' direction={{ base: "column", lg: "row" }}>
             <Radio value='binary' onChange={handleChangeRadio}>
               Binary
             </Radio>
@@ -97,9 +97,9 @@ function Dataset({
             ) : (
               ""
             )}
-          </HStack>
+          </Stack>
         </RadioGroup>
-        <HStack m='1' spacing='1'>
+        <Stack m='1' spacing='1' direction={{ base: "column", lg: "row" }}>
           <FormControl isRequired>
             <FormLabel>Label Name</FormLabel>
             <Input name='name' onChange={handleChangeText} value={state.name} />
@@ -112,7 +112,7 @@ function Dataset({
               value={state.positive_value}
             />
           </FormControl>
-        </HStack>
+        </Stack>
       </FormControl>
       <FormControl isRequired={state.fairness !== undefined}>
         <FormLabel>Sensitive Variables</FormLabel>
@@ -124,7 +124,7 @@ function Dataset({
             Single Sensitive Variable
           </Checkbox>
           <FormControl isDisabled={!state.single_sensitive_var} isRequired>
-            <HStack spacing='5px'>
+            <Stack spacing='5px' direction={{ base: "column", lg: "row" }}>
               <VStack align='flex-start'>
                 <FormLabel>Variable Name</FormLabel>
                 <Input
@@ -154,7 +154,7 @@ function Dataset({
                   required
                 />
               </VStack>
-            </HStack>
+            </Stack>
           </FormControl>
           <Checkbox
             value='multiple_sensitive_vars'
@@ -177,7 +177,11 @@ function Dataset({
             ""
           )}
           <FormControl isDisabled={!state.multiple_sensitive_vars} isRequired>
-            <HStack spacing='5px' w='full' h='full'>
+            <Stack
+              spacing='5px'
+              w='full'
+              h='full'
+              direction={{ base: "column", lg: "row" }}>
               <VStack align='flex-start' w='full' h='full'>
                 <FormLabel>Variable Names</FormLabel>
                 <Input
@@ -210,11 +214,16 @@ function Dataset({
                   placeholder='Comma separated list of values'
                 />
               </VStack>
-            </HStack>
+            </Stack>
           </FormControl>
         </VStack>
       </FormControl>
       <FormControl>
+        <Checkbox value='has_index' onChange={handleChangeCheckbox}>
+          Dataset has an index column
+        </Checkbox>
+      </FormControl>
+      <FormControl pl='6' isDisabled={state.has_index === undefined}>
         <FormLabel>Index Column</FormLabel>
         <NumberInput
           name='index_col'
@@ -227,7 +236,7 @@ function Dataset({
           </NumberInputStepper>
         </NumberInput>
         <FormHelperText>
-          Add only if the index of the dataset is different from 0
+          Specify the position of the column having index values
         </FormHelperText>
       </FormControl>
       <FormControl>

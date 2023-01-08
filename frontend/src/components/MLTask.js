@@ -9,10 +9,10 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
-  HStack,
   Input,
   Radio,
   RadioGroup,
+  Stack,
   VStack,
 } from "@chakra-ui/react";
 
@@ -28,7 +28,7 @@ function MLTask({
   return (
     <Container title='ML Task'>
       <RadioGroup defaultValue={state.ml__task} name='ml__task' w='full'>
-        <HStack align='flex-start'>
+        <Stack align='flex-start' direction={{ base: "column", lg: "row" }}>
           <VStack align='flex-start'>
             <Radio
               value='classification'
@@ -305,7 +305,7 @@ function MLTask({
               </CardBody>
             </Card>
           </VStack>
-        </HStack>
+        </Stack>
       </RadioGroup>
       <Checkbox
         name='save_trained_model'
