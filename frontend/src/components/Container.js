@@ -15,7 +15,7 @@ function Container({ title, children }) {
       m='10px'
       bg={useColorModeValue("white", "gray.700")}
       boxShadow={"lg"}>
-      <CardHeader>
+      <CardHeader align='center'>
         <Heading as='h2' size='lg'>
           {title}
         </Heading>

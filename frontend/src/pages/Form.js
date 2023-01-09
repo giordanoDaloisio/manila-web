@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  FormControl,
   Heading,
   Stack,
   useColorModeValue,
@@ -84,7 +85,7 @@ function Form() {
   return (
     <Box
       as='form'
-      p='30px'
+      p='60px'
       onSubmit={handleSubmit}
       minH={"100vh"}
       justify={"center"}
@@ -135,14 +136,17 @@ function Form() {
         handleChangeCheckbox={handleChangeCheckbox}
         errors={errors}
       />
-      <Button
-        type='submit'
-        isDisabled={
-          Object.values(errors).filter((v) => v === true).length !== 0
-        }
-        ml='2'>
-        Generate Code
-      </Button>
+      <FormControl align='center'>
+        <Button
+          colorScheme='teal'
+          type='submit'
+          isDisabled={
+            Object.values(errors).filter((v) => v === true).length !== 0
+          }
+          ml='2'>
+          Generate Code
+        </Button>
+      </FormControl>
     </Box>
   );
 }
