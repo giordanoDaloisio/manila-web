@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  Heading,
-  Stack,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, Button, FormControl, useColorModeValue } from "@chakra-ui/react";
 import download from "downloadjs";
 import { useState } from "react";
 import { generate } from "../api";
