@@ -203,12 +203,9 @@ function MLTask({
                 Regression
               </Radio>
               {state.fairness ? (
-                <Alert status='error'>
-                  <AlertIcon />{" "}
-                  <AlertDescription>
-                    Regression task is not compatible with fairness methods
-                  </AlertDescription>
-                </Alert>
+                <FormHelperText color='darkorange'>
+                  Regression task is not compatible with fairness methods
+                </FormHelperText>
               ) : (
                 ""
               )}
