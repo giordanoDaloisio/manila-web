@@ -4,9 +4,11 @@ from aif360.algorithms.preprocessing import DisparateImpactRemover, LFR
 from aif360.algorithms.inprocessing import GerryFairClassifier, MetaFairClassifier, PrejudiceRemover
 from aif360.datasets import BinaryLabelDataset
 from fairlearn.reductions import GridSearch, ExponentiatedGradient
-from aif360.sklearn.inprocessing import AdversarialDebiasing
 from aif360.sklearn.postprocessing import CalibratedEqualizedOdds, RejectOptionClassifierCV, PostProcessingMeta
+{%if adversarial_debiasing%}
+from aif360.sklearn.inprocessing import AdversarialDebiasing
 import tensorflow.compat.v1 as tf
+{%endif%}
 {%if demv%}
 from demv import DEMV
 {%endif%}
@@ -54,18 +56,6 @@ class ModelTrainer:
       return model
     {%endif%}
 
-    def use_lfr(self, model, unpriv_group, priv_group):
-      bin_data = BinaryLabelDataset(favorable_label=self.positive_label,
-                                    unfavorable_label=1-self.positive_label,
-                                    df=self.dataset,
-                                    label_names=[self.label],
-                                    protected_attribute_names=self.sensitive_features)
-      lfr = LFR(unprivileged_groups=[unpriv_group], privileged_groups=[priv_group])
-      data_fair = lfr.fit_transform(bin_data)
-      new_data, _ = data_fair.convert_to_dataframe()
-      model.fit(new_data.drop(columns=self.label), new_data[self.label])
-      return model
-
     {%if exponentiated_gradient%}
     def use_eg(self, model):
       constr = _get_constr(self.dataset, self.label)
@@ -83,13 +73,15 @@ class ModelTrainer:
       return grid_model
     {%endif%}
 
+    {%if adversarial_debiasing%}
     def use_adv(self):
       data = self.dataset.set_index(self.sensitive_features)
       adv = AdversarialDebiasing(prot_attr=[s for s in self.sensitive_features])
       tf.disable_eager_execution()
       adv.fit(data.drop(columns=self.label), data[self.label])
       return adv
-    
+    {%endif%}
+
     def use_gerry(self):
       bin_data = BinaryLabelDataset(favorable_label=self.positive_label,
                                     unfavorable_label=1-self.positive_label,

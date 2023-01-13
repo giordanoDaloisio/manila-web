@@ -88,9 +88,9 @@ def exec(data):
     priv_group = { '{{variable_name}}': {{privileged_value}} }
     sensitive_features = ['{{variable_name}}']
     {% elif multiple_sensitive_vars %}
-    {% set variables = variable_names_comma_separated.split(',') %}
-    {% set privileged_values = privileged_values_comma_separated.split(',') %}
-    {% set unprivileged_values = unprivileged_values_comma_separated.split(',') %}
+    {% set variables = variable_names.split(',') %}
+    {% set privileged_values = privileged_values.split(',') %}
+    {% set unprivileged_values = unprivileged_values.split(',') %}
     priv_group = {
     {% for i in range(0, variables|count)%}
     '{{variables[i]}}': {{privileged_values[i]}},
