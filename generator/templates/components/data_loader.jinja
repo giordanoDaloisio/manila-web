@@ -1,25 +1,25 @@
-    {%if csv%}
+    {%if extension == 'csv'%}
     data = pd.read_csv(args.dataset
     {%endif%}
-    {%if text%}
+    {%if extension == 'text'%}
     data = pd.read_fwf(args.dataset
     {%endif%}
-    {%if json%}
+    {%if extension == 'json'%}
     data = pd.read_json(args.dataset
     {%endif%}
-    {%if excel%}
+    {%if extension == 'excel'%}
     data = pd.read_excel(args.dataset
     {%endif%}
-    {%if xml%}
+    {%if extension == 'xml'%}
     data = pd.read_xml(args.dataset
     {%endif%}
-    {%if html%}
+    {%if extension == 'html'%}
     data = pd.read_html(args.dataset
     {%endif%}
-    {%if parquet%}
+    {%if extension == 'parquet'%}
     data = pd.read_parquet(args.dataset
     {%endif%}
-    {%if hdf5%}
+    {%if extension == 'hdf5'%}
     data = pd.read_hdf(args.dataset
     {%endif%}
     {%if has_header == 'false'%}
