@@ -60,7 +60,7 @@ class ModelTrainer:
     def use_eg(self, model):
       constr = _get_constr(self.dataset, self.label)
       eg_model = ExponentiatedGradient(model, constraints=constr)
-      eg_model.fit(self.dataset.drop(columns=self.label), self.dataset[self.label])
+      eg_model.fit(self.dataset.drop(columns=self.label), self.dataset[self.label], sensitive_features=self.dataset[self.sensitive_features])
       return eg_model
     {%endif%}
 
@@ -69,7 +69,7 @@ class ModelTrainer:
       constr = _get_constr(self.dataset, self.label)
       grid_model = GridSearch(model, constraints=constr)
       grid_model.fit(self.dataset.drop(columns=self.label),
-                   self.dataset[self.label])
+                   self.dataset[self.label],sensitive_features=self.dataset[self.sensitive_features])
       return grid_model
     {%endif%}
 

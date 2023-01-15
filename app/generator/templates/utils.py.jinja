@@ -153,12 +153,12 @@ def _model_train(df_train, df_test, label, classifier, sensitive_features, exp=F
                     sensitive_features=df_train[sensitive_features]) 
         else:
             {%if mlp__classifier%}
-            if isinstance({{"model['classifier']" if scaler else "model"}}, MLPClassifier):
+            if isinstance({{"model['classifier']" if (standard_scaler || min_max_scaler || max_abs_scaler || robust_scaler || quantile_transformer_scaler || power_transformer_scaler) else "model"}}, MLPClassifier):
                 model.fit(x_train, y_train)
             else:
-                model.fit(x_train, y_train, {{"classifier__sample_weight" if scaler else "sample_weight"}}=weights)
+                model.fit(x_train, y_train, {{"classifier__sample_weight" if (standard_scaler || min_max_scaler || max_abs_scaler || robust_scaler || quantile_transformer_scaler || power_transformer_scaler) else "sample_weight"}}=weights)
             {%else%}
-            model.fit(x_train, y_train, {{"classifier__sample_weight" if scaler else "sample_weight"}}=weights)
+            model.fit(x_train, y_train, {{"classifier__sample_weight" if (standard_scaler || min_max_scaler || max_abs_scaler || robust_scaler || quantile_transformer_scaler || power_transformer_scaler) else "sample_weight"}}=weights)
             {%endif%}  
     df_pred = _predict_data(model, df_test, label, x_test)
     if adv:
