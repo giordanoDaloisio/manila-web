@@ -204,7 +204,7 @@ def exec(data):
 
     ris = pd.DataFrame()
     for m in ml_methods.keys():
-        {%if scaler%}
+        {%if standard_scaler || min_max_scaler || max_abs_scaler || robust_scaler || quantile_transformer_scaler || power_transformer_scaler%}
         model = Pipeline([
             {{""}}{%include 'components/model_scalers.py.jinja'%}
             ('classifier', ml_methods[m])
