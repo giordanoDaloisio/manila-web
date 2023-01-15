@@ -3,7 +3,7 @@ from flask import Flask, request, send_file, send_from_directory
 from generator.generator import generate
 from flask_cors import cross_origin
 
-app = Flask(__name__, static_url_path='', static_folder=os.path.join('frontend','build'))
+app = Flask(__name__, static_url_path='', static_folder=os.path.join('build'))
 
 
 @app.route('/')
