@@ -67,13 +67,13 @@ def cross_val(classifier, data, label, unpriv_group, priv_group, sensitive_featu
         if inprocessor == FairnessMethods.EG:
             constr = _get_constr(df_train, label)
             model = ExponentiatedGradient(
-                model, constraints=constr, sample_weight_name={{'"classifier__sample_weight"' if scaler else '"sample_weight"'}})
+                model, constraints=constr, sample_weight_name={{'"classifier__sample_weight"' if (standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler) else '"sample_weight"'}})
         {%endif%}
         {%if grid_search%}
         if inprocessor == FairnessMethods.GRID:
             constr = _get_constr(df_train, label)
             model = GridSearch(
-            model, constr, sample_weight_name={{'"classifier__sample_weight"' if scaler else '"sample_weight"'}})
+            model, constr, sample_weight_name={{'"classifier__sample_weight"' if (standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler) else '"sample_weight"'}})
         {%endif%}
         {%if adversarial_debiasing%}
         if inprocessor == FairnessMethods.AD:

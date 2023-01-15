@@ -25,7 +25,7 @@ from sklearn.tree import DecisionTreeClassifier
 {% if random__forest__classifier%}
 from sklearn.ensemble import RandomForestClassifier
 {% endif %}
-{% if scaler %}
+{% if(standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler)%}
 from sklearn.pipeline import Pipeline
 {% endif %}
 {% if standard_scaler %}
