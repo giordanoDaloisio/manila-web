@@ -1,0 +1,1 @@
+{"id":"6039160e-f492-42fb-8bbc-badf7da76d8f","space":47107,"runtime":"python3.9","name":"app","path":"y36oo4","project":"a07msc1z","account":"144798365827","region":"eu-central-1","deps":["Flask==2.2.2","Jinja2==3.1.2","zipp==3.11.0"],"envs":null,"public":true,"log_level":"off","cron":""}
