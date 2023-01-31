@@ -45,6 +45,34 @@ function Form() {
           delete copy["unprivileged_values"];
           delete copy["privileged_values"];
         }
+        if (e.target.value === "individual") {
+          delete copy["euclidean_distance"];
+          delete copy["manhattan_distance"];
+          delete copy["mahalanobis_distance"];
+        }
+        if (e.target.value === "group_metric") {
+          delete copy["equal"];
+          delete copy["proportional"];
+          delete copy["other"];
+          delete copy["statistical_parity"];
+          delete copy["disparate_impact"];
+          delete copy["equalized_odds"];
+          delete copy["average_odds"];
+          delete copy["true_positive_difference"];
+          delete copy["false_positive_difference"];
+        }
+        if (e.target.value === "equal") {
+          delete copy["statistical_parity"];
+          delete copy["disparate_impact"];
+        }
+        if (e.target.value === "proportional") {
+          delete copy["equalized_odds"];
+          delete copy["average_odds"];
+        }
+        if (e.target.value === "other") {
+          delete copy["true_positive_difference"];
+          delete copy["false_positive_difference"];
+        }
         return copy;
       });
     }

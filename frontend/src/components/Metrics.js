@@ -8,8 +8,11 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  ListItem,
+  OrderedList,
   Radio,
   Stack,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
@@ -50,9 +53,11 @@ function Metrics({
     <Container title='Metrics'>
       <Stack
         spacing='5'
-        align='flex-start'
+        align='center'
         w='full'
-        direction={{ base: "column", lg: "row" }}>
+        p='0 20px'
+        //direction={{ base: "column", lg: "row" }}
+      >
         <Card w='full'>
           <CardBody>
             <FormControl
@@ -175,65 +180,221 @@ function Metrics({
             </FormControl>
           </CardBody>
         </Card>
-        <Card w='full'>
-          <CardBody>
-            <FormControl
-              isDisabled={state.fairness === undefined}
-              isInvalid={errors.fair_metric_err}>
-              <FormLabel>Fairness Metrics</FormLabel>
-              {errors.fair_metric_err ? (
-                <Alert status='error'>
-                  <AlertIcon />
-                  <AlertDescription>
-                    Select at least one metric
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                ""
-              )}
-              <VStack align='flex-start'>
-                <Checkbox
-                  value='statistical_parity'
-                  onChange={handleChangeCheckbox}
-                  isChecked={state.statistical_parity !== undefined}>
-                  Statistical Parity
-                </Checkbox>
-                <Checkbox
-                  value='disparate_impact'
-                  onChange={handleChangeCheckbox}
-                  isChecked={state.disparate_impact !== undefined}>
-                  Disparate Impact
-                </Checkbox>
-                <Checkbox
-                  value='equalized_odds'
-                  onChange={handleChangeCheckbox}
-                  isChecked={state.equalized_odds !== undefined}>
-                  Equalized Odds
-                </Checkbox>
-                <Checkbox
-                  value='average_odds'
-                  onChange={handleChangeCheckbox}
-                  isChecked={state.average_odds !== undefined}>
-                  Average Odds
-                </Checkbox>
-                <Checkbox
-                  value='true_positive_difference'
-                  onChange={handleChangeCheckbox}
-                  isChecked={state.true_positive_difference !== undefined}>
-                  True Positive Difference
-                </Checkbox>
-                <Checkbox
-                  value='false_positive_difference'
-                  onChange={handleChangeCheckbox}
-                  isChecked={state.false_positive_difference !== undefined}>
-                  False Positive Difference
-                </Checkbox>
-              </VStack>
-            </FormControl>
-          </CardBody>
-        </Card>
-      </Stack>
-      <Stack direction={{ base: "column", lg: "row" }}>
+        {state.fairness !== undefined ? (
+          <Card w='full'>
+            <CardBody>
+              <FormControl
+                isDisabled={state.fairness === undefined}
+                isInvalid={errors.fair_metric_err}>
+                <FormLabel>Fairness Metrics</FormLabel>
+                {errors.fair_metric_err ? (
+                  <Alert status='error'>
+                    <AlertIcon />
+                    <AlertDescription>
+                      Select at least one metric
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  ""
+                )}
+                <VStack align='flex-start' pl='4' spacing='20px'>
+                  <OrderedList mt='2'>
+                    <ListItem>
+                      <Text>
+                        Are you dealing with bias on{" "}
+                        <Text as='b'>individuals</Text> (similar individuals
+                        should be treated similarly) ,{" "}
+                        <Text as='b'>groups</Text> (individuals of a group
+                        should not be discriminated) , or{" "}
+                        <Text as='b'>both</Text>?
+                      </Text>
+                    </ListItem>
+                    <VStack align='flex-start'>
+                      <Checkbox
+                        name='individual'
+                        value='individual'
+                        onChange={handleChangeCheckbox}
+                        isChecked={state.individual !== undefined}
+                        isDisabled={state.fairness === undefined}
+                        mt='2'>
+                        Individual
+                      </Checkbox>
+                      {state.individual === "individual" ? (
+                        <VStack pl='4' align='flex-start' spacing='2'>
+                          <Checkbox
+                            value='euclidean_distance'
+                            onChange={handleChangeCheckbox}
+                            isChecked={state.euclidean_distance !== undefined}>
+                            Euclidean Distance
+                          </Checkbox>
+                          <FormHelperText>0 means fairness</FormHelperText>
+                          <Checkbox
+                            value='manhattan_distance'
+                            onChange={handleChangeCheckbox}
+                            isChecked={state.manhattan_distance !== undefined}>
+                            Manhattan Distance
+                          </Checkbox>
+                          <FormHelperText>0 means fairness</FormHelperText>
+                          <Checkbox
+                            value='mahalanobis_distance'
+                            onChange={handleChangeCheckbox}
+                            isChecked={
+                              state.mahalanobis_distance !== undefined
+                            }>
+                            Mahalanobis Distance
+                          </Checkbox>
+                          <FormHelperText>0 means fairness</FormHelperText>
+                        </VStack>
+                      ) : (
+                        ""
+                      )}
+                      <Checkbox
+                        name='group_metric'
+                        value='group_metric'
+                        onChange={handleChangeCheckbox}
+                        isChecked={state.group_metric !== undefined}
+                        isDisabled={state.fairness === undefined}
+                        mt='2'>
+                        Group
+                      </Checkbox>
+                      {state.group_metric === "group_metric" ? (
+                        <Stack pl='4'>
+                          <ListItem>
+                            <Text>
+                              Should different groups be treated{" "}
+                              <Text as='b'>equally</Text> (everyone should have
+                              the same probability of receiving a positive
+                              label), <Text as='b'>proportionally</Text>{" "}
+                              (everyone should get a positive label only if the
+                              evidence tells that), or <Text as='b'>other</Text>
+                              ?
+                            </Text>
+                          </ListItem>
+                          <VStack align='flex-start'>
+                            <Checkbox
+                              name='equal'
+                              value='equal'
+                              onChange={handleChangeCheckbox}
+                              isChecked={state.equal === "equal"}
+                              isDisabled={state.fairness === undefined}
+                              mt='2'>
+                              Equally
+                            </Checkbox>
+                            {state.equal === "equal" ? (
+                              <VStack pl='4' align='flex-start'>
+                                <Checkbox
+                                  value='statistical_parity'
+                                  onChange={handleChangeCheckbox}
+                                  isChecked={
+                                    state.statistical_parity !== undefined
+                                  }>
+                                  Statistical Parity
+                                </Checkbox>
+                                <FormHelperText>
+                                  0 means fairness
+                                </FormHelperText>
+                                <Checkbox
+                                  value='disparate_impact'
+                                  onChange={handleChangeCheckbox}
+                                  isChecked={
+                                    state.disparate_impact !== undefined
+                                  }>
+                                  Disparate Impact
+                                </Checkbox>
+                                <FormHelperText>
+                                  1 means fairness
+                                </FormHelperText>
+                              </VStack>
+                            ) : (
+                              ""
+                            )}
+                            <Checkbox
+                              name='proportional'
+                              value='proportional'
+                              onChange={handleChangeCheckbox}
+                              isChecked={state.proportional === "proportional"}
+                              isDisabled={state.fairness === undefined}
+                              mt='2'>
+                              Proportionally
+                            </Checkbox>
+                            {state.proportional === "proportional" ? (
+                              <VStack pl='4' align='flex-start'>
+                                <Checkbox
+                                  value='equalized_odds'
+                                  onChange={handleChangeCheckbox}
+                                  isChecked={
+                                    state.equalized_odds !== undefined
+                                  }>
+                                  Equalized Odds Difference
+                                </Checkbox>
+                                <FormHelperText>
+                                  0 means fairness
+                                </FormHelperText>
+                                <Checkbox
+                                  value='average_odds'
+                                  onChange={handleChangeCheckbox}
+                                  isChecked={state.average_odds !== undefined}>
+                                  Average Odds Difference
+                                </Checkbox>
+                                <FormHelperText>
+                                  0 means fairness
+                                </FormHelperText>
+                              </VStack>
+                            ) : (
+                              ""
+                            )}
+                            <Checkbox
+                              name='other'
+                              value='other'
+                              onChange={handleChangeCheckbox}
+                              isChecked={state.other === "other"}
+                              isDisabled={state.fairness === undefined}
+                              mt='2'>
+                              Other
+                            </Checkbox>
+                            {state.other === "other" ? (
+                              <VStack pl='4' align='flex-start'>
+                                <Checkbox
+                                  value='true_positive_difference'
+                                  onChange={handleChangeCheckbox}
+                                  isChecked={
+                                    state.true_positive_difference !== undefined
+                                  }>
+                                  True Positive Difference
+                                </Checkbox>
+                                <FormHelperText>
+                                  0 means fairness
+                                </FormHelperText>
+                                <Checkbox
+                                  value='false_positive_difference'
+                                  onChange={handleChangeCheckbox}
+                                  isChecked={
+                                    state.false_positive_difference !==
+                                    undefined
+                                  }>
+                                  False Positive Difference
+                                </Checkbox>
+                                <FormHelperText>
+                                  0 means fairness
+                                </FormHelperText>
+                              </VStack>
+                            ) : (
+                              ""
+                            )}
+                          </VStack>
+                        </Stack>
+                      ) : (
+                        ""
+                      )}
+                    </VStack>
+                  </OrderedList>
+                </VStack>
+              </FormControl>
+            </CardBody>
+          </Card>
+        ) : (
+          ""
+        )}
         <Card w='full'>
           <CardBody>
             <FormControl isInvalid={errors.aggr_metrics}>
@@ -313,17 +474,6 @@ function Metrics({
             </FormControl>
           </CardBody>
         </Card>
-        {/* <FormControl isRequired>
-          <VStack align='flex-start'>
-            <FormLabel>Select an ordering function</FormLabel>
-            <Select name='agg_metric' onChange={handleChangeRadio}>
-              <option value='min'>Minimum</option>
-              <option value='max'>Maximum</option>
-              <option value='mean'>Statistical Mean</option>
-              <option value='hmean'>Harmonic Mean</option>
-            </Select>
-          </VStack>
-        </FormControl> */}
       </Stack>
     </Container>
   );

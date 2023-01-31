@@ -80,7 +80,10 @@ export const useValidation = (state) => {
         state.equalized_odds ||
         state.average_odds ||
         state.true_positive_difference ||
-        state.false_positive_difference
+        state.false_positive_difference ||
+        state.euclidean_distance ||
+        state.manhattan_distance ||
+        state.mahalanobis_distance
       );
     // At least one presentation must be selected
     const pres_error = !(
