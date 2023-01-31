@@ -1,6 +1,8 @@
 {% include "components/utils_libraries.jinja"%}
 from methods import FairnessMethods
 
+np.random.seed(2)
+
 # TRAINING FUNCTIONS
 
 def cross_val(classifier, data, label, unpriv_group, priv_group, sensitive_features, positive_label, metrics, n_splits=10, preprocessor=None, inprocessor=None, postprocessor=None):
