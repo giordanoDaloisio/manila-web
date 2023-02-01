@@ -20,5 +20,6 @@ def generate_file():
     mimetype='zip',
     download_name='experiment.zip')
 
+
 if __name__ == '__main__':
-  app.run()
+  app.run(debug=True)
