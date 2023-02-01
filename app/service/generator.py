@@ -1,9 +1,16 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 import zipfile
 import io
+import os
+import time
+import calendar
+import pandas as pd
+import shutil
+import sys
+import importlib
 
 def load_templates():
-  env = Environment(loader=PackageLoader('generator'),
+  env = Environment(loader=PackageLoader('service'),
                       autoescape=select_autoescape(disabled_extensions=(['py','yml'])), 
                       lstrip_blocks=True, 
                       trim_blocks=True)
@@ -35,3 +42,38 @@ def generate_zip(params):
       zip.writestr(zinfo_or_arcname='charts.py', data=charts.render(params))
   mem_file.seek(0)
   return mem_file
+
+def generate_code(params):
+  _,utils,demv,environment,metrics,trainer,methods,charts,experiment = load_templates()
+  current_GMT = time.gmtime()
+  time_stamp = calendar.timegm(current_GMT)
+  folder_name = 'code_'+str(time_stamp)
+  os.makedirs(folder_name, exist_ok=True)
+  with open(os.path.join(folder_name, 'experiment.py'), 'w') as f:
+    f.write(experiment.render(params))
+  with open(os.path.join(folder_name, 'utils.py'), 'w') as f:
+    f.write(utils.render(params))
+  with open(os.path.join(folder_name, 'environment.yml'), 'w') as f:
+    f.write(environment.render(params))
+  with open(os.path.join(folder_name, 'metrics.py'), 'w') as f:
+    f.write(metrics.render(params))
+  with open(os.path.join(folder_name, 'model_trainer.py'), 'w') as f:
+    f.write(trainer.render(params))
+  with open(os.path.join(folder_name, 'methods.py'), 'w') as f:
+    f.write(methods.render(params))
+  if 'demv' in params:
+    with open(os.path.join(folder_name, 'demv.py'), 'w') as f:
+      f.write(demv.render())
+  if 'chart' in params:
+    with open(os.path.join(folder_name,'charts.py'), 'w') as f:
+      f.write(charts.render())
+  return folder_name
+
+def run_experiment(dataset, path):
+  sys.path.append(path)
+  data = pd.read_csv(io.BytesIO(dataset), encoding='latin1')
+  import experiment
+  experiment = importlib.reload(experiment)
+  model, metrics = experiment.run_exp(data)
+  shutil.rmtree(path)
+  return metrics.to_json()

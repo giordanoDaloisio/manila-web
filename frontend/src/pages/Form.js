@@ -96,6 +96,7 @@ function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log(state);
       const ris = await generate(state);
       download(ris.data, "experiment.zip");
     } catch (e) {
@@ -161,11 +162,22 @@ function Form() {
         <Button
           colorScheme='teal'
           type='submit'
+          name='generate'
           isDisabled={
             Object.values(errors).filter((v) => v === true).length !== 0
           }
           ml='2'>
           Generate Code
+        </Button>
+        <Button
+          colorScheme='telegram'
+          type='submit'
+          name='run'
+          isDisabled={
+            Object.values(errors).filter((v) => v === true).length !== 0
+          }
+          ml='2'>
+          Run the experiment
         </Button>
       </FormControl>
     </Box>

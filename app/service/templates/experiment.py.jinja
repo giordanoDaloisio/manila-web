@@ -1,13 +1,23 @@
+import os
+import pickle
 from copy import deepcopy
-from utils import *
-from model_trainer import ModelTrainer
+import utils
+import model_trainer
 from datetime import datetime
 from methods import FairnessMethods
 {%if chart%}
 from charts import Charts
 {%endif%}
 {%include "components/libraries.jinja"%}
+{%if web%}
+import importlib
 
+utils = importlib.reload(utils)
+model_trainer = importlib.reload(model_trainer)
+{%endif%}
+
+from utils import *
+from model_trainer import ModelTrainer
 
 base_metrics = {
     {%if precision %}
@@ -77,7 +87,7 @@ def _store_metrics(metrics, method, fairness, save_data, save_model, model_fair)
 
 
 
-def exec(data):
+def run_exp(data):
     label = '{{name}}'
     positive_label = {{positive_value}}
     

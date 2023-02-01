@@ -14,7 +14,7 @@ if __name__ == '__main__':
     
     {%include "components/data_loader.jinja"%}
 
-    model, report = exec(data)
+    model, report = run_exp(data)
     os.makedirs('ris', exist_ok=True)
     dir_name = os.path.basename(os.path.dirname(__file__))
     {%if tabular%}
