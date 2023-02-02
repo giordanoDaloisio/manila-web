@@ -24,9 +24,10 @@ def generate_file():
 def run():
   params = request.form.to_dict()
   params.update({'web': 'web'})
+  data_extension = params.get('extension')
   data = request.files['dataset'].read()
   folder_name = generate_code(params)
-  metrics = run_experiment(data, folder_name)
+  metrics = run_experiment(data, folder_name, data_extension)
   response = make_response(metrics, 200)
   response.headers['Content-Type'] = 'application/json'
   return response
