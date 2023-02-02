@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, send_file, send_from_directory, make_response,jsonify
+from flask import Flask, request, send_file, send_from_directory, make_response
 from service.generator import generate_zip, generate_code, run_experiment
 from flask_cors import cross_origin
 
