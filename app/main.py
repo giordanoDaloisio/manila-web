@@ -28,7 +28,7 @@ def run():
   data = request.files['dataset'].read()
   folder_name = generate_code(params)
   metrics, model = run_experiment(data, folder_name, data_extension)
-  response = make_response({'results': metrics, 'model': model}, 200)
+  response = make_response({'results': metrics, 'model_path': model}, 200)
   response.headers['Content-Type'] = 'application/json'
   return response
 

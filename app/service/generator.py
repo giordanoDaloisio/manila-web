@@ -96,6 +96,6 @@ def run_experiment(dataset, path, extension):
   experiment = importlib.reload(experiment)
   model, metrics = experiment.run_exp(data)
   model = pickle.dumps(model)
-  file_name = store_file(model, folder_name=path)
+  store_file(model, folder_name=path)
   shutil.rmtree(path)
-  return metrics.to_dict(), file_name 
+  return metrics.to_dict(), path 
