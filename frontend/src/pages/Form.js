@@ -1,7 +1,17 @@
-import { Box, Button, FormControl, useColorModeValue } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import FilePicker from "chakra-ui-file-picker";
 import download from "downloadjs";
 import { useState } from "react";
-import { generate } from "../api";
+import { generate, run } from "../api";
+import Container from "../components/Container";
 import Dataset from "../components/Dataset";
 import Fairness from "../components/Fairness";
 import Metrics from "../components/Metrics";
@@ -22,6 +32,10 @@ function Form() {
     validation: "k_fold",
     K: 10,
   });
+  const [file, setFile] = useState(null);
+  const [networkError, setNetworkError] = useState("");
+  const [isRunLoading, setIsRunLoading] = useState(false);
+  const [isGenLoading, setIsGenLoading] = useState(false);
 
   const errors = useValidation(state);
 
@@ -93,15 +107,37 @@ function Form() {
     setState(state_copy);
   };
 
+  const handleChangeFile = (files) => {
+    if (files.length > 0) {
+      setFile(files[0]);
+    } else {
+      setFile(null);
+    }
+  };
+
+  const handleRun = async (e) => {
+    e.preventDefault();
+    try {
+      setIsRunLoading(true);
+      const ris = await run(state, file);
+      console.log(ris);
+    } catch (e) {
+      console.log(e);
+      setNetworkError(e.message);
+    }
+    setIsRunLoading(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(state);
+      setIsGenLoading(true);
       const ris = await generate(state);
       download(ris.data, "experiment.zip");
     } catch (e) {
       console.log(e);
     }
+    setIsGenLoading(false);
   };
 
   return (
@@ -158,11 +194,34 @@ function Form() {
         handleChangeCheckbox={handleChangeCheckbox}
         errors={errors}
       />
+      <Container title='Upload dataset'>
+        <FormControl>
+          <FilePicker
+            type='file'
+            value={file}
+            onFileChange={handleChangeFile}
+            placeholder='The file extension must be the same as above'
+          />
+          <FormHelperText>
+            Upload a file if you want to run the experiment on the server (the
+            file extension must be the same as above).
+          </FormHelperText>
+        </FormControl>
+      </Container>
+      {networkError !== "" ? (
+        <Alert status='error'>
+          <AlertIcon />
+          {networkError}
+        </Alert>
+      ) : (
+        ""
+      )}
       <FormControl align='center'>
         <Button
           colorScheme='teal'
           type='submit'
           name='generate'
+          isLoading={isGenLoading}
           isDisabled={
             Object.values(errors).filter((v) => v === true).length !== 0
           }
@@ -171,12 +230,14 @@ function Form() {
         </Button>
         <Button
           colorScheme='telegram'
-          type='submit'
           name='run'
+          isLoading={isRunLoading}
           isDisabled={
-            Object.values(errors).filter((v) => v === true).length !== 0
+            Object.values(errors).filter((v) => v === true).length !== 0 ||
+            file === null
           }
-          ml='2'>
+          ml='2'
+          onClick={handleRun}>
           Run the experiment
         </Button>
       </FormControl>

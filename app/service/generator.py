@@ -75,6 +75,8 @@ def generate_code(params):
 def run_experiment(dataset, path, extension):
   sys.path.append(path)
   data = None
+  import experiment
+  experiment = importlib.reload(experiment)
   if extension == 'csv':
     data = pd.read_csv(io.BytesIO(dataset), encoding='latin1')
   elif extension == 'parquet':
@@ -92,10 +94,13 @@ def run_experiment(dataset, path, extension):
   elif extension == 'hdf5':
     data = pd.read_hdf(pd.HDFStore(dataset), encoding='latin1')
   assert dataset != None, "Invalid dataset"
-  import experiment
-  experiment = importlib.reload(experiment)
-  model, metrics = experiment.run_exp(data)
-  model = pickle.dumps(model)
-  store_file(model, folder_name=path)
-  shutil.rmtree(path)
-  return metrics.to_dict(), path 
+  try:
+    model, metrics = experiment.run_exp(data)
+    model = pickle.dumps(model)
+    store_file(model, folder_name=path)
+    shutil.rmtree(path)
+    return metrics.to_dict(), path 
+  except Exception as e:
+    sys.modules.pop(experiment.__name__, None)
+    shutil.rmtree(path)
+    raise e

@@ -11,3 +11,13 @@ export const generate = async (data) => {
   });
   return ris;
 };
+
+export const run = async (data, file) => {
+  const values = { ...data, dataset: file };
+  const ris = await api.post("/run", values, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return ris;
+};
