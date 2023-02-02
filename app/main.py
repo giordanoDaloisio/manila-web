@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, send_file, send_from_directory, make_response
+from flask import Flask, request, send_file, send_from_directory, make_response,jsonify
 from service.generator import generate_zip, generate_code, run_experiment
 from flask_cors import cross_origin
 
@@ -27,8 +27,8 @@ def run():
   data_extension = params.get('extension')
   data = request.files['dataset'].read()
   folder_name = generate_code(params)
-  metrics = run_experiment(data, folder_name, data_extension)
-  response = make_response(metrics, 200)
+  metrics, model = run_experiment(data, folder_name, data_extension)
+  response = make_response({'results': metrics, 'model': model}, 200)
   response.headers['Content-Type'] = 'application/json'
   return response
 
