@@ -1,4 +1,5 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
+from service.store_service import store_file
 import zipfile
 import io
 import os
@@ -8,6 +9,8 @@ import pandas as pd
 import shutil
 import sys
 import importlib
+import pickle
+
 
 def load_templates():
   env = Environment(loader=PackageLoader('service'),
@@ -92,5 +95,7 @@ def run_experiment(dataset, path, extension):
   import experiment
   experiment = importlib.reload(experiment)
   model, metrics = experiment.run_exp(data)
+  model = pickle.dumps(model)
+  file_name = store_file(model, folder_name=path)
   shutil.rmtree(path)
-  return metrics.to_json()
+  return metrics.to_dict(), file_name 

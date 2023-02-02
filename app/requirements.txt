@@ -11,3 +11,5 @@ Jinja2
 zipp
 openpyxl
 pyarrow
+python-dotenv
+deta

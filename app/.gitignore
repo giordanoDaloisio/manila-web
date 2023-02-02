@@ -4,3 +4,4 @@ online
 /.deta/prog_info
 /.deta/state
 build
+.env
