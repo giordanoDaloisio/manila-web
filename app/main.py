@@ -28,7 +28,14 @@ def run():
   data = request.files['dataset'].read()
   folder_name = generate_code(params)
   metrics, model = run_experiment(data, folder_name, data_extension)
-  response = make_response({'results': metrics, 'model_path': model}, 200)
+  results = {'models': {}, 'metrics': {}}
+  for k in metrics.keys():
+    print(k)
+    if k == 'fairness_method' or k == 'model':
+      results['models'][k] = metrics[k]
+    else:
+      results['metrics'][k] = metrics[k]
+  response = make_response({'results': results, 'model_path': model}, 200)
   response.headers['Content-Type'] = 'application/json'
   return response
 

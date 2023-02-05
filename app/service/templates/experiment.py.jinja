@@ -319,5 +319,5 @@ def run_exp(data):
         return rej, report
     {%else%}
     model.fit(data.drop(label,axis=1).values, data[label].values.ravel())
-    return report
+    return model, report
     {%endif%}

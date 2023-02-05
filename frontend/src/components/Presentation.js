@@ -19,7 +19,8 @@ function Presentation({ state, handleChangeCheckbox, errors }) {
             <Alert status='error'>
               <AlertIcon />
               <AlertDescription>
-                Select at least one presentation method
+                Select at least one presentation method (this field is valid
+                only for the code generation)
               </AlertDescription>
             </Alert>
           ) : (

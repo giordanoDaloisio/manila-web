@@ -9,7 +9,8 @@ import {
 } from "@chakra-ui/react";
 import FilePicker from "chakra-ui-file-picker";
 import download from "downloadjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { generate, run } from "../api";
 import Container from "../components/Container";
 import Dataset from "../components/Dataset";
@@ -20,6 +21,7 @@ import Presentation from "../components/Presentation";
 import Scaler from "../components/Scaler";
 import Validation from "../components/Validation";
 import { useValidation } from "../hook/useValidation";
+import { RESULT } from "../routes";
 
 function Form() {
   const [state, setState] = useState({
@@ -36,8 +38,10 @@ function Form() {
   const [networkError, setNetworkError] = useState("");
   const [isRunLoading, setIsRunLoading] = useState(false);
   const [isGenLoading, setIsGenLoading] = useState(false);
+  const [fetchedData, setFetchedData] = useState(null);
 
   const errors = useValidation(state);
+  const navigate = useNavigate();
 
   const handleChangeCheckbox = (e) => {
     if (e.target.checked) {
@@ -118,9 +122,12 @@ function Form() {
   const handleRun = async (e) => {
     e.preventDefault();
     try {
+      setNetworkError("");
       setIsRunLoading(true);
       const ris = await run(state, file);
-      console.log(ris);
+      const data = ris.data;
+      console.log(ris.data);
+      setFetchedData(data);
     } catch (e) {
       console.log(e);
       setNetworkError(e.message);
@@ -139,6 +146,14 @@ function Form() {
     }
     setIsGenLoading(false);
   };
+
+  useEffect(() => {
+    if (fetchedData !== null) {
+      navigate(RESULT, {
+        state: fetchedData,
+      });
+    }
+  }, [fetchedData]);
 
   return (
     <Box

@@ -64,7 +64,15 @@ from aif360.sklearn.postprocessing import RejectOptionClassifierCV
 {%if mlp__classifier%}
 from sklearn.neural_network import MLPClassifier
 {%endif%}
-from metrics import *
+import metrics
+{%if web%}
+import importlib
+{%endif%}
 {%if statistical_mean%}
 import statistics
+{%endif%}
+
+{%if web%}
+metrics = importlib.reload(metrics)
+from metrics import *
 {%endif%}

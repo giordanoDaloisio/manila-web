@@ -4,7 +4,8 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Form from "./pages/Form";
-import { HOME } from "./routes";
+import Results from "./pages/Results";
+import { HOME, RESULT } from "./routes";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -12,6 +13,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path={HOME} element={<Form />} />
+        <Route path={RESULT} element={<Results />} />
       </Routes>
     </BrowserRouter>
   </ChakraProvider>
