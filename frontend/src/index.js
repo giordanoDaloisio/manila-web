@@ -9,12 +9,14 @@ import { HOME, RESULT } from "./routes";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ChakraProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route path={HOME} element={<Form />} />
-        <Route path={RESULT} element={<Results />} />
-      </Routes>
-    </BrowserRouter>
-  </ChakraProvider>
+  <React.StrictMode>
+    <ChakraProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path={HOME} element={<Form />} />
+          <Route path={RESULT} element={<Results />} />
+        </Routes>
+      </BrowserRouter>
+    </ChakraProvider>
+  </React.StrictMode>
 );

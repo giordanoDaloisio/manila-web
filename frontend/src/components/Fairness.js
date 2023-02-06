@@ -8,6 +8,7 @@ import {
   FormHelperText,
   FormLabel,
   Stack,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import Container from "./Container";
@@ -70,12 +71,10 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
             </Checkbox>
             <FormLabel size='md' m='10px 0px'>
               Pre Processing
-            </FormLabel>
-            <Alert status='info'>
-              <AlertIcon />
+              <br />
               These methods work on the training dataset to reduce its intrinsic
               bias
-            </Alert>
+            </FormLabel>
             <VStack pl='6' align='flex-start' spacing='10px'>
               <Checkbox
                 value='reweighing'
@@ -146,12 +145,11 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
             </VStack>
             <FormLabel size='md' m='10px 0px'>
               In Processing
-            </FormLabel>
-            <Alert status='info'>
-              <AlertIcon />
+              <br />
               These methods work on the ML algorithm modifying its learning
               process to reduce the learned bias
-            </Alert>
+            </FormLabel>
+            <Text></Text>
             <VStack pl='6' align='flex-start' spacing='10px'>
               <Checkbox
                 value='exponentiated_gradient'
@@ -286,12 +284,10 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               }>
               <FormLabel size='md' m='10px 0px'>
                 Post Processing
-              </FormLabel>
-              <Alert status='info'>
-                <AlertIcon />
+                <br />
                 These methods work on an already trained ML algorithm to reduce
                 the learned bias
-              </Alert>
+              </FormLabel>
               <VStack pl='6' align='flex-start' spacing='10px'>
                 <Checkbox
                   value='calibrated_eo'

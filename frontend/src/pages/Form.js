@@ -126,7 +126,6 @@ function Form() {
       setIsRunLoading(true);
       const ris = await run(state, file);
       const data = ris.data;
-      console.log(ris.data);
       setFetchedData(data);
     } catch (e) {
       console.log(e);
@@ -227,6 +226,14 @@ function Form() {
         <Alert status='error'>
           <AlertIcon />
           {networkError}
+        </Alert>
+      ) : (
+        ""
+      )}
+      {isRunLoading ? (
+        <Alert status='info'>
+          <AlertIcon />
+          The experiment is running. Please wait.
         </Alert>
       ) : (
         ""
