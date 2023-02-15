@@ -1,5 +1,4 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
-from service.store_service import store_file
 import zipfile
 import io
 import os
@@ -96,8 +95,8 @@ def run_experiment(dataset, path, extension):
   assert dataset != None, "Invalid dataset"
   try:
     model, metrics = experiment.run_exp(data)
-    model = pickle.dumps(model)
-    store_file(model, folder_name=path)
+    #model = pickle.dumps(model)
+    #store_file(model, folder_name=path)
     shutil.rmtree(path)
     return metrics.to_dict(), path 
   except Exception as e:
