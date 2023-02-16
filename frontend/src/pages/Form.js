@@ -127,9 +127,9 @@ function Form() {
       const ris = await run(state, file);
       const data = ris.data;
       setFetchedData(data);
-    } catch (e) {
-      console.log(e);
-      setNetworkError(e.data.error);
+    } catch (exc) {
+      console.log(exc);
+      setNetworkError(exc.response.data.error);
     }
     setIsRunLoading(false);
   };

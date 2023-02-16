@@ -1,18 +1,17 @@
 import os
 from flask import Flask, request, send_file, send_from_directory, make_response,jsonify, abort
 from service.generator import generate_zip, generate_code, run_experiment
-from flask_cors import cross_origin
+from flask_cors import CORS
 from flask_restful import Resource, Api
 
 app = Flask(__name__, static_url_path='', static_folder=os.path.join('build'))
 api = Api(app)
-
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 class Homepage(Resource):
   def get(self):
     return send_from_directory(app.static_folder, 'index.html')
 
 class Generator(Resource):
-  @cross_origin()
   def post(self):
     params = request.get_json()
     zip = generate_zip(params)
@@ -22,7 +21,6 @@ class Generator(Resource):
       download_name='experiment.zip')
 
 class Run(Resource):
-  @cross_origin()
   def post(self):
       params = request.form.to_dict()
       params.update({'web': 'web'})
@@ -32,6 +30,7 @@ class Run(Resource):
         folder_name = generate_code(params)
         metrics, model = run_experiment(data, folder_name, data_extension)
       except Exception as e:
+        app.logger.error(e.with_traceback(e.__traceback__).args)
         return jsonify({'error': str(e)}), 500
       results = {'models': {}, 'metrics': {}}
       for k in metrics.keys():
@@ -48,4 +47,4 @@ api.add_resource(Generator, '/generate')
 api.add_resource(Run, '/run')
 
 if __name__ == '__main__':
-  app.run()
+  app.run(debug=True)

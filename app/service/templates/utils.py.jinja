@@ -79,9 +79,13 @@ def cross_val(classifier, data, label, unpriv_group, priv_group, sensitive_featu
         {%endif%}
         {%if adversarial_debiasing%}
         if inprocessor == FairnessMethods.AD:
-            df_train = df_train.set_index([s for s in sensitive_features])
-            df_test = df_test.set_index([s for s in sensitive_features])
-            model = AdversarialDebiasing(prot_attr=[s for s in sensitive_features])
+            tf.reset_default_graph()
+            sess = tf.Session()
+            model = AdversarialDebiasing(privileged_groups = [priv_group],
+                          unprivileged_groups = [unpriv_group],
+                          scope_name='debiased_classifier',
+                          debias=True,
+                          sess=sess)
             tf.disable_eager_execution()
         {%endif%}
         {%if gerry_fair_classifier%}
@@ -96,17 +100,21 @@ def cross_val(classifier, data, label, unpriv_group, priv_group, sensitive_featu
         if inprocessor == FairnessMethods.PREJ:
             model = PrejudiceRemover(sensitive_attr=sensitive_features[0], class_attr=label)
         {%endif%}
-        {%if gerry_fair_classifier or meta_fair_classifier or prejudice_remover%}
-        if inprocessor == FairnessMethods.GERRY or inprocessor == FairnessMethods.META or inprocessor == FairnessMethods.PREJ:
+        {%if gerry_fair_classifier or meta_fair_classifier or prejudice_remover or adversarial_debiasing%}
+        if inprocessor == FairnessMethods.GERRY or inprocessor == FairnessMethods.META or inprocessor == FairnessMethods.PREJ or inprocessor == FairnessMethods.AD:
             pred, model = _train_gerry_meta(df_train, df_test, label, model, sensitive_features, positive_label)
         else:
             exp = bool(inprocessor == FairnessMethods.EG or inprocessor == FairnessMethods.GRID)
-            adv = bool(inprocessor == FairnessMethods.AD)
-            pred, model = _model_train(df_train, df_test, label, model, sensitive_features, exp=exp, weights=weights, adv=adv)
+            #adv = bool(inprocessor == FairnessMethods.AD)
+            pred, model = _model_train(df_train, df_test, label, model, sensitive_features, exp=exp, weights=weights)
         {%else%}
         exp = bool(inprocessor == FairnessMethods.EG or inprocessor == FairnessMethods.GRID)
-        adv = bool(inprocessor == FairnessMethods.AD)
-        pred, model = _model_train(df_train, df_test, label, model, sensitive_features, exp=exp, weights=weights, adv=adv)
+        #adv = bool(inprocessor == FairnessMethods.AD)
+        pred, model = _model_train(df_train, df_test, label, model, sensitive_features, exp=exp, weights=weights)
+        {%endif%}
+        {%if adversarial_debiasing%}
+        if inprocessor == FairnessMethods.AD:
+            sess.close()
         {%endif%}
         if postprocessor:
             df_train = df_train.set_index(sensitive_features[0])
@@ -167,7 +175,7 @@ def _model_train(df_train, df_test, label, classifier, sensitive_features, exp=F
         model.sess_.close()
     return df_pred, model
 
-{%if gerry_fair_classifier or meta_fair_classifier or prejudice_remover%}
+{%if gerry_fair_classifier or meta_fair_classifier or prejudice_remover or adversarial_debiasing%}
 def _train_gerry_meta(df_train, df_test, label, model, sensitive_features, positive_label):
     bin_train = BinaryLabelDataset(favorable_label=positive_label, 
         unfavorable_label=1-positive_label,

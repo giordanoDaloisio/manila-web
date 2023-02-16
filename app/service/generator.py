@@ -95,11 +95,9 @@ def run_experiment(dataset, path, extension):
   assert dataset != None, "Invalid dataset"
   try:
     model, metrics = experiment.run_exp(data)
-    #model = pickle.dumps(model)
-    #store_file(model, folder_name=path)
     shutil.rmtree(path)
     return metrics.to_dict(), path 
   except Exception as e:
-    shutil.rmtree(path)
+    #shutil.rmtree(path)
     sys.modules.pop(experiment.__name__, None)
     raise e

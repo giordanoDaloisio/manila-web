@@ -96,8 +96,8 @@ export const useValidation = (state) => {
     );
     // eg or grid => !mlp_class and !mlp_regr
     const eg_grid_error =
-      (state.exponentiated_gradient || state.grid_search) &&
-      (state.mlp__classifier || state.mlp__regressor || state.reweighing);
+      (state.exponentiated_gradient || state.grid_search || state.reweighing) &&
+      (state.mlp__classifier || state.mlp__regressor);
     // box cox => strictly pos
     const box_cox_err =
       state.box_cox_method && !state.strictly_positive_attributes;

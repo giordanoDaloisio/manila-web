@@ -40,7 +40,7 @@ from balancers import MulticlassBalancer, BinaryBalancer
 from demv import DEMV
 {%endif%}
 {%if adversarial_debiasing%}
-from aif360.sklearn.inprocessing import AdversarialDebiasing
+from aif360.algorithms.inprocessing import AdversarialDebiasing
 import tensorflow.compat.v1 as tf
 {%endif%}
 {%if gerry_fair_classifier%}
@@ -52,7 +52,7 @@ from aif360.algorithms.inprocessing import MetaFairClassifier
 {%if prejudice_remover%}
 from aif360.algorithms.inprocessing import PrejudiceRemover
 {%endif%}
-{%if post_processing%}
+{%if calibrated_eo or reject_option_classifier%}
 from aif360.sklearn.postprocessing import PostProcessingMeta
 {%endif%}
 {%if calibrated_eo%}
