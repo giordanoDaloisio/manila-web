@@ -98,6 +98,6 @@ def run_experiment(dataset, path, extension):
     shutil.rmtree(path)
     return metrics.to_dict(), path 
   except Exception as e:
-    #shutil.rmtree(path)
+    shutil.rmtree(path)
     sys.modules.pop(experiment.__name__, None)
     raise e

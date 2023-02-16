@@ -281,6 +281,7 @@ def run_exp(data):
     {%if fairness%}
     trainer = ModelTrainer(data, label, sensitive_features, positive_label)
     if best_ris['fairness_method'] == FairnessMethods.NO_ONE.name:
+        model.fit(data.drop(label, axis=1), data[label])
         return model, report
     {%if demv%}
     if best_ris['fairness_method'] == FairnessMethods.DEMV.name:
