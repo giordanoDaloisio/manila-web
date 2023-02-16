@@ -10,3 +10,4 @@ pandas==1.5.3
 python-dotenv==0.21.1
 scikit-learn==1.2.1
 zipp==3.11.0
+BlackBoxAuditing==0.1.54

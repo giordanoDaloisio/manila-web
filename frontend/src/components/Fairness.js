@@ -253,7 +253,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               ) : (
                 ""
               )}
-              <Checkbox
+              {/* <Checkbox
                 value='prejudice_remover'
                 onChange={handleChangeCheckbox}
                 checked={state.prejudice_remover !== undefined}
@@ -268,7 +268,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
                 </FormHelperText>
               ) : (
                 ""
-              )}
+              )} */}
             </VStack>
             <FormControl
               isDisabled={

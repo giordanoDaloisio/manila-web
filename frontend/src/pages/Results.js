@@ -1,5 +1,7 @@
 import {
   Box,
+  Grid,
+  GridItem,
   Stack,
   Table,
   TableCaption,
@@ -110,130 +112,133 @@ function Results() {
         <Bar data={data} options={options} height='60%' />
       </Container>
       <Container title='How to read the metrics'>
-        <Stack
-          direction={{ base: "column", sm: "row" }}
-          spacing='4'
-          align='center'>
-          <TableContainer align='center' alignItems='center'>
-            <Table variant='simple'>
-              <TableCaption>Classification metrics</TableCaption>
-              <Thead>
-                <Tr>
-                  <Th>Metric</Th>
-                  <Th>Optimal value</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <Tr>
-                  <Td>Accuracy</Td>
-                  <Td>1</Td>
-                </Tr>
-                <Tr>
-                  <Td>Precision</Td>
-                  <Td>1</Td>
-                </Tr>
-                <Tr>
-                  <Td>Recall</Td>
-                  <Td>1</Td>
-                </Tr>
-                <Tr>
-                  <Td>F1Score</Td>
-                  <Td>1</Td>
-                </Tr>
-                <Tr>
-                  <Td>Area Under Curve</Td>
-                  <Td>1</Td>
-                </Tr>
-                <Tr>
-                  <Td>Zero One Loss</Td>
-                  <Td>0</Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
-          <TableContainer align='center' alignItems='center'>
-            <Table variant='simple'>
-              <TableCaption>Regression metrics</TableCaption>
-              <Thead>
-                <Tr>
-                  <Th>Metric</Th>
-                  <Th>Optimal value</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <Tr>
-                  <Td>Mean Squared Error</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Mean Absolute Error</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>R2 Error</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Mean Squared Logaritmic Error</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Mean Absolute Percentage Error</Td>
-                  <Td>0</Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
-          <TableContainer align='center' alignItems='center'>
-            <Table variant='simple'>
-              <TableCaption>Fairness metrics</TableCaption>
-              <Thead>
-                <Tr>
-                  <Th>Metric</Th>
-                  <Th>Optimal value</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <Tr>
-                  <Td>Euclidean Distance</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Manhattan Distance</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Mahalanobis Distance</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Statistical Parity</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Disparate Impact</Td>
-                  <Td>1</Td>
-                </Tr>
-                <Tr>
-                  <Td>Equalized Odds Difference</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>Average Odds Difference</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>True Positive Difference</Td>
-                  <Td>0</Td>
-                </Tr>
-                <Tr>
-                  <Td>False Positive Difference</Td>
-                  <Td>0</Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Stack>
+        <Grid templateColumns='repeat(3, 1fr)' gap={6}>
+          <GridItem>
+            <TableContainer align='center' alignItems='center'>
+              <Table variant='simple'>
+                <TableCaption>Classification metrics</TableCaption>
+                <Thead>
+                  <Tr>
+                    <Th>Metric</Th>
+                    <Th>Optimal value</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  <Tr>
+                    <Td>Accuracy</Td>
+                    <Td>1</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Precision</Td>
+                    <Td>1</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Recall</Td>
+                    <Td>1</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>F1Score</Td>
+                    <Td>1</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Area Under Curve</Td>
+                    <Td>1</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Zero One Loss</Td>
+                    <Td>0</Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </GridItem>
+          <GridItem>
+            <TableContainer align='center' alignItems='center'>
+              <Table variant='simple'>
+                <TableCaption>Regression metrics</TableCaption>
+                <Thead>
+                  <Tr>
+                    <Th>Metric</Th>
+                    <Th>Optimal value</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  <Tr>
+                    <Td>Mean Squared Error</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Mean Absolute Error</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>R2 Error</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Mean Squared Logaritmic Error</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Mean Absolute Percentage Error</Td>
+                    <Td>0</Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </GridItem>
+          <GridItem>
+            <TableContainer align='center' alignItems='center'>
+              <Table variant='simple'>
+                <TableCaption>Fairness metrics</TableCaption>
+                <Thead>
+                  <Tr>
+                    <Th>Metric</Th>
+                    <Th>Optimal value</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  <Tr>
+                    <Td>Euclidean Distance</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Manhattan Distance</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Mahalanobis Distance</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Statistical Parity</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Disparate Impact</Td>
+                    <Td>1</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Equalized Odds Difference</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Average Odds Difference</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>True Positive Difference</Td>
+                    <Td>0</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>False Positive Difference</Td>
+                    <Td>0</Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </GridItem>
+        </Grid>
       </Container>
     </Box>
   );
