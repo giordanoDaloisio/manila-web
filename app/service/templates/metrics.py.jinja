@@ -103,40 +103,16 @@ def statistical_parity(data_pred: pd.DataFrame, group_condition: dict, label_nam
 
 {%if equalized_odds %}
 def equalized_odds(data_pred: pd.DataFrame, group_condition: dict, label_name: str, positive_label: str):
-    query = '&'.join([f'{k}=={v}' for k, v in group_condition.items()])
-    label_query = label_name+'=='+str(positive_label)
-    tpr_query = 'y_true == ' + str(positive_label)
-    if(len(data_pred.query(query + '&' + label_query)) == 0):
-        unpriv_group_tpr = 0
-    else:
-        unpriv_group_tpr = (len(data_pred.query(query + '&' + label_query + '&' + tpr_query))
-                            / len(data_pred.query(query + '&' + label_query)))
-
-    if (len(data_pred.query('~(' + query+')&' + label_query)) == 0):
-        priv_group_tpr = 0
-    else:
-        priv_group_tpr = (len(data_pred.query('~(' + query + ')&' + label_query + '&' + tpr_query))
-                          / len(data_pred.query('~(' + query+')&' + label_query)))
-
-    if (len(data_pred.query(query + '& ~(' + label_query + ')')) == 0):
-        unpriv_group_fpr = 0
-    else:
-        unpriv_group_fpr = (len(data_pred.query(query + '&' + label_query + '& ~(' + tpr_query + ')'))
-                            / len(data_pred.query(query + '& ~(' + label_query + ')')))
-
-    if (len(data_pred.query('~(' + query+')& ~(' + label_query + ')')) == 0):
-        priv_group_fpr = 0
-    else:
-        priv_group_fpr = (len(data_pred.query('~(' + query + ')&' + label_query + '& ~(' + tpr_query + ')'))
-                          / len(data_pred.query('~(' + query+')& ~(' + label_query + ')')))
-
-    return max(np.abs(unpriv_group_tpr - priv_group_tpr), np.abs(unpriv_group_fpr - priv_group_fpr))
+    fpr_unpriv, tpr_unpriv, fpr_priv, tpr_priv = _compute_tpr_fpr_groups(data_pred, label_name, group_condition, positive_label)
+    return (tpr_priv - tpr_unpriv) + (fpr_priv - fpr_unpriv)
 {%endif%}
 
 {%if average_odds%}
 def average_odds_difference(data_pred: pd.DataFrame, group_condition: str, label: str, positive_label: int):
-    fpr_unpriv, tpr_unpriv, fpr_priv, tpr_priv = _compute_tpr_fpr_groups(data_pred, label, group_condition, positive_label)
-    return (fpr_unpriv - fpr_priv) + (tpr_unpriv - tpr_priv)/2
+    unpriv_group, unpriv_group_pos, priv_group, priv_group_pos = _get_groups(data_pred, label, positive_label, group_condition)
+    accuracy_priv = accuracy(priv_group, label)
+    accuracy_unpriv = accuracy(unpriv_group, label)
+    return accuracy_priv - accuracy_unpriv
 {%endif%}
 
 {%if true_positive_difference%}
