@@ -58,6 +58,12 @@ export function labelMapper(value) {
   if (value === "model") {
     return "Machine Learning Model";
   }
+  if (value === "ao") {
+    return "Average Odds";
+  }
+  if (value === "eq_odds") {
+    return "Equalized Odds";
+  }
   return value;
 }
 
