@@ -60,3 +60,40 @@ export function labelMapper(value) {
   }
   return value;
 }
+
+export function parseData(data) {
+  if (data === "RW") {
+    return "Reweighing";
+  } else if (data === "AD") {
+    return "Adversarial Debiasing";
+  } else if (data === "NO_ONE") {
+    return "No Method";
+  } else if (data === "DEMV") {
+    return "DEMV";
+  } else if (data === "EG") {
+    return "Exponential Gradient";
+  } else if (data === "GRID") {
+    return "Grid Search";
+  } else if (data === "GERRY") {
+    return "GerryFair";
+  } else if (data === "META") {
+    return "MetaFair";
+  } else if (data === "PREJ") {
+    return "Prejudice Remover";
+  } else if (data === "REJ") {
+    return "Reject Option Classification";
+  } else if (data === "logreg") {
+    return "Logistic Regression";
+  } else if (data === "svm") {
+    return "Support Vector Machine";
+  } else if (data === "gradient_class") {
+    return "Gradient Boosting Classifier";
+  } else if (data === "mlp") {
+    return "Multi-Layer Perceptron";
+  } else if (data === "tree") {
+    return "Decision Tree";
+  } else if (data === "forest") {
+    return "Random Forest";
+  }
+  return parseFloat(data).toFixed(2);
+}

@@ -17,7 +17,6 @@ import Dataset from "../components/Dataset";
 import Fairness from "../components/Fairness";
 import Metrics from "../components/Metrics";
 import MLTask from "../components/MLTask";
-import Presentation from "../components/Presentation";
 import Scaler from "../components/Scaler";
 import Validation from "../components/Validation";
 import { useValidation } from "../hook/useValidation";
@@ -33,6 +32,7 @@ function Form() {
     train_size: 80,
     validation: "k_fold",
     K: 10,
+    tabular: "tabular",
   });
   const [file, setFile] = useState(null);
   const [networkError, setNetworkError] = useState("");
@@ -203,11 +203,11 @@ function Form() {
         handleChangeRadio={handleChangeRadio}
         setState={setState}
       />
-      <Presentation
+      {/* <Presentation
         state={state}
         handleChangeCheckbox={handleChangeCheckbox}
         errors={errors}
-      />
+      /> */}
       <Container title='Upload dataset'>
         <FormControl>
           <FilePicker

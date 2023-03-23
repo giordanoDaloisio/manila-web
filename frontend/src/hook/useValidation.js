@@ -86,14 +86,14 @@ export const useValidation = (state) => {
         state.mahalanobis_distance
       );
     // At least one presentation must be selected
-    const pres_error = !(
-      state.tabular ||
-      state.bar_plot ||
-      state.line_plot ||
-      state.strip_plot ||
-      state.box_plot ||
-      state.point_plot
-    );
+    // const pres_error = !(
+    //   state.tabular ||
+    //   state.bar_plot ||
+    //   state.line_plot ||
+    //   state.strip_plot ||
+    //   state.box_plot ||
+    //   state.point_plot
+    // );
     // eg or grid => !mlp_class and !mlp_regr
     const eg_grid_error =
       (state.exponentiated_gradient || state.grid_search || state.reweighing) &&
@@ -132,7 +132,7 @@ export const useValidation = (state) => {
       errors_fairmethods: fair_method_error,
       class_metrics: metric_error,
       aggr_metrics: aggr_error,
-      pres_error,
+      // pres_error,
       eg_grid_error,
       box_cox_err,
       multi_vars_err,
