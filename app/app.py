@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, send_file, send_from_directory, make_response,jsonify, abort
+from flask import Flask, request, send_file, send_from_directory, make_response, json, Response
 from service.generator import generate_zip, generate_code, run_experiment
 from flask_cors import CORS
 from flask_restful import Resource, Api
@@ -31,7 +31,8 @@ class Run(Resource):
         metrics, model = run_experiment(data, folder_name, data_extension)
       except Exception as e:
         app.logger.error(e.with_traceback(e.__traceback__).args)
-        return jsonify({'error': str(e)}), 500
+        message = json.dumps({'error': str(e)})
+        return Response(message, status=500, mimetype='application/json')
       results = {'models': {}, 'metrics': {}}
       for k in metrics.keys():
         if k == 'fairness_method' or k == 'model':
