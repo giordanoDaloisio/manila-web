@@ -1,0 +1,21 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ "deploy" ]
+
+jobs:
+
+  build:
+    name: Docker image build
+    env:
+      REPO: ${{secrets.DOCKER_REPO}}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build ./app --file Dockerfile -t $REPO:latest -t $REPO:${GITHUB_SHA::8}
+    - name: Login to Docker
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+    - name: Publish to DockerHub
+      run: docker push $REPO
