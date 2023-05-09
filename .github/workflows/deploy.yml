@@ -8,7 +8,7 @@ jobs:
   build:
     name: Docker image build
     env:
-      REPO: ${{secrets.DOCKER_REPO}}
+      REPO: ${{ secrets.DOCKER_REPO }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

@@ -5,6 +5,7 @@ import {
   Button,
   FormControl,
   FormHelperText,
+  Heading,
   useColorModeValue,
 } from "@chakra-ui/react";
 import FilePicker from "chakra-ui-file-picker";
@@ -162,6 +163,7 @@ function Form() {
       minH={"100vh"}
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}>
+      <Heading>MANILA</Heading>
       <Dataset
         state={state}
         setState={setState}
