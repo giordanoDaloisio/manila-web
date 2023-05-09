@@ -27,5 +27,5 @@ jobs:
     needs: [build]
     steps:
       - uses: joelwmale/webhook-action@master
-        env:
-          WEBHOOK_URL: $WEBHOOK
+        with:
+          url: $WEBHOOK
