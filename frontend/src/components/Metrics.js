@@ -205,8 +205,7 @@ function Metrics({
                         <Text as='b'>individuals</Text> (similar individuals
                         should be treated similarly) ,{" "}
                         <Text as='b'>groups</Text> (individuals of a group
-                        should not be discriminated) , or{" "}
-                        <Text as='b'>both</Text>?
+                        should not be discriminated)?
                       </Text>
                     </ListItem>
                     <VStack align='flex-start'>
@@ -221,29 +220,39 @@ function Metrics({
                       </Checkbox>
                       {state.individual === "individual" ? (
                         <VStack pl='4' align='flex-start' spacing='2'>
-                          <Checkbox
-                            value='euclidean_distance'
-                            onChange={handleChangeCheckbox}
-                            isChecked={state.euclidean_distance !== undefined}>
-                            Euclidean Distance
-                          </Checkbox>
-                          <FormHelperText>0 means fairness</FormHelperText>
-                          <Checkbox
-                            value='manhattan_distance'
-                            onChange={handleChangeCheckbox}
-                            isChecked={state.manhattan_distance !== undefined}>
-                            Manhattan Distance
-                          </Checkbox>
-                          <FormHelperText>0 means fairness</FormHelperText>
-                          <Checkbox
-                            value='mahalanobis_distance'
-                            onChange={handleChangeCheckbox}
-                            isChecked={
-                              state.mahalanobis_distance !== undefined
-                            }>
-                            Mahalanobis Distance
-                          </Checkbox>
-                          <FormHelperText>0 means fairness</FormHelperText>
+                          <FormControl isDisabled={true}>
+                            <Alert status='error'>
+                              <AlertIcon />
+                              These metrics are not implemented yet
+                            </Alert>
+                            <Checkbox
+                              value='euclidean_distance'
+                              onChange={handleChangeCheckbox}
+                              isChecked={
+                                state.euclidean_distance !== undefined
+                              }>
+                              Euclidean Distance
+                            </Checkbox>
+                            <FormHelperText>0 means fairness</FormHelperText>
+                            <Checkbox
+                              value='manhattan_distance'
+                              onChange={handleChangeCheckbox}
+                              isChecked={
+                                state.manhattan_distance !== undefined
+                              }>
+                              Manhattan Distance
+                            </Checkbox>
+                            <FormHelperText>0 means fairness</FormHelperText>
+                            <Checkbox
+                              value='mahalanobis_distance'
+                              onChange={handleChangeCheckbox}
+                              isChecked={
+                                state.mahalanobis_distance !== undefined
+                              }>
+                              Mahalanobis Distance
+                            </Checkbox>
+                            <FormHelperText>0 means fairness</FormHelperText>
+                          </FormControl>
                         </VStack>
                       ) : (
                         ""
