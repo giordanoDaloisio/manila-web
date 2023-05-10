@@ -1,4 +1,5 @@
 import axios from "axios";
+
 const api = axios.create({
   baseURL: "https://manila-sobigdata.d4science.org/",
 });
