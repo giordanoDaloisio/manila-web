@@ -10,4 +10,6 @@ COPY . .
 
 EXPOSE 5000
 
-CMD [ "python3", "app.py"]
+ENV FLASK_ENV=development
+
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--debugger"]
