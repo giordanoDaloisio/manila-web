@@ -5,6 +5,9 @@ import {
   Button,
   FormControl,
   FormHelperText,
+  Heading,
+  Text,
+  VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
 import FilePicker from "chakra-ui-file-picker";
@@ -162,6 +165,10 @@ function Form() {
       minH={"100vh"}
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}>
+      <VStack>
+        <Heading>MANILA</Heading>
+        <Text>Select the features that comprise your experiment</Text>
+      </VStack>
       <Dataset
         state={state}
         setState={setState}
