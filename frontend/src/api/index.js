@@ -1,23 +1,19 @@
 import axios from "axios";
-// const api = axios.create({
-//   //baseURL: "https://manila-sobigdata.d4science.org/",
-//   baseURL: "http://localhost:5000/",
-// });
+
+const api = axios.create({
+  baseURL: "https://manila-sobigdata.d4science.org/",
+});
 
 export const generate = async (data) => {
-  const ris = await axios.post(
-    "https://manila-sobigdata.d4science.org/generate",
-    data,
-    {
-      responseType: "blob",
-    }
-  );
+  const ris = await api.post("/generate", data, {
+    responseType: "blob",
+  });
   return ris;
 };
 
 export const run = async (data, file) => {
   const values = { ...data, dataset: file };
-  const ris = await axios.post("http://127.0.0.1:5000/run", values, {
+  const ris = await api.post("/run", values, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
