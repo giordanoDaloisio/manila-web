@@ -17,7 +17,7 @@ export const generate = async (data) => {
 
 export const run = async (data, file) => {
   const values = { ...data, dataset: file };
-  const ris = await axios.post("http://localhost:5000/run", values, {
+  const ris = await axios.post("http://127.0.0.1:5000/run", values, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
