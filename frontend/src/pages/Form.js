@@ -132,7 +132,7 @@ function Form() {
       setFetchedData(data);
     } catch (exc) {
       console.log(exc);
-      setNetworkError(exc.response.data.error);
+      setNetworkError(exc.response.data.error || exc.message);
     }
     setIsRunLoading(false);
   };

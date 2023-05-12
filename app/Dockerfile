@@ -12,7 +12,7 @@ COPY . .
 
 EXPOSE 5000
 
-ENTRYPOINT ["./gunicorn.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--chdir", "manila", "app:app", "-w", "2", "--timeout", "600"]
 
 #ENV FLASK_DEBUG=1
 
