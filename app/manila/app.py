@@ -36,8 +36,8 @@ class Run(Resource):
         data_extension = params.get("extension")
         data = request.files["dataset"].read()
         try:
-            folder_name = generate_code(params)
-            metrics, model = run_experiment(data, folder_name, data_extension)
+            #folder_name = generate_code(params)
+            metrics, model = run_experiment(data, 'code_1683997207', data_extension)
         except Exception as e:
             app.logger.error(e.with_traceback(e.__traceback__).args)
             message = json.dumps({"error": str(e)})
