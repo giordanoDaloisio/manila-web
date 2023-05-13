@@ -53,9 +53,16 @@ class Run(Resource):
         return response
 
 
+class Test(Resource):
+    def post(self):
+        data = request.files["dataset"].read()
+        return data
+
+
 api.add_resource(Homepage, "/")
 api.add_resource(Generator, "/generate")
 api.add_resource(Run, "/run")
+api.add_resource(Test, "/test")
 
 if __name__ == "__main__":
     app.run(debug=True)
