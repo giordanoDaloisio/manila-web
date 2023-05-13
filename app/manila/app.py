@@ -37,18 +37,19 @@ class Run(Resource):
         data = request.files["dataset"].read()
         try:
             folder_name = generate_code(params)
-            metrics, model = run_experiment(data, folder_name, data_extension)
+            # metrics, model = run_experiment(data, folder_name, data_extension)
         except Exception as e:
             app.logger.error(e.with_traceback(e.__traceback__).args)
             message = json.dumps({"error": str(e)})
             return Response(message, status=500, mimetype="application/json")
         results = {"models": {}, "metrics": {}}
-        for k in metrics.keys():
-            if k == "fairness_method" or k == "model":
-                results["models"][k] = metrics[k]
-            else:
-                results["metrics"][k] = metrics[k]
-        response = make_response({"results": results, "model_path": model}, 200)
+        # for k in metrics.keys():
+        #     if k == "fairness_method" or k == "model":
+        #         results["models"][k] = metrics[k]
+        #     else:
+        #         results["metrics"][k] = metrics[k]
+        # response = make_response({"results": results, "model_path": model}, 200)
+        response = make_response({"results": results}, 200)
         response.headers["Content-Type"] = "application/json"
         return response
 

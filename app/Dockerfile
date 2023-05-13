@@ -13,7 +13,3 @@ COPY . .
 EXPOSE 5000
 
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--chdir", "manila", "app:app", "-w", "2", "--timeout", "600"]
-
-#ENV FLASK_DEBUG=1
-
-#ENTRYPOINT [ "python3", "-m" , "flask", "--app", "app", "--debug" ,"run", "--host=0.0.0.0"]
