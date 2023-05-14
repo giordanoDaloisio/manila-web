@@ -9,7 +9,7 @@ import shutil
 import sys
 import importlib
 import pickle
-from service.code_1684083319 import experiment
+from service import experiment
 
 
 def load_templates():
@@ -100,8 +100,8 @@ def generate_code(params):
 
 
 def run_experiment(dataset, path, extension):
+    sys.path.append(path)
     data = None
-    # sys.path.append(path)
     # import experiment
     # experiment = importlib.reload(experiment)
     if extension == "csv":
@@ -124,7 +124,7 @@ def run_experiment(dataset, path, extension):
     try:
         model, metrics = experiment.run_exp(data)
         # shutil.rmtree(path)
-        return metrics.to_dict(), path
+        # return metrics.to_dict(), path
         return metrics, path
     except Exception as e:
         shutil.rmtree(path)
