@@ -9,7 +9,7 @@ import shutil
 import sys
 import importlib
 import pickle
-import experiment
+from service import experiment
 
 
 def load_templates():
