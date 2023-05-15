@@ -42,6 +42,7 @@ function Form() {
   const [isRunLoading, setIsRunLoading] = useState(false);
   const [isGenLoading, setIsGenLoading] = useState(false);
   const [fetchedData, setFetchedData] = useState(null);
+  const [fileError, setFileError] = useState("");
 
   const errors = useValidation(state);
   const navigate = useNavigate();
@@ -116,8 +117,14 @@ function Form() {
 
   const handleChangeFile = (files) => {
     if (files.length > 0) {
-      setFile(files[0]);
+      if (Math.floor(files[0].size / 1024) > 10000) {
+        setFileError("The file is too big. The maximum size is 10MB.");
+      } else {
+        setFileError("");
+        setFile(files[0]);
+      }
     } else {
+      setFileError("");
       setFile(null);
     }
   };
@@ -132,7 +139,9 @@ function Form() {
       setFetchedData(data);
     } catch (exc) {
       console.log(exc);
-      setNetworkError(exc.response.data.error || exc.message);
+      exc.response.data && exc.response.data.error
+        ? setNetworkError(exc.response.data.error)
+        : setNetworkError(exc.message);
     }
     setIsRunLoading(false);
   };
@@ -227,6 +236,14 @@ function Form() {
             Upload a file if you want to run the experiment on the server (the
             file extension must be the same as above).
           </FormHelperText>
+          {fileError !== "" ? (
+            <Alert status='error'>
+              <AlertIcon />
+              {fileError}
+            </Alert>
+          ) : (
+            ""
+          )}
         </FormControl>
       </Container>
       {networkError !== "" ? (
@@ -263,7 +280,8 @@ function Form() {
           isLoading={isRunLoading}
           isDisabled={
             Object.values(errors).filter((v) => v === true).length !== 0 ||
-            file === null
+            file === null ||
+            fileError !== ""
           }
           ml='2'
           onClick={handleRun}>

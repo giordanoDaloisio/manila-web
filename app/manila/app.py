@@ -11,7 +11,9 @@ from flask import (
 from service.generator import generate_zip, generate_code, run_experiment
 from flask_cors import CORS
 from flask_restful import Resource, Api
+from werkzeug.serving import WSGIRequestHandler
 
+WSGIRequestHandler.protocol_version = "HTTP/1.1"
 app = Flask(__name__, static_url_path="", static_folder=os.path.join("build"))
 api = Api(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})

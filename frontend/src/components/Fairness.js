@@ -205,7 +205,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               ) : (
                 ""
               )}
-              <Checkbox
+              {/* <Checkbox
                 value='adversarial_debiasing'
                 onChange={handleChangeCheckbox}
                 isChecked={state.adversarial_debiasing !== undefined}
@@ -220,7 +220,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
                 </FormHelperText>
               ) : (
                 ""
-              )}
+              )} */}
               <Checkbox
                 value='gerry_fair_classifier'
                 onChange={handleChangeCheckbox}
