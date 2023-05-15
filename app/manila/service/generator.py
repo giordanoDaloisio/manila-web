@@ -9,7 +9,6 @@ import shutil
 import sys
 import importlib
 import pickle
-from service import experiment
 
 
 def load_templates():
@@ -102,8 +101,8 @@ def generate_code(params):
 def run_experiment(dataset, path, extension):
     sys.path.append(path)
     data = None
-    # import experiment
-    # experiment = importlib.reload(experiment)
+    import experiment
+    experiment = importlib.reload(experiment)
     if extension == "csv":
         data = pd.read_csv(io.BytesIO(dataset), encoding="latin1")
     elif extension == "parquet":
@@ -123,9 +122,8 @@ def run_experiment(dataset, path, extension):
     assert dataset != None, "Invalid dataset"
     try:
         model, metrics = experiment.run_exp(data)
-        # shutil.rmtree(path)
-        # return metrics.to_dict(), path
-        return metrics, path
+        shutil.rmtree(path)
+        return metrics.to_dict(), path
     except Exception as e:
         shutil.rmtree(path)
         sys.modules.pop(experiment.__name__, None)
