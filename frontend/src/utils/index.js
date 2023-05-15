@@ -100,6 +100,8 @@ export function parseData(data) {
     return "Decision Tree";
   } else if (data === "forest") {
     return "Random Forest";
+  } else if (data === "DIR") {
+    return "Disparate Impact Remover";
   }
   return parseFloat(data).toFixed(2);
 }
