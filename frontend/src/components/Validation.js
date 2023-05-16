@@ -66,7 +66,13 @@ function Validation({ state, handleChangeRadio, setState }) {
         </FormControl>
       </Stack>
       <Checkbox
-        onChange={(e) => setState({ ...state, save_temporary_results: true })}
+        onChange={(e) =>
+          setState(
+            e.target.checked
+              ? { ...state, save_temporary_results: true }
+              : { ...state, save_temporary_results: false }
+          )
+        }
         isChecked={state.save_temporary_results === true}>
         Save results for each fold (works only in the generated code)
       </Checkbox>
