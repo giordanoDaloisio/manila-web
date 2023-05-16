@@ -139,7 +139,7 @@ function Form() {
       setFetchedData(data);
     } catch (exc) {
       console.log(exc);
-      exc.response.data && exc.response.data.error
+      exc.response && exc.response.data && exc.response.data.error
         ? setNetworkError(exc.response.data.error)
         : setNetworkError(exc.message);
     }
