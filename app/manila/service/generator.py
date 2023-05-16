@@ -19,7 +19,7 @@ def keep_alive():
     global THREAD_RUN
     while THREAD_RUN:
         try:
-            response = requests.get("http://localhost:5000/keepalive")
+            response = requests.get("https://manila-sobigdata.d4science.org/keepalive")
             response.raise_for_status()
         except requests.exceptions.RequestException:
             pass
