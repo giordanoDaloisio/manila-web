@@ -1,14 +1,29 @@
-from jinja2 import Environment, PackageLoader, select_autoescape
-import zipfile
+import calendar
+import importlib
 import io
 import os
-import time
-import calendar
-import pandas as pd
 import shutil
 import sys
-import importlib
-import pickle
+import time
+import zipfile
+import requests
+import threading
+
+import pandas as pd
+from jinja2 import Environment, PackageLoader, select_autoescape
+
+THREAD_RUN = True
+
+
+def keep_alive():
+    global THREAD_RUN
+    while THREAD_RUN:
+        try:
+            response = requests.get("http://localhost:5000/keepalive")
+            response.raise_for_status()
+        except requests.exceptions.RequestException:
+            pass
+        time.sleep(100)
 
 
 def load_templates():
@@ -102,6 +117,7 @@ def run_experiment(dataset, path, extension):
     sys.path.append(path)
     data = None
     import experiment
+
     experiment = importlib.reload(experiment)
     if extension == "csv":
         data = pd.read_csv(io.BytesIO(dataset), encoding="latin1")
@@ -121,8 +137,13 @@ def run_experiment(dataset, path, extension):
         data = pd.read_hdf(pd.HDFStore(dataset), encoding="latin1")
     assert dataset != None, "Invalid dataset"
     try:
+        global THREAD_RUN
+        THREAD_RUN = True
+        t = threading.Thread(target=keep_alive)
+        t.start()
         model, metrics = experiment.run_exp(data)
         shutil.rmtree(path)
+        THREAD_RUN = False
         return metrics.to_dict(), path
     except Exception as e:
         shutil.rmtree(path)

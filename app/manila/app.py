@@ -7,6 +7,7 @@ from flask import (
     make_response,
     json,
     Response,
+    jsonify,
 )
 from service.generator import generate_zip, generate_code, run_experiment
 from flask_cors import CORS
@@ -55,9 +56,15 @@ class Run(Resource):
         return response
 
 
+class KeepAlive(Resource):
+    def get(self):
+        return jsonify({"status": "alive"})
+
+
 api.add_resource(Homepage, "/")
 api.add_resource(Generator, "/generate")
 api.add_resource(Run, "/run")
+api.add_resource(KeepAlive, "/keepalive")
 
 if __name__ == "__main__":
     app.run(debug=True)
