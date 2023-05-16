@@ -117,8 +117,8 @@ function Form() {
 
   const handleChangeFile = (files) => {
     if (files.length > 0) {
-      if (Math.floor(files[0].size / 1024) > 5000) {
-        setFileError("The file is too big. The maximum size is 5MB.");
+      if (Math.floor(files[0].size / 1024) > 10000) {
+        setFileError("The file is too big. The maximum size is 10MB.");
       } else {
         setFileError("");
         setFile(files[0]);
