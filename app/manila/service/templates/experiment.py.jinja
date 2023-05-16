@@ -68,6 +68,15 @@ base_metrics = {
     {% if statistical_mean %}
     'mean': [],
     {% endif %}
+    {% if euclidean_distance %}
+    'euclidean': [],
+    {% endif %}
+    {% if mahalanobis_distance %}
+    'mahalanobis': [],
+    {% endif %}
+    {% if manhattan_distance %}
+    'manhattan_distance': [],
+    {% endif %}
 }
 
 def _store_metrics(metrics, method, fairness, save_data, save_model, model_fair):

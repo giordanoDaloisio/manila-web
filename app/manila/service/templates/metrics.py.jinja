@@ -20,6 +20,9 @@ from sklearn.metrics import recall_score
 {%if auc%}
 from sklearn.metrics import roc_auc_score
 {%endif%}
+{%if euclidean_distance or mahalanobis_distance or manhattan_distance%}
+from aif360.metrics import SampleDistortionMetric
+{%endif%}
 
 def _get_groups(data, label_name, positive_label, group_condition):
     query = '&'.join([str(k) + '==' + str(v)
@@ -160,6 +163,24 @@ def f1(df_pred: pd.DataFrame, label: str):
 {%if auc%}
 def auc(df_pred: pd.DataFrame, label: str):
     return roc_auc_score(df_pred['y_true'].values, df_pred[label].values)
+{%endif%}
+
+{%if euclidean_distance%}
+def euclidean_distance(df_true, df_pred, priv_group, unpriv_group):
+    metric = SampleDistortionMetric(df_true, df_pred, unpriv_group, priv_group)
+    return metric.euclidean_distance()
+{%endif%}
+
+{%if mahalanobis_distance%}
+def mahalanobis_distance(df_true, df_pred, priv_group, unpriv_group):
+    metric = SampleDistortionMetric(df_true, df_pred, unpriv_group, priv_group)
+    return metric.mahalanobis_distance()
+{%endif%}
+
+{%if manhattan_distance%}
+def manhattan_distance(df_true, df_pred, priv_group, unpriv_group):
+    metric = SampleDistortionMetric(df_true, df_pred, unpriv_group, priv_group)
+    return metric.mahalanobis_distance()
 {%endif%}
 
 def norm_data(data):

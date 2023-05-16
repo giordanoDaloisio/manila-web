@@ -265,6 +265,9 @@ def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensi
     auc_score = auc(df_pred, label)
     metrics['auc'].append(auc_score)
 {%endif%}
+{%if euclidean_distance %}
+    euclidean = euclidean_distance(df_pred, unpriv_group, label, positive_label)
+{%endif%}
 {%if harmonic_mean%}
     metrics['hmean'].append(
         stats.hmean([
