@@ -281,7 +281,8 @@ function Form() {
           isDisabled={
             Object.values(errors).filter((v) => v === true).length !== 0 ||
             file === null ||
-            fileError !== ""
+            fileError !== "" ||
+            ("use_validation" in state && state.use_validation === true)
           }
           ml='2'
           onClick={handleRun}>

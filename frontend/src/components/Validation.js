@@ -1,6 +1,9 @@
 import {
+  Alert,
+  AlertIcon,
   Checkbox,
   FormControl,
+  FormHelperText,
   FormLabel,
   HStack,
   NumberDecrementStepper,
@@ -19,13 +22,20 @@ import Container from "./Container";
 function Validation({ state, handleChangeRadio, setState }) {
   return (
     <Container title='Validation'>
-      <Checkbox
-        name='use_validation'
-        onChange={(e) =>
-          setState({ ...state, use_validation: e.target.checked })
-        }>
-        Use validation
-      </Checkbox>
+      <Alert status='warning'>
+        <AlertIcon />
+        If you select cross-validation, you can not run the experiment on the
+        server.
+      </Alert>
+      <FormControl>
+        <Checkbox
+          name='use_validation'
+          onChange={(e) =>
+            setState({ ...state, use_validation: e.target.checked })
+          }>
+          Use validation
+        </Checkbox>
+      </FormControl>
       <Stack pl='6'>
         <RadioGroup
           name='validation'
