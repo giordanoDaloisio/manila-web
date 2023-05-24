@@ -1,19 +1,22 @@
 import {
   Box,
+  Button,
+  Grid,
+  GridItem,
   Heading,
-  Highlight,
   ListItem,
   Text,
   UnorderedList,
   useColorModeValue,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BarChart from "../components/BarChart";
 import Container from "../components/Container";
 import DataTableComponent from "../components/DataTableComponent";
 import ExportButton from "../components/ExportButton";
+import { HOME } from "../routes";
 import { downloadCSV, parseData } from "../utils";
 
 function Results() {
@@ -24,6 +27,7 @@ function Results() {
   const labels = [];
   const datasets = [];
   const csvdata = [];
+  const navigate = useNavigate();
 
   if (Object.keys(results.models).includes("fairness_method")) {
     for (let i = 0; i < Object.values(models.model).length; i++) {
@@ -66,9 +70,18 @@ function Results() {
       minH={"100vh"}
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}>
-      <Heading align='center' pb={6}>
-        Results
-      </Heading>
+      <Grid templateColumns={"(3, 1fr)"}>
+        <GridItem w='100%' h='0' pl='4'>
+          <Button onClick={() => navigate(HOME)} colorScheme='facebook'>
+            Back
+          </Button>
+        </GridItem>
+        <GridItem w='100%'>
+          <Heading align='center' pb={6}>
+            Results
+          </Heading>
+        </GridItem>
+      </Grid>
       <Container title='Bar Chart'>
         <VStack align='flex-start'>
           <ExportButton

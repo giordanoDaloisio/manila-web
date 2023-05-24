@@ -2,6 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://manila-sobigdata.d4science.org/",
+  //baseURL: "http://localhost:5000/",
 });
 
 export const generate = async (data) => {

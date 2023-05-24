@@ -18,25 +18,14 @@ import { generate, run } from "../api";
 import Container from "../components/Container";
 import Dataset from "../components/Dataset";
 import Fairness from "../components/Fairness";
-import Metrics from "../components/Metrics";
 import MLTask from "../components/MLTask";
+import Metrics from "../components/Metrics";
 import Scaler from "../components/Scaler";
 import Validation from "../components/Validation";
 import { useValidation } from "../hook/useValidation";
 import { RESULT } from "../routes";
 
-function Form() {
-  const [state, setState] = useState({
-    extension: "csv",
-    label: "binary",
-    index_col: 0,
-    has_header: true,
-    ml__task: "classification",
-    train_size: 80,
-    validation: "k_fold",
-    K: 10,
-    tabular: "tabular",
-  });
+function Form({ state, setState }) {
   const [file, setFile] = useState(null);
   const [networkError, setNetworkError] = useState("");
   const [isRunLoading, setIsRunLoading] = useState(false);
