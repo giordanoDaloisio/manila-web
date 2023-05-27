@@ -300,9 +300,6 @@ def run_exp(data):
     elif best_ris['fairness_method'] == FairnessMethods.GRID.name:
         grid = trainer.use_grid(model)
         return grid, report
-    elif best_ris['fairness_method'] == FairnessMethods.AD.name:
-        adv = trainer.use_adv()
-        return adv, report
     elif best_ris['fairness_method'] == FairnessMethods.GERRY.name:
         gerry = trainer.use_gerry()
         return gerry, report

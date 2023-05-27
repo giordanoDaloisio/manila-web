@@ -39,10 +39,6 @@ from balancers import MulticlassBalancer, BinaryBalancer
 {%if demv%}
 from demv import DEMV
 {%endif%}
-{%if adversarial_debiasing%}
-from aif360.algorithms.inprocessing import AdversarialDebiasing
-import tensorflow.compat.v1 as tf
-{%endif%}
 {%if gerry_fair_classifier%}
 from aif360.algorithms.inprocessing import GerryFairClassifier
 {%endif%}

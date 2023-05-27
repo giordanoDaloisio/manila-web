@@ -5,10 +5,6 @@ from aif360.algorithms.inprocessing import GerryFairClassifier, MetaFairClassifi
 from aif360.datasets import BinaryLabelDataset
 from fairlearn.reductions import GridSearch, ExponentiatedGradient
 from aif360.sklearn.postprocessing import CalibratedEqualizedOdds, RejectOptionClassifierCV, PostProcessingMeta
-{%if adversarial_debiasing%}
-from aif360.sklearn.inprocessing import AdversarialDebiasing
-import tensorflow.compat.v1 as tf
-{%endif%}
 {%if demv%}
 from demv import DEMV
 {%endif%}
@@ -71,15 +67,6 @@ class ModelTrainer:
       grid_model.fit(self.dataset.drop(columns=self.label),
                    self.dataset[self.label],sensitive_features=self.dataset[self.sensitive_features])
       return grid_model
-    {%endif%}
-
-    {%if adversarial_debiasing%}
-    def use_adv(self):
-      data = self.dataset.set_index(self.sensitive_features)
-      adv = AdversarialDebiasing(prot_attr=[s for s in self.sensitive_features])
-      tf.disable_eager_execution()
-      adv.fit(data.drop(columns=self.label), data[self.label])
-      return adv
     {%endif%}
 
     def use_gerry(self):
