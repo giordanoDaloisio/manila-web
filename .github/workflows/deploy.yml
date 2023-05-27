@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Clean builder
+        run: docker builder prune
       - name: Build the Docker image
         run: docker build ./app -t $REPO:latest -t $REPO:${GITHUB_SHA::8}
       - name: Login to Docker
