@@ -71,11 +71,11 @@ function Results() {
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}>
       <Grid templateColumns={"(3, 1fr)"}>
-        {/* <GridItem w='100%' h='0' pl='4'>
+        <GridItem w='100%' h='0' pl='4'>
           <Button onClick={() => navigate(HOME)} colorScheme='facebook'>
             Back
           </Button>
-        </GridItem> */}
+        </GridItem>
         <GridItem w='100%'>
           <Heading align='center' pb={6}>
             Results
