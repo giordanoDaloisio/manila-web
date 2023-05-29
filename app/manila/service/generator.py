@@ -113,39 +113,39 @@ def generate_code(params):
     return folder_name
 
 
-# def run_experiment(dataset, path, extension):
-#     sys.path.append(path)
-#     data = None
-#     import experiment
+def run_experiment(dataset, path, extension):
+    sys.path.append(path)
+    data = None
+    import experiment
 
-#     experiment = importlib.reload(experiment)
-#     if extension == "csv":
-#         data = pd.read_csv(io.BytesIO(dataset), encoding="latin1")
-#     elif extension == "parquet":
-#         data = pd.read_parquet(io.BytesIO(dataset), encoding="latin1")
-#     elif extension == "excel":
-#         data = pd.read_excel(io.BytesIO(dataset))
-#     elif extension == "json":
-#         data = pd.read_json(io.BytesIO(dataset), encoding="latin1")
-#     elif extension == "text":
-#         data = pd.read_fwf(io.BytesIO(dataset), encoding="latin1")
-#     elif extension == "html":
-#         data = pd.read_html(io.StringIO(dataset), encoding="latin1")
-#     elif extension == "xml":
-#         data = pd.read_xml(io.BytesIO(dataset), encoding="latin1")
-#     elif extension == "hdf5":
-#         data = pd.read_hdf(pd.HDFStore(dataset), encoding="latin1")
-#     assert dataset != None, "Invalid dataset"
-#     try:
-#         global THREAD_RUN
-#         THREAD_RUN = True
-#         t = threading.Thread(target=keep_alive)
-#         t.start()
-#         model, metrics = experiment.run_exp(data)
-#         shutil.rmtree(path)
-#         THREAD_RUN = False
-#         return metrics.to_dict(), path
-#     except Exception as e:
-#         shutil.rmtree(path)
-#         sys.modules.pop(experiment.__name__, None)
-#         raise e
+    experiment = importlib.reload(experiment)
+    if extension == "csv":
+        data = pd.read_csv(io.BytesIO(dataset), encoding="latin1")
+    elif extension == "parquet":
+        data = pd.read_parquet(io.BytesIO(dataset), encoding="latin1")
+    elif extension == "excel":
+        data = pd.read_excel(io.BytesIO(dataset))
+    elif extension == "json":
+        data = pd.read_json(io.BytesIO(dataset), encoding="latin1")
+    elif extension == "text":
+        data = pd.read_fwf(io.BytesIO(dataset), encoding="latin1")
+    elif extension == "html":
+        data = pd.read_html(io.StringIO(dataset), encoding="latin1")
+    elif extension == "xml":
+        data = pd.read_xml(io.BytesIO(dataset), encoding="latin1")
+    elif extension == "hdf5":
+        data = pd.read_hdf(pd.HDFStore(dataset), encoding="latin1")
+    assert dataset != None, "Invalid dataset"
+    try:
+        global THREAD_RUN
+        THREAD_RUN = True
+        t = threading.Thread(target=keep_alive)
+        t.start()
+        model, metrics = experiment.run_exp(data)
+        shutil.rmtree(path)
+        THREAD_RUN = False
+        return metrics.to_dict(), path
+    except Exception as e:
+        shutil.rmtree(path)
+        sys.modules.pop(experiment.__name__, None)
+        raise e
