@@ -25,7 +25,18 @@ import Validation from "../components/Validation";
 import { useValidation } from "../hook/useValidation";
 import { RESULT } from "../routes";
 
-function Form({ state, setState }) {
+function Form() {
+  const [state, setState] = useState({
+    extension: "csv",
+    label: "binary",
+    index_col: 0,
+    has_header: true,
+    ml__task: "classification",
+    train_size: 80,
+    validation: "k_fold",
+    K: 10,
+    tabular: "tabular",
+  });
   const [file, setFile] = useState(null);
   const [networkError, setNetworkError] = useState("");
   const [isRunLoading, setIsRunLoading] = useState(false);
