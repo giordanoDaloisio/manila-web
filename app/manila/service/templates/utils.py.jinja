@@ -211,6 +211,9 @@ def _predict_data(model, df_test, label, x_test, aif_data=False):
         df_pred[label] = pred
     return df_pred
 
+
+##### METRICS FUNCTIONS #####
+
 def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensitive_features):
     df_pred = df_pred.reset_index()
 {%if statistical_parity%}
@@ -265,6 +268,18 @@ def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensi
     auc_score = auc(df_pred, label)
     metrics['auc'].append(auc_score)
 {%endif%}
+{%if euclidean_distance%}
+    euc_dist = euclidean_distance(df_pred, label)
+    metrics['euclidean_distance'].append(euc_dist)
+{%endif%}
+{%if manhattan_distance%}
+    man_dist = manhattan_distance(df_pred, label)
+    metrics['manhattan_distance'].append(man_dist)
+{%endif%}
+{%if mahalanobis_distance%}
+    mahal_dist = mahalanobis_distance(df_pred, label)
+    metrics['mahalanobis_distance'].append(mahal_dist)
+{%endif%}
 {%if harmonic_mean%}
     metrics['hmean'].append(
         stats.hmean([
@@ -303,6 +318,15 @@ def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensi
             {%endif%}
             {%if false_positive_difference%}
             norm_data(fpr),
+            {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
             {%endif%}
         ])
     )
@@ -346,6 +370,15 @@ def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensi
             {%if false_positive_difference%}
             fpr,
             {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
+            {%endif%}
         ])
     )
 {%endif%}
@@ -388,6 +421,15 @@ def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensi
             {%if false_positive_difference%}
             fpr,
             {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
+            {%endif%}
         ])
     )
     {%endif%}
@@ -429,6 +471,15 @@ def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensi
             {%endif%}
             {%if false_positive_difference%}
             fpr,
+            {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
             {%endif%}
         ])
     )

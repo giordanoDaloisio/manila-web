@@ -16,6 +16,7 @@ function Scaler({
         <Checkbox
           value='standard_scaler'
           onChange={handleChangeCheckbox}
+          isChecked={state.standard_scaler !== undefined}
           isDisabled={
             state.min_max_scaler ||
             state.max_abs_scaler ||
@@ -30,6 +31,7 @@ function Scaler({
         <Checkbox
           value='min_max_scaler'
           onChange={handleChangeCheckbox}
+          isChecked={state.min_max_scaler !== undefined}
           isDisabled={
             state.standard_scaler ||
             state.max_abs_scaler ||
@@ -45,6 +47,7 @@ function Scaler({
         <Checkbox
           value='max_abs_scaler'
           onChange={handleChangeCheckbox}
+          isChecked={state.max_abs_scaler !== undefined}
           isDisabled={
             state.standard_scaler ||
             state.min_max_scaler ||
@@ -58,6 +61,7 @@ function Scaler({
       <Checkbox
         value='robust_scaler'
         onChange={handleChangeCheckbox}
+        isChecked={state.robust_scaler !== undefined}
         isDisabled={
           state.standard_scaler ||
           state.min_max_scaler ||
@@ -70,6 +74,7 @@ function Scaler({
       <Checkbox
         value='quantile_transformer_scaler'
         onChange={handleChangeCheckbox}
+        isChecked={state.quantile_transformer_scaler !== undefined}
         isDisabled={
           state.standard_scaler ||
           state.min_max_scaler ||
@@ -84,6 +89,7 @@ function Scaler({
         <Checkbox
           value='power_transformer_scaler'
           onChange={handleChangeCheckbox}
+          isChecked={state.power_transformer_scaler !== undefined}
           isDisabled={
             state.standard_scaler ||
             state.min_max_scaler ||
@@ -97,6 +103,7 @@ function Scaler({
           <Checkbox
             value='yeo_johnson_method'
             onChange={handleChangeCheckbox}
+            isChecked={state.yeo_johnson_method !== undefined}
             isDisabled={
               !state.power_transformer_scaler || state.box_cox_method
             }>
@@ -105,6 +112,7 @@ function Scaler({
           <Checkbox
             value='box_cox_method'
             onChange={handleChangeCheckbox}
+            isChecked={state.box_cox_method !== undefined}
             isDisabled={
               !state.power_transformer_scaler ||
               state.yeo_johnson_method ||

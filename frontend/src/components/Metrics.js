@@ -220,11 +220,11 @@ function Metrics({
                       </Checkbox>
                       {state.individual === "individual" ? (
                         <VStack pl='4' align='flex-start' spacing='2'>
-                          <FormControl isDisabled={true}>
-                            <Alert status='error'>
+                          <FormControl>
+                            {/* <Alert status='error'>
                               <AlertIcon />
                               These metrics are not implemented yet
-                            </Alert>
+                            </Alert> */}
                             <Checkbox
                               value='euclidean_distance'
                               onChange={handleChangeCheckbox}

@@ -64,6 +64,15 @@ export function labelMapper(value) {
   if (value === "eq_odds") {
     return "Equalized Odds";
   }
+  if (value === "euclidean_distance") {
+    return "Euclidean Distance";
+  }
+  if (value === "manhattan_distance") {
+    return "Manhattan Distance";
+  }
+  if (value === "mahalanobis_distance") {
+    return "Mahalanobis Distance";
+  }
   return value;
 }
 

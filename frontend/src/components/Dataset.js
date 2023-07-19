@@ -61,7 +61,9 @@ function Dataset({
         <FormLabel>Label</FormLabel>
         <RadioGroup defaultValue={state.label} name='label'>
           <Stack spacing='24px' direction={{ base: "column", lg: "row" }}>
-            <Radio value='binary' onChange={handleChangeRadio}>
+            <Radio
+              value='binary'
+              onChange={handleChangeRadio}>
               Binary
             </Radio>
             <Radio
@@ -120,6 +122,7 @@ function Dataset({
           <Checkbox
             value='single_sensitive_var'
             disabled={state.multiple_sensitive_vars}
+            isChecked={state.single_sensitive_var !== undefined}
             onChange={handleChangeCheckbox}>
             Single Sensitive Variable
           </Checkbox>
@@ -164,7 +167,8 @@ function Dataset({
               state.calibrated_eo ||
               state.reject_option_classifier
             }
-            onChange={handleChangeCheckbox}>
+            onChange={handleChangeCheckbox}
+            isChecked={state.multiple_sensitive_vars}>
             Multiple Sensitive Variables
           </Checkbox>
           {state.dir ||
@@ -219,7 +223,10 @@ function Dataset({
         </VStack>
       </FormControl>
       <FormControl>
-        <Checkbox value='has_index' onChange={handleChangeCheckbox}>
+        <Checkbox
+          value='has_index'
+          onChange={handleChangeCheckbox}
+          isChecked={state.has_index}>
           Dataset has an index column
         </Checkbox>
       </FormControl>

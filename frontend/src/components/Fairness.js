@@ -79,7 +79,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='reweighing'
                 onChange={handleChangeCheckbox}
-                checked={state.reweighing !== undefined}
+                isChecked={state.reweighing !== undefined}
                 isInvalid={errors.eg_grid_error}
                 isDisabled={
                   errors.error_sensvars === true ||
@@ -114,7 +114,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='dir'
                 onChange={handleChangeCheckbox}
-                checked={state.dir !== undefined}
+                isChecked={state.dir !== undefined}
                 isDisabled={
                   errors.error_sensvars === true ||
                   state.multiple_sensitive_vars ||
@@ -139,7 +139,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='demv'
                 onChange={handleChangeCheckbox}
-                checked={state.demv !== undefined}>
+                isChecked={state.demv === "demv"}>
                 DEMV
               </Checkbox>
             </VStack>
@@ -154,7 +154,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='exponentiated_gradient'
                 onChange={handleChangeCheckbox}
-                checked={state.exponentiated_gradient !== undefined}
+                isChecked={state.exponentiated_gradient !== undefined}
                 isInvalid={errors.eg_grid_error}
                 isDisabled={
                   errors.error_sensvars === true ||
@@ -181,7 +181,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='grid_search'
                 onChange={handleChangeCheckbox}
-                checked={state.grid_search !== undefined}
+                isChecked={state.grid_search !== undefined}
                 isInvalid={errors.eg_grid_error}
                 isDisabled={
                   errors.error_sensvars === true ||
@@ -240,7 +240,7 @@ function Fairness({ state, setState, handleChangeCheckbox, errors }) {
               <Checkbox
                 value='meta_fair_classifier'
                 onChange={handleChangeCheckbox}
-                checked={state.meta_fair_classifier !== undefined}
+                isChecked={state.meta_fair_classifier !== undefined}
                 isDisabled={
                   state.label === "multiclass" || errors.error_sensvars === true
                 }>

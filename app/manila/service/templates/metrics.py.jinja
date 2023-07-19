@@ -162,5 +162,20 @@ def auc(df_pred: pd.DataFrame, label: str):
     return roc_auc_score(df_pred['y_true'].values, df_pred[label].values)
 {%endif%}
 
+{%if euclidean_distance%}
+def euclidean_distance(df_pred, label):
+    return np.linalg.norm(df_pred['y_true'].values - df_pred[label].values)/len(df_pred)
+{%endif%}
+
+{%if manhattan_distance%}
+def manhattan_distance(df_pred, label):
+      return np.sum(np.abs(df_pred['y_true'].values - df_pred[label].values))/len(df_pred)
+{%endif%}
+
+{%if mahalanobis_distance%}
+def mahalanobis_distance(df_pred, label):
+    return np.sqrt(np.sum(np.square(df_pred['y_true'].values - df_pred[label].values)))/len(df_pred)
+{%endif%}
+
 def norm_data(data):
     return abs(1 - abs(data))

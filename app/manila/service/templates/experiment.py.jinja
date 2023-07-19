@@ -56,6 +56,15 @@ base_metrics = {
     {% if accuracy %}
     'acc': [],
     {% endif %}
+    {% if euclidean_distance%}
+    'euclidean_distance': [],
+    {% endif %}
+    {% if manhattan_distance %}
+    'manhattan_distance': [],
+    {% endif %}
+    {% if mahalanobis_distance %}
+    'mahalanobis_distance': [],
+    {% endif %}
     {% if harmonic_mean %}
     'hmean': [],
     {% endif %}
