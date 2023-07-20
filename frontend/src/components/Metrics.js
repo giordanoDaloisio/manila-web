@@ -11,6 +11,7 @@ import {
   ListItem,
   OrderedList,
   Radio,
+  RadioGroup,
   Stack,
   Text,
   VStack,
@@ -221,10 +222,6 @@ function Metrics({
                       {state.individual === "individual" ? (
                         <VStack pl='4' align='flex-start' spacing='2'>
                           <FormControl>
-                            {/* <Alert status='error'>
-                              <AlertIcon />
-                              These metrics are not implemented yet
-                            </Alert> */}
                             <Checkbox
                               value='euclidean_distance'
                               onChange={handleChangeCheckbox}
@@ -269,6 +266,14 @@ function Metrics({
                       {state.group_metric === "group_metric" ? (
                         <Stack pl='4'>
                           <ListItem>
+                            <Text>Is past knowledge relevant?</Text>
+                            <RadioGroup
+                              onChange={handleChangeRadio} name="past_knowledge">
+                                <Radio value="yes">Yes</Radio>
+                                
+                              </RadioGroup>
+                          </ListItem>
+                          {/* <ListItem>
                             <Text>
                               Should different groups be treated{" "}
                               <Text as='b'>equally</Text> (everyone should have
@@ -390,7 +395,7 @@ function Metrics({
                             ) : (
                               ""
                             )}
-                          </VStack>
+                          </VStack> */}
                         </Stack>
                       ) : (
                         ""
