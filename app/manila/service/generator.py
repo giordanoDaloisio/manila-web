@@ -8,6 +8,7 @@ import time
 import zipfile
 import requests
 import threading
+import pickle
 
 import pandas as pd
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -142,9 +143,16 @@ def run_experiment(dataset, path, extension):
         t = threading.Thread(target=keep_alive)
         t.start()
         model, metrics = experiment.run_exp(data)
+        current_GMT = time.gmtime()
+        time_stamp = calendar.timegm(current_GMT)
+        if "fairness_method" in metrics.columns:
+            model_name = f"{metrics.loc[0,'model']}_{metrics.loc[0,'fairness_method']}_{time_stamp}"
+        else:
+            model_name = metrics.loc[0, "model"] + "_" + str(time_stamp)
+        pickle.dump(model, open(os.path.join("models", model_name + ".pkl"), "wb"))
         shutil.rmtree(path)
         THREAD_RUN = False
-        return metrics.to_dict(), path
+        return metrics.to_dict(), model_name
     except Exception as e:
         shutil.rmtree(path)
         sys.modules.pop(experiment.__name__, None)

@@ -13,6 +13,8 @@ from service.generator import generate_zip, generate_code, run_experiment
 from flask_cors import CORS
 from flask_restful import Resource, Api
 from werkzeug.serving import WSGIRequestHandler
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 
 WSGIRequestHandler.protocol_version = "HTTP/1.1"
 app = Flask(__name__, static_url_path="", static_folder=os.path.join("build"))
@@ -61,10 +63,28 @@ class KeepAlive(Resource):
         return jsonify({"status": "alive"})
 
 
+class Model(Resource):
+    def get(self, model_name):
+        return send_from_directory("models", model_name + ".pkl")
+
+
 api.add_resource(Homepage, "/")
 api.add_resource(Generator, "/generate")
 api.add_resource(Run, "/run")
 api.add_resource(KeepAlive, "/keepalive")
+api.add_resource(Model, "/model/<string:model_name>")
+
+
+def clean_models():
+    for filename in os.listdir("models"):
+        if filename.endswith(".pkl"):
+            os.remove(os.path.join("models", filename))
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=clean_models, trigger="cron", hour=0)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
     app.run(debug=True)
