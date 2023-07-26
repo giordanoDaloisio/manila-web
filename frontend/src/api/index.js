@@ -21,3 +21,10 @@ export const run = async (data, file) => {
   });
   return ris;
 };
+
+export const downloadModel = async (name) => {
+  const ris = await api.get("/model/" + name, {
+    responseType: "blob",
+  });
+  return ris;
+};

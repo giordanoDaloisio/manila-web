@@ -8,7 +8,7 @@ import {
   Text,
   UnorderedList,
   useColorModeValue,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 
 import { useLocation, useNavigate } from "react-router-dom";
@@ -18,10 +18,12 @@ import DataTableComponent from "../components/DataTableComponent";
 import ExportButton from "../components/ExportButton";
 import { HOME } from "../routes";
 import { downloadCSV, parseData } from "../utils";
+import DownloadButton from "../components/DownloadButton";
 
 function Results() {
   const loc = useLocation();
   const results = loc.state.results;
+  const model_link = loc.state.model_path;
   const metrics = results.metrics;
   const models = results.models;
   const labels = [];
@@ -83,9 +85,12 @@ function Results() {
         </GridItem>
       </Grid>
       <Container title='Bar Chart'>
+        <VStack>
+          <DownloadButton name={model_link} />
+        </VStack>
         <VStack align='flex-start'>
           <ExportButton
-            label='Export to csv'
+            label='Export Metrics to CSV'
             onExport={() => downloadCSV(csvdata)}
           />
         </VStack>

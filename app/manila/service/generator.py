@@ -149,6 +149,7 @@ def run_experiment(dataset, path, extension):
             model_name = f"{metrics.loc[0,'model']}_{metrics.loc[0,'fairness_method']}_{time_stamp}"
         else:
             model_name = metrics.loc[0, "model"] + "_" + str(time_stamp)
+        os.makedirs("models", exist_ok=True)
         pickle.dump(model, open(os.path.join("models", model_name + ".pkl"), "wb"))
         shutil.rmtree(path)
         THREAD_RUN = False
