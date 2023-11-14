@@ -6,10 +6,12 @@ import {
   FormControl,
   FormHelperText,
   Heading,
+  Link,
   Text,
   VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import FilePicker from "chakra-ui-file-picker";
 import download from "downloadjs";
 import { useEffect, useState } from "react";
@@ -25,8 +27,7 @@ import Validation from "../components/Validation";
 import { useValidation } from "../hook/useValidation";
 import { RESULT } from "../routes";
 
-function Form({state, setState}) {
-
+function Form({ state, setState }) {
   const [file, setFile] = useState(null);
   const [networkError, setNetworkError] = useState("");
   const [isRunLoading, setIsRunLoading] = useState(false);
@@ -167,6 +168,16 @@ function Form({state, setState}) {
       <VStack>
         <Heading>MANILA</Heading>
         <Text>Select the features that comprise your experiment</Text>
+        <Text>
+          At this link you can find the documentation and a step-by-step guide
+          on how to use the tool:{" "}
+          <Link
+            href='https://manila-fairness.github.io/'
+            isExternal
+            color='teal'>
+            MANILA Documentation <ExternalLinkIcon />
+          </Link>
+        </Text>
       </VStack>
       <Dataset
         state={state}
