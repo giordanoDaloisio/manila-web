@@ -167,7 +167,6 @@ function Form({ state, setState }) {
       bg={useColorModeValue("gray.50", "gray.800")}>
       <VStack>
         <Heading>MANILA</Heading>
-        <Text>Select the features that comprise your experiment</Text>
         <Text>
           At this link you can find the documentation and a step-by-step guide
           on how to use the tool:{" "}
