@@ -1,15 +1,15 @@
 import axios from "axios";
 
-// let baseURL = "";
+let baseURL = "";
 
-// if (process.env.NODE_ENV === "development") {
-//   baseURL = "http://localhost:5000/";
-// } else if (process.env.NODE_ENV === "production") {
-//   baseURL = "https://manila-sobigdata.d4science.org/";
-// }
+if (process.env.NODE_ENV === "development") {
+  baseURL = "http://localhost:5000/";
+} else if (process.env.NODE_ENV === "production") {
+  baseURL = "https://manila-sobigdata.d4science.org/";
+}
 
 const api = axios.create({
-  baseURL: "https://manila-sobigdata.d4science.org/",
+  baseURL,
 });
 
 export const generate = async (data) => {
