@@ -41,6 +41,7 @@ class Run(Resource):
         data_extension = params.get("extension")
         data = request.files["dataset"].read()
         try:
+            print(params)
             folder_name = generate_code(params)
             metrics, model = run_experiment(data, folder_name, data_extension)
         except Exception as e:

@@ -1,0 +1,487 @@
+{% include "components/utils_libraries.jinja"%}
+
+from methods import FairnessMethods
+
+np.random.seed(2)
+
+# TRAINING FUNCTIONS
+
+def cross_val(classifier, data, label, unpriv_group, priv_group, sensitive_features, positive_label, metrics, n_splits=10, preprocessor=None, inprocessor=None, postprocessor=None):
+    {%if not use_validation%}
+    n_splits = 2
+    {%endif%}
+    data_start = data.copy()
+    {%if validation == 'k_fold' or not use_validation%}
+    fold = KFold(n_splits=n_splits, shuffle=True, random_state=2)
+    {%endif%}
+    {%if use_validation%}
+    {%if validation=='leave_one_out'%}
+    fold = LeaveOneOut()
+    {%endif%}
+    {%if validation=='leave_p_out'%}
+    fold = LeavePOut(p=n_splits)
+    {%endif%}
+    {%if validation=='stratified_k_fold'%}
+    fold = StratifiedKFold(n_splits=n_splits)
+    {%endif%}
+    {%if validation=='group_k_fold'%}
+    fold = GroupKFold(n_splits=n_splits)
+    {%endif%}
+    {%if validation=='stratified_group_k_fold'%}
+    fold = StratifiedGroupKFold(n_splits=n_splits)
+    {%endif%}
+    {%endif%}
+    for train, test in fold.split(data_start):
+        weights = None
+        data = data_start.copy()
+        df_train = data.iloc[train]
+        df_test = data.iloc[test]
+        model = deepcopy(classifier)
+        {%if reweighing%}
+        if preprocessor == FairnessMethods.RW:
+            bin_data = BinaryLabelDataset(favorable_label=positive_label, 
+                unfavorable_label=1-positive_label, 
+                df=df_train, 
+                label_names=[label], 
+                protected_attribute_names=sensitive_features)
+            
+            rw = Reweighing(unprivileged_groups=[unpriv_group], privileged_groups=[priv_group])
+            rw_data = rw.fit_transform(bin_data)
+            weights = rw_data.instance_weights
+            df_train, _ = rw_data.convert_to_dataframe()
+        {%endif%}
+        {%if dir%}
+        if preprocessor == FairnessMethods.DIR:
+            bin_data = BinaryLabelDataset(favorable_label=positive_label, 
+                unfavorable_label=1-positive_label, 
+                df=df_train, 
+                label_names=[label], 
+                protected_attribute_names=sensitive_features)
+            dir = DisparateImpactRemover(sensitive_attribute=sensitive_features[0])
+            trans_data = dir.fit_transform(bin_data)
+            df_train, _ = trans_data.convert_to_dataframe()
+        {%endif%}
+        {%if demv %}
+        if preprocessor == FairnessMethods.DEMV:
+            demv = DEMV(round_level=1)
+            df_train = demv.fit_transform(df_train, [keys for keys in unpriv_group.keys()], label)
+        {%endif%}
+        {%if exponentiated_gradient%}
+        if inprocessor == FairnessMethods.EG:
+            constr = _get_constr(df_train, label)
+            model = ExponentiatedGradient(
+                model, constraints=constr, sample_weight_name={{'"classifier__sample_weight"' if (standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler) else '"sample_weight"'}})
+        {%endif%}
+        {%if grid_search%}
+        if inprocessor == FairnessMethods.GRID:
+            constr = _get_constr(df_train, label)
+            model = GridSearch(
+            model, constr, sample_weight_name={{'"classifier__sample_weight"' if (standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler) else '"sample_weight"'}})
+        {%endif%}
+        {%if adversarial_debiasing%}
+        if inprocessor == FairnessMethods.AD:
+            tf.reset_default_graph()
+            sess = tf.Session()
+            model = AdversarialDebiasing(privileged_groups = [priv_group],
+                          unprivileged_groups = [unpriv_group],
+                          scope_name='debiased_classifier',
+                          debias=True,
+                          sess=sess)
+            tf.disable_eager_execution()
+        {%endif%}
+        {%if gerry_fair_classifier%}
+        if inprocessor == FairnessMethods.GERRY:
+            model = GerryFairClassifier(fairness_def='FP')
+        {%endif%}
+        {%if meta_fair_classifier%}
+        if inprocessor == FairnessMethods.META:
+            model = MetaFairClassifier(sensitive_attr=sensitive_features[0])
+        {%endif%}
+        {%if prejudice_remover%}
+        if inprocessor == FairnessMethods.PREJ:
+            model = PrejudiceRemover(sensitive_attr=sensitive_features[0], class_attr=label)
+        {%endif%}
+        {%if gerry_fair_classifier or meta_fair_classifier or prejudice_remover or adversarial_debiasing%}
+        if inprocessor == FairnessMethods.GERRY or inprocessor == FairnessMethods.META or inprocessor == FairnessMethods.PREJ or inprocessor == FairnessMethods.AD:
+            pred, model = _train_gerry_meta(df_train, df_test, label, model, sensitive_features, positive_label)
+        else:
+            exp = bool(inprocessor == FairnessMethods.EG or inprocessor == FairnessMethods.GRID)
+            #adv = bool(inprocessor == FairnessMethods.AD)
+            pred, model = _model_train(df_train, df_test, label, model, sensitive_features, exp=exp, weights=weights)
+        {%else%}
+        exp = bool(inprocessor == FairnessMethods.EG or inprocessor == FairnessMethods.GRID)
+        #adv = bool(inprocessor == FairnessMethods.AD)
+        pred, model = _model_train(df_train, df_test, label, model, sensitive_features, exp=exp, weights=weights)
+        {%endif%}
+        {%if adversarial_debiasing%}
+        if inprocessor == FairnessMethods.AD:
+            sess.close()
+        {%endif%}
+        if postprocessor:
+            df_train = df_train.set_index(sensitive_features[0])
+            df_test = df_test.set_index(sensitive_features[0])
+        {%if calibrated_eo%}
+        if postprocessor==FairnessMethods.CAL_EO:
+            cal = CalibratedEqualizedOdds(prot_attr=sensitive_features[0])
+            model, pred = _compute_postprocessing(model, cal, df_train, df_test, label)
+        {%endif%}
+        {%if reject_option_classifier%}
+        if postprocessor == FairnessMethods.REJ:
+            rej = RejectOptionClassifierCV(
+                scoring='statistical_parity', prot_attr=sensitive_features[0])
+            model, pred = _compute_postprocessing(
+                model, rej, df_train, df_test, label)
+        {%endif%}
+        compute_metrics(pred, unpriv_group, label, positive_label, metrics, sensitive_features)
+    return model, metrics
+
+{%if exponentiated_gradient or grid_search%}
+def _get_constr(df, label):
+    if len(df[label].unique()) == 2:
+        constr = DemographicParity()
+    else:
+        constr = BoundedGroupLoss(ZeroOneLoss(), upper_bound=0.1)
+    return constr
+{%endif%}
+
+def _train_test_split(df_train, df_test, label):
+    x_train = df_train.drop(label, axis=1).values
+    y_train = df_train[label].values.ravel()
+    x_test = df_test.drop(label, axis=1).values
+    y_test = df_test[label].values.ravel()
+    return x_train, x_test, y_train, y_test
+
+
+def _model_train(df_train, df_test, label, classifier, sensitive_features, exp=False, weights=None, adv=False):
+    x_train, x_test, y_train, y_test = _train_test_split(
+        df_train, df_test, label)
+    model = deepcopy(classifier)
+    if adv:
+        model.fit(x_train, y_train)
+    else:
+        if exp:
+            model.fit(x_train, y_train,
+                    sensitive_features=df_train[sensitive_features]) 
+        else:
+            {%if mlp__classifier%}
+            if isinstance({{"model['classifier']" if (standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler)else "model"}}, MLPClassifier):
+                model.fit(x_train, y_train)
+            else:
+                model.fit(x_train, y_train, {{"classifier__sample_weight" if (standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler) else "sample_weight"}}=weights)
+            {%else%}
+            model.fit(x_train, y_train, {{"classifier__sample_weight" if (standard_scaler or min_max_scaler or max_abs_scaler or robust_scaler or quantile_transformer_scaler or power_transformer_scaler)  else "sample_weight"}}=weights)
+            {%endif%}  
+    df_pred = _predict_data(model, df_test, label, x_test)
+    if adv:
+        model.sess_.close()
+    return df_pred, model
+
+{%if gerry_fair_classifier or meta_fair_classifier or prejudice_remover or adversarial_debiasing%}
+def _train_gerry_meta(df_train, df_test, label, model, sensitive_features, positive_label):
+    bin_train = BinaryLabelDataset(favorable_label=positive_label, 
+        unfavorable_label=1-positive_label,
+        df=df_train, 
+        label_names=[label], 
+        protected_attribute_names=sensitive_features)
+    model.fit(bin_train)
+    bin_test = BinaryLabelDataset(favorable_label=positive_label, 
+        unfavorable_label=1-positive_label,
+        df=df_test, 
+        label_names=[label], 
+        protected_attribute_names=sensitive_features)
+    df_pred = _predict_data(model, df_test, label, bin_test, True)
+    return df_pred, model
+{%endif%}
+
+{%if calibrated_eo or reject_option_classifier%}
+def _compute_postprocessing(model, postprocessor, d_train, d_test, label):
+    meta = PostProcessingMeta(model, postprocessor)
+    meta.fit(d_train.drop(label, axis=1), d_train[label])
+    df_pred = _predict_data(meta, d_test, label, d_test.drop(label, axis=1))
+    return meta, df_pred
+{%endif%}
+
+def _predict_data(model, df_test, label, x_test, aif_data=False):
+    pred = model.predict(x_test)
+    df_pred = df_test.copy()
+    df_pred['y_true'] = df_pred[label]
+    if aif_data:
+        df_pred[label] = pred.labels
+    else:
+        df_pred[label] = pred
+    return df_pred
+
+
+##### METRICS FUNCTIONS #####
+
+def compute_metrics(df_pred, unpriv_group, label, positive_label, metrics, sensitive_features):
+    df_pred = df_pred.reset_index()
+{%if statistical_parity%}
+    stat_par = statistical_parity(
+        df_pred, unpriv_group, label, positive_label)
+    metrics['stat_par'].append(stat_par)
+{%endif%}
+{%if equalized_odds%}
+    eo = equalized_odds(
+        df_pred, unpriv_group, label, positive_label)
+    metrics['eq_odds'].append(eo)
+{%endif%}
+{%if disparate_impact%}
+    di = disparate_impact(
+        df_pred, unpriv_group, label, positive_label=positive_label)
+    metrics['disp_imp'].append(di)
+{%endif%}
+{%if average_odds%}
+    ao = average_odds_difference(df_pred, unpriv_group, label, positive_label)
+    metrics['ao'] = ao
+{%endif%}
+{%if true_positive_difference%}
+    tpr = true_pos_diff(df_pred, unpriv_group, label, positive_label)
+    metrics['tpr_diff'] = tpr
+{%endif%}
+{%if false_positive_difference%}
+    fpr = false_pos_diff(df_pred, unpriv_group, label, positive_label)
+    metrics['fpr_diff'] = fpr
+{%endif%}
+{%if zero_one_loss%}
+    zero_one_loss = zero_one_loss_diff(
+        y_true=df_pred['y_true'].values, y_pred=df_pred[label].values, sensitive_features=df_pred[sensitive_features].values)
+    metrics['zero_one_loss'].append(zero_one_loss)
+{%endif%}
+{%if accuracy%}
+    accuracy_score = accuracy(df_pred, label)
+    metrics['acc'].append(accuracy_score)
+{%endif%}
+{%if precision%}
+    precision_score = precision(df_pred, label)
+    metrics['precision'].append(precision_score)
+{%endif%}
+{%if recall%}
+    recall_score = recall(df_pred, label)
+    metrics['recall'].append(recall_score)
+{%endif%}
+{%if f1_score%}
+    f1_score = f1(df_pred, label)
+    metrics['f1score'].append(f1_score)
+{%endif%}
+{%if auc%}
+    auc_score = auc(df_pred, label)
+    metrics['auc'].append(auc_score)
+{%endif%}
+{%if euclidean_distance%}
+    euc_dist = euclidean_distance(df_pred, label)
+    metrics['euclidean_distance'].append(euc_dist)
+{%endif%}
+{%if manhattan_distance%}
+    man_dist = manhattan_distance(df_pred, label)
+    metrics['manhattan_distance'].append(man_dist)
+{%endif%}
+{%if mahalanobis_distance%}
+    mahal_dist = mahalanobis_distance(df_pred, label)
+    metrics['mahalanobis_distance'].append(mahal_dist)
+{%endif%}
+{%if harmonic_mean%}
+    metrics['hmean'].append(
+        stats.hmean([
+            {%if accuracy%}
+            accuracy_score,
+            {%endif%} 
+            {%if disparate_impact%}
+            di,
+            {%endif%} 
+            {%if equalized_odds%}
+            norm_data(eo), 
+            {%endif%}
+            {%if statistical_parity%}
+            norm_data(stat_par), 
+            {%endif%}
+            {%if zero_one_loss%}
+            norm_data(zero_one_loss),
+            {%endif%}
+            {%if average_odds%}
+            norm_data(ao),
+            {%endif%}
+            {%if precision%}
+            precision_score,
+            {%endif%}
+            {%if recall%}
+            recall_score,
+            {%endif%}
+            {%if f1_score%}
+            f1_score,
+            {%endif%}
+            {%if auc%}
+            auc_score,
+            {%endif%}
+            {%if true_positive_difference%}
+            norm_data(tpr),
+            {%endif%}
+            {%if false_positive_difference%}
+            norm_data(fpr),
+            {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
+            {%endif%}
+        ])
+    )
+{%endif%}
+{%if min%}
+    metrics['min'].append(
+        min([
+            {%if accuracy%}
+            accuracy_score,
+            {%endif%} 
+            {%if disparate_impact%}
+            di,
+            {%endif%} 
+            {%if equalized_odds%}
+            eo, 
+            {%endif%}
+            {%if statistical_parity%}
+            stat_par, 
+            {%endif%}
+            {%if zero_one_loss%}
+            zero_one_loss,
+            {%endif%}
+            {%if average_odds%}
+            ao,
+            {%endif%}
+            {%if precision%}
+            precision_score,
+            {%endif%}
+            {%if recall%}
+            recall_score,
+            {%endif%}
+            {%if f1_score%}
+            f1_score,
+            {%endif%}
+            {%if auc%}
+            auc_score,
+            {%endif%}
+            {%if true_positive_difference%}
+            tpr,
+            {%endif%}
+            {%if false_positive_difference%}
+            fpr,
+            {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
+            {%endif%}
+        ])
+    )
+{%endif%}
+{%if max%}
+    metrics['max'].append(
+        max([
+            {%if accuracy%}
+            accuracy_score,
+            {%endif%} 
+            {%if disparate_impact%}
+            di,
+            {%endif%} 
+            {%if equalized_odds%}
+            eo, 
+            {%endif%}
+            {%if statistical_parity%}
+            stat_par, 
+            {%endif%}
+            {%if zero_one_loss%}
+            zero_one_loss,
+            {%endif%}
+            {%if average_odds%}
+            ao,
+            {%endif%}
+            {%if precision%}
+            precision_score,
+            {%endif%}
+            {%if recall%}
+            recall_score,
+            {%endif%}
+            {%if f1_score%}
+            f1_score,
+            {%endif%}
+            {%if auc%}
+            auc_score,
+            {%endif%}
+            {%if true_positive_difference%}
+            tpr,
+            {%endif%}
+            {%if false_positive_difference%}
+            fpr,
+            {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
+            {%endif%}
+        ])
+    )
+    {%endif%}
+    {%if statistical_mean%}
+    metrics['mean'].append(
+        statistics.mean([
+            {%if accuracy%}
+            accuracy_score,
+            {%endif%} 
+            {%if disparate_impact%}
+            di,
+            {%endif%} 
+            {%if equalized_odds%}
+            eo, 
+            {%endif%}
+            {%if statistical_parity%}
+            stat_par, 
+            {%endif%}
+            {%if zero_one_loss%}
+            zero_one_loss,
+            {%endif%}
+            {%if average_odds%}
+            ao,
+            {%endif%}
+            {%if precision%}
+            precision_score,
+            {%endif%}
+            {%if recall%}
+            recall_score,
+            {%endif%}
+            {%if f1_score%}
+            f1_score,
+            {%endif%}
+            {%if auc%}
+            auc_score,
+            {%endif%}
+            {%if true_positive_difference%}
+            tpr,
+            {%endif%}
+            {%if false_positive_difference%}
+            fpr,
+            {%endif%}
+            {%if euclidean_distance%}
+            norm_data(euc_dist),
+            {%endif%}
+            {%if manhattan_distance%}
+            norm_data(man_dist),
+            {%endif%}
+            {%if mahalanobis_distance%}
+            norm_data(mahal_dist),
+            {%endif%}
+        ])
+    )
+    {%endif%}
+    return metrics
