@@ -9,6 +9,7 @@ import zipfile
 import requests
 import threading
 import pickle
+from service.experiment import experiment
 
 import pandas as pd
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -114,12 +115,12 @@ def generate_code(params):
     return folder_name
 
 
-def run_experiment(dataset, path, extension):
-    sys.path.append(path)
+def run_experiment(dataset, extension, params: dict):
+    # sys.path.append(path)
     data = None
-    import experiment
+    # import experiment
 
-    experiment = importlib.reload(experiment)
+    # experiment = importlib.reload(experiment)
     if extension == "csv":
         data = pd.read_csv(io.BytesIO(dataset), encoding="latin1")
     elif extension == "parquet":
@@ -142,7 +143,7 @@ def run_experiment(dataset, path, extension):
         THREAD_RUN = True
         t = threading.Thread(target=keep_alive)
         t.start()
-        model, metrics = experiment.run_exp(data)
+        model, metrics = experiment.run_exp(data, params)
         current_GMT = time.gmtime()
         time_stamp = calendar.timegm(current_GMT)
         if "fairness_method" in metrics.columns:
@@ -151,10 +152,8 @@ def run_experiment(dataset, path, extension):
             model_name = metrics.loc[0, "model"] + "_" + str(time_stamp)
         os.makedirs("models", exist_ok=True)
         pickle.dump(model, open(os.path.join("models", model_name + ".pkl"), "wb"))
-        shutil.rmtree(path)
         THREAD_RUN = False
         return metrics.to_dict(), model_name
     except Exception as e:
-        shutil.rmtree(path)
         sys.modules.pop(experiment.__name__, None)
         raise e

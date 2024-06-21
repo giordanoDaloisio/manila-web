@@ -15,11 +15,18 @@ from flask_restful import Resource, Api
 from werkzeug.serving import WSGIRequestHandler
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
+import logging
+import traceback
 
 WSGIRequestHandler.protocol_version = "HTTP/1.1"
 app = Flask(__name__, static_url_path="", static_folder=os.path.join("build"))
 api = Api(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Configure Flask logging
+app.logger.setLevel(logging.INFO)  # Set log level to INFO
+handler = logging.FileHandler("app.log")  # Log to a file
+app.logger.addHandler(handler)
 
 
 class Homepage(Resource):
@@ -41,11 +48,10 @@ class Run(Resource):
         data_extension = params.get("extension")
         data = request.files["dataset"].read()
         try:
-            print(params)
-            folder_name = generate_code(params)
-            metrics, model = run_experiment(data, folder_name, data_extension)
+            # folder_name = generate_code(params)
+            metrics, model = run_experiment(data, data_extension, params)
         except Exception as e:
-            app.logger.error(e.with_traceback(e.__traceback__).args)
+            app.logger.error(e.with_traceback(traceback.print_exc()))
             message = json.dumps({"error": str(e)})
             return Response(message, status=500, mimetype="application/json")
         results = {"models": {}, "metrics": {}}
@@ -67,6 +73,12 @@ class KeepAlive(Resource):
 class Model(Resource):
     def get(self, model_name):
         return send_from_directory("models", model_name + ".pkl")
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    app.logger.error(error)
+    return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
 api.add_resource(Homepage, "/")
