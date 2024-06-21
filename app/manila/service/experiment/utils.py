@@ -19,7 +19,7 @@ from aif360.algorithms.preprocessing import DisparateImpactRemover
 from aif360.algorithms.preprocessing import LFR
 from copy import deepcopy
 from scipy import stats
-from service.experiment.demv import DEMV
+from demv import DEMV
 from aif360.algorithms.inprocessing import GerryFairClassifier
 from aif360.algorithms.inprocessing import MetaFairClassifier
 from aif360.algorithms.inprocessing import PrejudiceRemover
@@ -71,6 +71,12 @@ def cross_val(
     prejudice_remover = params.get("prejudice_remover", False)
     calibrated_eo = params.get("calibrated_eo", False)
     reject_option_classifier = params.get("reject_option_classifier", False)
+    standard_scaler = params.get("standard_scaler", False)
+    min_max_scaler = params.get("min_max_scaler", False)
+    max_abs_scaler = params.get("max_abs_scaler", False)
+    robust_scaler = params.get("robust_scaler", False)
+    quantile_transformer_scaler = params.get("quantile_transformer_scaler", False)
+    power_transformer_scaler = params.get("power_transformer_scaler", False)
 
     if not use_validation:
         n_splits = 2
@@ -113,7 +119,7 @@ def cross_val(
             weights = rw_data.instance_weights
             df_train, _ = rw_data.convert_to_dataframe()
 
-        if preprocessor == "FairnessMethods.DIR":
+        if preprocessor == FairnessMethods.DIR:
             bin_data = BinaryLabelDataset(
                 favorable_label=positive_label,
                 unfavorable_label=1 - positive_label,
@@ -125,21 +131,44 @@ def cross_val(
             trans_data = dir.fit_transform(bin_data)
             df_train, _ = trans_data.convert_to_dataframe()
 
-        if preprocessor == "FairnessMethods.DEMV":
-            demv = DEMV(round_level=1)
-            df_train = demv.fit_transform(
-                df_train, [keys for keys in unpriv_group.keys()], label
+        if preprocessor == FairnessMethods.DEMV:
+            demv = DEMV(sensitive_vars=sensitive_features)
+            df_train, y = demv.fit_transform(
+                df_train.drop(columns=label), df_train[label]
             )
+            df_train[label] = y
 
-        if inprocessor == "FairnessMethods.EG":
+        if inprocessor == FairnessMethods.EG:
             constr = _get_constr(df_train, label)
-            model = ExponentiatedGradient(
-                model, constraints=constr, sample_weight_name="sample_weight"
-            )
+            if (
+                    standard_scaler
+                    or min_max_scaler
+                    or max_abs_scaler
+                    or robust_scaler
+                    or quantile_transformer_scaler
+                    or power_transformer_scaler
+                ):
+                    model = ExponentiatedGradient(
+                        model, constraints=constr, sample_weight_name="classifier__sample_weight"
+                    )
+            else:
+                model = ExponentiatedGradient(model, constraints=constr, sample_weight_name="sample_weight")
 
-        if inprocessor == "FairnessMethods.GRID":
+        if inprocessor == FairnessMethods.GRID:
             constr = _get_constr(df_train, label)
-            model = GridSearch(model, constr, sample_weight_name="sample_weight")
+            if (
+                        standard_scaler
+                        or min_max_scaler
+                        or max_abs_scaler
+                        or robust_scaler
+                        or quantile_transformer_scaler
+                        or power_transformer_scaler
+                    ):
+                        model = GridSearch(
+                            model, constraints=constr, sample_weight_name="classifier__sample_weight"
+                        )
+            else:
+                model = GridSearch(model, constraints=constr, sample_weight_name="sample_weight")
 
         # if adversarial_debiasing:
         #     if inprocessor == 'FairnessMethods.AD':
@@ -148,13 +177,13 @@ def cross_val(
         #         model = AdversarialDebiasing(privileged_groups=[priv_group], unprivileged_groups=[unpriv_group], scope_name='debiased_classifier', debias=True, sess=sess)
         #         tf.disable_eager_execution()
 
-        if inprocessor == "FairnessMethods.GERRY":
+        if inprocessor == FairnessMethods.GERRY:
             model = GerryFairClassifier(fairness_def="FP")
 
-        if inprocessor == "FairnessMethods.META":
+        if inprocessor == FairnessMethods.META:
             model = MetaFairClassifier(sensitive_attr=sensitive_features[0])
 
-        if inprocessor == "FairnessMethods.PREJ":
+        if inprocessor == FairnessMethods.PREJ:
             model = PrejudiceRemover(
                 sensitive_attr=sensitive_features[0], class_attr=label
             )
@@ -254,7 +283,10 @@ def _model_train(
 
     x_train, x_test, y_train, y_test = _train_test_split(df_train, df_test, label)
     model = deepcopy(classifier)
-
+    ic(exp)
+    ic(model)
+    ic(params)
+    ic(standard_scaler)
     if adv:
         model.fit(x_train, y_train)
     else:
@@ -374,7 +406,6 @@ def compute_metrics(
     min_enabled = params.get("min", False)
     max_enabled = params.get("max", False)
     mean_enabled = params.get("statistical_mean", False)
-    ic(params)
     if statistical_parity_enabled:
         stat_par = statistical_parity(df_pred, unpriv_group, label, positive_label)
         metrics["stat_par"].append(stat_par)

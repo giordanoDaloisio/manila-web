@@ -1,0 +1,9 @@
+Pipeline.fit does not accept the sensitive_features parameter. You can pass parameters to specific steps of your pipeline using the stepname__parameter format, e.g. `Pipeline.fit(X, y, logisticregression__sample_weight=sample_weight)`.
+fit() got an unexpected keyword argument 'sensitive_features'
+fit() got an unexpected keyword argument 'sensitive_features'
+Can't pickle local object '_Lagrangian.best_h.<locals>.h'
+fit() got an unexpected keyword argument 'sensitive_features'
+load_data() got an unexpected keyword argument 'classifier__sensitive_features'
+Pipeline.fit does not accept the sample_weight parameter. You can pass parameters to specific steps of your pipeline using the stepname__parameter format, e.g. `Pipeline.fit(X, y, logisticregression__sample_weight=sample_weight)`.
+Pipeline.fit does not accept the sample_weight parameter. You can pass parameters to specific steps of your pipeline using the stepname__parameter format, e.g. `Pipeline.fit(X, y, logisticregression__sample_weight=sample_weight)`.
+Can't pickle local object '_Lagrangian.best_h.<locals>.h'

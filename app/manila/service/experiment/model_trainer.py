@@ -13,7 +13,7 @@ from aif360.sklearn.postprocessing import (
     RejectOptionClassifierCV,
     PostProcessingMeta,
 )
-from service.experiment.demv import DEMV
+from demv import DEMV
 from service.experiment.utils import _get_constr
 
 
@@ -67,9 +67,11 @@ class ModelTrainer:
         return model
 
     def use_demv(self, model):
-        demv = DEMV(round_level=1)
-        data = demv.fit_transform(self.dataset, self.sensitive_features, self.label)
-        model.fit(data.drop(columns=self.label), data[self.label])
+        demv = DEMV(self.sensitive_features)
+        x, y = demv.fit_transform(
+            self.dataset.drop(columns=self.label), self.dataset[self.label]
+        )
+        model.fit(x, y)
         return model
 
     def use_eg(self, model):

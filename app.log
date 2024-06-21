@@ -7,3 +7,4 @@ Pipeline.fit does not accept the sample_weight parameter. You can pass parameter
 '>=' not supported between instances of 'NoneType' and 'int'
 '>=' not supported between instances of 'NoneType' and 'int'
 'Series' object has no attribute 'race'
+"['income'] not found in axis"
