@@ -27,3 +27,4 @@ train_final_model() takes 7 positional arguments but 8 were given
 'module' object is not callable
 'LogisticRegression' object has no attribute 'loc'
 train_final_model() takes 7 positional arguments but 8 were given
+name 'equalized_odds' is not defined

@@ -8,6 +8,7 @@ from fairlearn.metrics import MetricFrame
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import roc_auc_score
+from icecream import ic
 
 
 def _get_groups(data, label_name, positive_label, group_condition):
@@ -35,13 +36,13 @@ def _compute_tpr_fpr(y_true, y_pred, positive_label):
     FP = 0
     FN = 0
     for i in range(len(y_true)):
-        if y_true[i] == positive_label:
+        if y_true[i] == float(positive_label):
             if y_true[i] == y_pred[i]:
                 TP += 1
             else:
                 FN += 1
         else:
-            if y_pred[i] == positive_label:
+            if y_pred[i] == float(positive_label):
                 FP += 1
             else:
                 TN += 1
@@ -60,12 +61,10 @@ def _compute_tpr_fpr_groups(data_pred, label, group_condition, positive_label):
     query = "&".join([f"{k}=={v}" for k, v in group_condition.items()])
     unpriv_group = data_pred.query(query)
     priv_group = data_pred.drop(unpriv_group.index)
-
     y_true_unpriv = unpriv_group["y_true"].values.ravel()
     y_pred_unpric = unpriv_group[label].values.ravel()
     y_true_priv = priv_group["y_true"].values.ravel()
     y_pred_priv = priv_group[label].values.ravel()
-
     fpr_unpriv, tpr_unpriv = _compute_tpr_fpr(
         y_true_unpriv, y_pred_unpric, positive_label
     )
@@ -98,24 +97,22 @@ def statistical_parity(
     return unpriv_group_prob - priv_group_prob
 
 
+def average_odds_difference(
+    data_pred: pd.DataFrame, group_condition: dict, label_name: str, positive_label: str
+):
+    fpr_unpriv, tpr_unpriv, fpr_priv, tpr_priv = _compute_tpr_fpr_groups(
+        data_pred, label_name, group_condition, positive_label
+    )
+    return ((tpr_priv - tpr_unpriv) + (fpr_priv - fpr_unpriv)) / 2
+
+
 def equalized_odds(
     data_pred: pd.DataFrame, group_condition: dict, label_name: str, positive_label: str
 ):
     fpr_unpriv, tpr_unpriv, fpr_priv, tpr_priv = _compute_tpr_fpr_groups(
         data_pred, label_name, group_condition, positive_label
     )
-    return (tpr_priv - tpr_unpriv) + (fpr_priv - fpr_unpriv)
-
-
-def average_odds_difference(
-    data_pred: pd.DataFrame, group_condition: str, label: str, positive_label: int
-):
-    unpriv_group, unpriv_group_pos, priv_group, priv_group_pos = _get_groups(
-        data_pred, label, positive_label, group_condition
-    )
-    accuracy_priv = accuracy(priv_group, label)
-    accuracy_unpriv = accuracy(unpriv_group, label)
-    return accuracy_priv - accuracy_unpriv
+    return tpr_unpriv - tpr_priv
 
 
 def true_pos_diff(
