@@ -388,7 +388,6 @@ def get_weights(params: dict):
 
 def compute_weighted_mean(metrics: dict, weights: dict):
     weighted_mean = 0
-    ic(metrics)
     for key in metrics.keys():
         if key in weights.keys():
             weighted_mean += metrics[key] * weights[key]
