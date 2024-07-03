@@ -7,3 +7,18 @@ load_data() got an unexpected keyword argument 'classifier__sensitive_features'
 Pipeline.fit does not accept the sample_weight parameter. You can pass parameters to specific steps of your pipeline using the stepname__parameter format, e.g. `Pipeline.fit(X, y, logisticregression__sample_weight=sample_weight)`.
 Pipeline.fit does not accept the sample_weight parameter. You can pass parameters to specific steps of your pipeline using the stepname__parameter format, e.g. `Pipeline.fit(X, y, logisticregression__sample_weight=sample_weight)`.
 Can't pickle local object '_Lagrangian.best_h.<locals>.h'
+bad operand type for abs(): 'str'
+bad operand type for abs(): 'str'
+'numpy.ndarray' object has no attribute 'columns'
+'numpy.ndarray' object has no attribute 'columns'
+'numpy.ndarray' object has no attribute 'columns'
+0
+not enough values to unpack (expected 3, got 2)
+not enough values to unpack (expected 3, got 2)
+'list' object has no attribute 'join'
+'weighted_mean'
+unsupported operand type(s) for +: 'int' and 'str'
+could not convert string to float: 'weighted_mean'
+can't multiply sequence by non-int of type 'float'
+can't multiply sequence by non-int of type 'float'
+'float' object is not subscriptable

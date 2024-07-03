@@ -141,34 +141,42 @@ def cross_val(
         if inprocessor == FairnessMethods.EG:
             constr = _get_constr(df_train, label)
             if (
-                    standard_scaler
-                    or min_max_scaler
-                    or max_abs_scaler
-                    or robust_scaler
-                    or quantile_transformer_scaler
-                    or power_transformer_scaler
-                ):
-                    model = ExponentiatedGradient(
-                        model, constraints=constr, sample_weight_name="classifier__sample_weight"
-                    )
+                standard_scaler
+                or min_max_scaler
+                or max_abs_scaler
+                or robust_scaler
+                or quantile_transformer_scaler
+                or power_transformer_scaler
+            ):
+                model = ExponentiatedGradient(
+                    model,
+                    constraints=constr,
+                    sample_weight_name="classifier__sample_weight",
+                )
             else:
-                model = ExponentiatedGradient(model, constraints=constr, sample_weight_name="sample_weight")
+                model = ExponentiatedGradient(
+                    model, constraints=constr, sample_weight_name="sample_weight"
+                )
 
         if inprocessor == FairnessMethods.GRID:
             constr = _get_constr(df_train, label)
             if (
-                        standard_scaler
-                        or min_max_scaler
-                        or max_abs_scaler
-                        or robust_scaler
-                        or quantile_transformer_scaler
-                        or power_transformer_scaler
-                    ):
-                        model = GridSearch(
-                            model, constraints=constr, sample_weight_name="classifier__sample_weight"
-                        )
+                standard_scaler
+                or min_max_scaler
+                or max_abs_scaler
+                or robust_scaler
+                or quantile_transformer_scaler
+                or power_transformer_scaler
+            ):
+                model = GridSearch(
+                    model,
+                    constraints=constr,
+                    sample_weight_name="classifier__sample_weight",
+                )
             else:
-                model = GridSearch(model, constraints=constr, sample_weight_name="sample_weight")
+                model = GridSearch(
+                    model, constraints=constr, sample_weight_name="sample_weight"
+                )
 
         # if adversarial_debiasing:
         #     if inprocessor == 'FairnessMethods.AD':
@@ -283,10 +291,6 @@ def _model_train(
 
     x_train, x_test, y_train, y_test = _train_test_split(df_train, df_test, label)
     model = deepcopy(classifier)
-    ic(exp)
-    ic(model)
-    ic(params)
-    ic(standard_scaler)
     if adv:
         model.fit(x_train, y_train)
     else:
@@ -373,6 +377,24 @@ def _predict_data(model, df_test, label, x_test, aif_data=False):
 ##### METRICS FUNCTIONS #####
 
 
+def get_weights(params: dict):
+    weights = {}
+    for key in params.keys():
+        if "weight" in key and not "weighted" in key:
+            new_key = "_".join(key.split("_")[1:])
+            weights[new_key] = float(params[key])
+    return weights
+
+
+def compute_weighted_mean(metrics: dict, weights: dict):
+    weighted_mean = 0
+    ic(metrics)
+    for key in metrics.keys():
+        if key in weights.keys():
+            weighted_mean += metrics[key] * weights[key]
+    return weighted_mean / sum(weights.values())
+
+
 def compute_metrics(
     df_pred,
     unpriv_group,
@@ -403,6 +425,7 @@ def compute_metrics(
     manhattan_distance_enabled = params.get("manhattan_distance", False)
     mahalanobis_distance_enabled = params.get("mahalanobis_distance", False)
     harmonic_mean_enabled = params.get("harmonic_mean", False)
+    weighted_mean_enabled = params.get("weighted_mean", False)
     min_enabled = params.get("min", False)
     max_enabled = params.get("max", False)
     mean_enabled = params.get("statistical_mean", False)
@@ -556,5 +579,34 @@ def compute_metrics(
         ]
         hm_metrics = [i for i in hm_metrics if i is not None]
         metrics["mean"].append(statistics.mean(hm_metrics))
+
+    if weighted_mean_enabled:
+        weights = get_weights(params)
+        wm_metrics = {
+            "acc": accuracy_score if accuracy_enabled else None,
+            "disp_imp": di if disparate_impact_enabled else None,
+            "eq_odds": norm_data(eo) if equalized_odds_enabled else None,
+            "stat_par": norm_data(stat_par) if statistical_parity_enabled else None,
+            "zero_one_loss": (
+                norm_data(zero_one_loss) if zero_one_loss_enabled else None
+            ),
+            "ao": norm_data(ao) if average_odds_enabled else None,
+            "precision": precision_score if precision_enabled else None,
+            "recall": recall_score if recall_enabled else None,
+            "f1score": f1_score_val if f1_score_enabled else None,
+            "auc": auc_score if auc_enabled else None,
+            "tpr_diff": norm_data(tpr) if true_positive_difference_enabled else None,
+            "fpr_diff": norm_data(fpr) if false_positive_difference_enabled else None,
+            "euclidean_distance": (
+                norm_data(euc_dist) if euclidean_distance_enabled else None
+            ),
+            "manhattan_distance": (
+                norm_data(man_dist) if manhattan_distance_enabled else None
+            ),
+            "mahalanobis_distance": (
+                norm_data(mahal_dist) if mahalanobis_distance_enabled else None
+            ),
+        }
+        metrics["weighted_mean"].append(compute_weighted_mean(wm_metrics, weights))
 
     return metrics

@@ -7,15 +7,8 @@ from service.experiment.methods import FairnessMethods
 import pandas as pd
 import numpy as np
 
+from typing import Any
 from service.experiment.charts import Charts
-
-# from fairlearn.reductions import (
-#     ExponentiatedGradient,
-#     BoundedGroupLoss,
-#     ZeroOneLoss,
-#     GridSearch,
-#     DemographicParity,
-# )
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
@@ -37,25 +30,34 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.tree import DecisionTreeRegressor
 
-# {%if web%}
-# import importlib
-
-# utils = importlib.reload(utils)
-# model_trainer = importlib.reload(model_trainer)
-# {%endif%}
 
 from service.experiment.utils import *
 from service.experiment.model_trainer import ModelTrainer
 
-# TODO: fix all metrics
+
 def identify_pareto_front(data):
+    if "acc" in data.columns:
+        data["acc"] = -data["acc"]
+    if "f1_score" in data.columns:
+        data["f1_score"] = -data["f1_score"]
+    if "auc" in data.columns:
+        data["auc"] = -data["auc"]
+    if "precision" in data.columns:
+        data["precision"] = -data["precision"]
+    if "recall" in data.columns:
+        data["recall"] = -data["recall"]
+    if "disp_imp" in data.columns:
+        data["disp_imp"] = -data["disp_imp"]
     is_pareto = np.ones(data.shape[0], dtype=bool)
     for i in range(data.shape[0]):
         for j in range(data.shape[0]):
-            if all(abs(data[j]) <= abs(data[i])) and any(abs(data[j]) < abs(data[i])):
+            if all(data.iloc[j].abs() <= data.iloc[i].abs()) and any(
+                data.iloc[j].abs() < data.iloc[i].abs()
+            ):
                 is_pareto[i] = False
                 break
-    return np.where(is_pareto)[0] 
+    return np.where(is_pareto)[0]
+
 
 def get_base_metrics(params: dict):
     base_metrics = {}
@@ -97,17 +99,9 @@ def get_base_metrics(params: dict):
         base_metrics["min"] = []
     if "statistical_mean" in params:
         base_metrics["mean"] = []
+    if "weighted_mean" in params:
+        base_metrics["weighted_mean"] = []
     return base_metrics
-
-
-# from sklearn.preprocessing import (
-#     StandardScaler,
-#     MinMaxScaler,
-#     MaxAbsScaler,
-#     RobustScaler,
-#     QuantileTransformer,
-#     PowerTransformer,
-# )
 
 
 def get_scaler(param):
@@ -241,6 +235,7 @@ def run_exp(data, params: dict):
         fairness_methods.pop("no_method")
 
     agg_metric = params.get("agg_metric")
+    pareto = params.get("pareto_front")
     dataset_label = "multi-class" if params.get("multi_class") else "binary"
 
     ris = pd.DataFrame()
@@ -259,6 +254,7 @@ def run_exp(data, params: dict):
         else:
             model = ml_methods[m]
 
+        # Training-testing
         if params.get("fairness"):
             for f in fairness_methods.keys():
                 model = deepcopy(model)
@@ -381,6 +377,8 @@ def run_exp(data, params: dict):
                 ris_metrics, m, "None", save_data, save_model, model_fair
             )
             ris = ris.append(df_metrics)
+
+    # Generate report
     if agg_metric:
         if params.get("fairness"):
             report = (
@@ -403,54 +401,55 @@ def run_exp(data, params: dict):
             model = Pipeline([("scaler", params.get("scaler")), ("classifier", model)])
 
         if params.get("fairness"):
-            trainer = ModelTrainer(data, label, sensitive_features, positive_label, params)
+            trainer = ModelTrainer(
+                data, label, sensitive_features, positive_label, params
+            )
             if best_ris["fairness_method"] == FairnessMethods.NO_ONE.name:
                 model.fit(data.drop(label, axis=1), data[label])
-                return model, report
+                return model, report, None
             if best_ris["fairness_method"] == FairnessMethods.DEMV.name:
                 demv = trainer.use_demv(model)
-                return demv, report
+                return demv, report, None
             if best_ris["fairness_method"] == FairnessMethods.RW.name:
                 rw = trainer.use_rw(model)
-                return rw, report
+                return rw, report, None
             if best_ris["fairness_method"] == FairnessMethods.DIR.name:
                 dir = trainer.use_dir(model)
-                return dir, report
+                return dir, report, None
             if best_ris["fairness_method"] == FairnessMethods.EG.name:
                 eg = trainer.use_eg(model)
-                return eg, report
+                return eg, report, None
             if best_ris["fairness_method"] == FairnessMethods.GRID.name:
                 grid = trainer.use_grid(model)
-                return grid, report
+                return grid, report, None
             if best_ris["fairness_method"] == FairnessMethods.GERRY.name:
                 gerry = trainer.use_gerry()
-                return gerry, report
+                return gerry, report, None
             if best_ris["fairness_method"] == FairnessMethods.META.name:
                 meta = trainer.use_meta()
-                return meta, report
+                return meta, report, None
             if best_ris["fairness_method"] == FairnessMethods.PREJ.name:
                 prej = trainer.use_prj()
-                return prej, report
+                return prej, report, None
             if best_ris["fairness_method"] == FairnessMethods.CAL_EO.name:
                 cal = trainer.use_cal_eo(model)
-                return cal, report
+                return cal, report, None
             if best_ris["fairness_method"] == FairnessMethods.REJ.name:
                 rej = trainer.use_rej_opt(model)
-                return rej, report
+                return rej, report, None
         else:
             model.fit(data.drop(label, axis=1).values, data[label].values.ravel())
-            return model, report
+            return model, report, None
+    elif pareto:
+        agg_ris = ris.groupby(["fairness_method", "model"]).agg(np.mean)
+        pareto_indexes = identify_pareto_front(agg_ris)
+        report = agg_ris.iloc[pareto_indexes]
+        return None, agg_ris.reset_index(), report.reset_index()
     else:
         if params.get("fairness"):
             report = (
-                ris.groupby(["fairness_method", "model"])
-                .agg(np.mean)
-                .reset_index()
+                ris.groupby(["fairness_method", "model"]).agg(np.mean).reset_index()
             )
         else:
-            report = (
-                ris.groupby(["model"])
-                .agg(np.mean)
-                .reset_index()
-            )
-        
+            report = ris.groupby(["model"]).agg(np.mean).reset_index()
+        return None, report, None

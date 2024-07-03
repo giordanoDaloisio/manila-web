@@ -29,6 +29,16 @@ handler = logging.FileHandler("app.log")  # Log to a file
 app.logger.addHandler(handler)
 
 
+def parse_results(metrics):
+    results = {"models": {}, "metrics": {}}
+    for k in metrics.keys():
+        if k == "fairness_method" or k == "model":
+            results["models"][k] = metrics[k]
+        else:
+            results["metrics"][k] = metrics[k]
+    return results
+
+
 class Homepage(Resource):
     def get(self):
         return send_from_directory(app.static_folder, "index.html")
@@ -48,19 +58,18 @@ class Run(Resource):
         data_extension = params.get("extension")
         data = request.files["dataset"].read()
         try:
-            # folder_name = generate_code(params)
-            metrics, model = run_experiment(data, data_extension, params)
+            metrics, model, pareto = run_experiment(data, data_extension, params)
         except Exception as e:
             app.logger.error(e.with_traceback(traceback.print_exc()))
             message = json.dumps({"error": str(e)})
             return Response(message, status=500, mimetype="application/json")
-        results = {"models": {}, "metrics": {}}
-        for k in metrics.keys():
-            if k == "fairness_method" or k == "model":
-                results["models"][k] = metrics[k]
-            else:
-                results["metrics"][k] = metrics[k]
-        response = make_response({"results": results, "model_path": model}, 200)
+        results = parse_results(metrics)
+        pareto_results = None
+        if pareto is not None:
+            pareto_results = parse_results(pareto)
+        response = make_response(
+            {"results": results, "pareto": pareto_results, "model_path": model}, 200
+        )
         response.headers["Content-Type"] = "application/json"
         return response
 

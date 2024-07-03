@@ -116,11 +116,7 @@ def generate_code(params):
 
 
 def run_experiment(dataset, extension, params: dict):
-    # sys.path.append(path)
     data = None
-    # import experiment
-
-    # experiment = importlib.reload(experiment)
     if extension == "csv":
         data = pd.read_csv(io.BytesIO(dataset), encoding="latin1")
     elif extension == "parquet":
@@ -143,7 +139,7 @@ def run_experiment(dataset, extension, params: dict):
         THREAD_RUN = True
         t = threading.Thread(target=keep_alive)
         t.start()
-        model, metrics = experiment.run_exp(data, params)
+        model, metrics, pareto = experiment.run_exp(data, params)
         current_GMT = time.gmtime()
         time_stamp = calendar.timegm(current_GMT)
         if "fairness_method" in metrics.columns:
@@ -153,7 +149,9 @@ def run_experiment(dataset, extension, params: dict):
         os.makedirs("models", exist_ok=True)
         pickle.dump(model, open(os.path.join("models", model_name + ".pkl"), "wb"))
         THREAD_RUN = False
-        return metrics.to_dict(), model_name
+        if pareto is not None:
+            return metrics.to_dict(), model_name, pareto.to_dict()
+        return metrics.to_dict(), model_name, None
     except Exception as e:
         sys.modules.pop(experiment.__name__, None)
         raise e
