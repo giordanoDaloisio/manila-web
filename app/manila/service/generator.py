@@ -10,6 +10,7 @@ import requests
 import threading
 import pickle
 from service.experiment import experiment
+from icecream import ic
 
 import pandas as pd
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -140,14 +141,28 @@ def run_experiment(dataset, extension, params: dict):
         t = threading.Thread(target=keep_alive)
         t.start()
         model, metrics, pareto = experiment.run_exp(data, params)
-        current_GMT = time.gmtime()
-        time_stamp = calendar.timegm(current_GMT)
-        if "fairness_method" in metrics.columns:
-            model_name = f"{metrics.loc[0,'model']}_{metrics.loc[0,'fairness_method']}_{time_stamp}"
+        ic(model)
+        if type(model) == list:
+            model_name = []
+            for i, m in enumerate(model):
+                current_GMT = time.gmtime()
+                time_stamp = calendar.timegm(current_GMT)
+                if "fairness_method" in pareto.columns:
+                    m_name = f"{pareto.loc[i,'model']}_{pareto.loc[i,'fairness_method']}_{time_stamp}"
+                else:
+                    m_name = pareto.loc[i, "model"] + "_" + str(time_stamp)
+                model_name.append(m_name)
+                os.makedirs("models", exist_ok=True)
+                pickle.dump(m, open(os.path.join("models", m_name + ".pkl"), "wb"))
         else:
-            model_name = metrics.loc[0, "model"] + "_" + str(time_stamp)
-        os.makedirs("models", exist_ok=True)
-        pickle.dump(model, open(os.path.join("models", model_name + ".pkl"), "wb"))
+            current_GMT = time.gmtime()
+            time_stamp = calendar.timegm(current_GMT)
+            if "fairness_method" in metrics.columns:
+                model_name = f"{metrics.loc[0,'model']}_{metrics.loc[0,'fairness_method']}_{time_stamp}"
+            else:
+                model_name = metrics.loc[0, "model"] + "_" + str(time_stamp)
+            os.makedirs("models", exist_ok=True)
+            pickle.dump(model, open(os.path.join("models", model_name + ".pkl"), "wb"))
         THREAD_RUN = False
         if pareto is not None:
             return metrics.to_dict(), model_name, pareto.to_dict()

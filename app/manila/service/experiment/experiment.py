@@ -7,7 +7,6 @@ from service.experiment.methods import FairnessMethods
 import pandas as pd
 import numpy as np
 
-from typing import Any
 from service.experiment.charts import Charts
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
@@ -124,6 +123,51 @@ def get_scaler(param):
         )
         scaler = PowerTransformer(method=method)
     return scaler
+
+
+def train_final_model(
+    params, data, label, sensitive_features, positive_label, best_ris, model
+):
+    if params.get("scaler"):
+        model = Pipeline([("scaler", params.get("scaler")), ("classifier", model)])
+    if params.get("fairness"):
+        trainer = ModelTrainer(data, label, sensitive_features, positive_label, params)
+        if best_ris["fairness_method"] == FairnessMethods.NO_ONE.name:
+            model.fit(data.drop(label, axis=1), data[label])
+            return model
+        if best_ris["fairness_method"] == FairnessMethods.DEMV.name:
+            demv = trainer.use_demv(model)
+            return demv
+        if best_ris["fairness_method"] == FairnessMethods.RW.name:
+            rw = trainer.use_rw(model)
+            return rw
+        if best_ris["fairness_method"] == FairnessMethods.DIR.name:
+            dir = trainer.use_dir(model)
+            return dir
+        if best_ris["fairness_method"] == FairnessMethods.EG.name:
+            eg = trainer.use_eg(model)
+            return eg
+        if best_ris["fairness_method"] == FairnessMethods.GRID.name:
+            grid = trainer.use_grid(model)
+            return grid
+        if best_ris["fairness_method"] == FairnessMethods.GERRY.name:
+            gerry = trainer.use_gerry()
+            return gerry
+        if best_ris["fairness_method"] == FairnessMethods.META.name:
+            meta = trainer.use_meta()
+            return meta
+        if best_ris["fairness_method"] == FairnessMethods.PREJ.name:
+            prej = trainer.use_prj()
+            return prej
+        if best_ris["fairness_method"] == FairnessMethods.CAL_EO.name:
+            cal = trainer.use_cal_eo(model)
+            return cal
+        if best_ris["fairness_method"] == FairnessMethods.REJ.name:
+            rej = trainer.use_rej_opt(model)
+            return rej
+    else:
+        model.fit(data.drop(label, axis=1).values, data[label].values.ravel())
+        return model
 
 
 def _store_metrics(metrics, method, fairness, save_data, save_model, model_fair):
@@ -397,54 +441,34 @@ def run_exp(data, params: dict):
 
         best_ris = report.iloc[0, :]
         model = ml_methods[best_ris["model"]]
-        if params.get("scaler"):
-            model = Pipeline([("scaler", params.get("scaler")), ("classifier", model)])
-
-        if params.get("fairness"):
-            trainer = ModelTrainer(
-                data, label, sensitive_features, positive_label, params
-            )
-            if best_ris["fairness_method"] == FairnessMethods.NO_ONE.name:
-                model.fit(data.drop(label, axis=1), data[label])
-                return model, report, None
-            if best_ris["fairness_method"] == FairnessMethods.DEMV.name:
-                demv = trainer.use_demv(model)
-                return demv, report, None
-            if best_ris["fairness_method"] == FairnessMethods.RW.name:
-                rw = trainer.use_rw(model)
-                return rw, report, None
-            if best_ris["fairness_method"] == FairnessMethods.DIR.name:
-                dir = trainer.use_dir(model)
-                return dir, report, None
-            if best_ris["fairness_method"] == FairnessMethods.EG.name:
-                eg = trainer.use_eg(model)
-                return eg, report, None
-            if best_ris["fairness_method"] == FairnessMethods.GRID.name:
-                grid = trainer.use_grid(model)
-                return grid, report, None
-            if best_ris["fairness_method"] == FairnessMethods.GERRY.name:
-                gerry = trainer.use_gerry()
-                return gerry, report, None
-            if best_ris["fairness_method"] == FairnessMethods.META.name:
-                meta = trainer.use_meta()
-                return meta, report, None
-            if best_ris["fairness_method"] == FairnessMethods.PREJ.name:
-                prej = trainer.use_prj()
-                return prej, report, None
-            if best_ris["fairness_method"] == FairnessMethods.CAL_EO.name:
-                cal = trainer.use_cal_eo(model)
-                return cal, report, None
-            if best_ris["fairness_method"] == FairnessMethods.REJ.name:
-                rej = trainer.use_rej_opt(model)
-                return rej, report, None
-        else:
-            model.fit(data.drop(label, axis=1).values, data[label].values.ravel())
-            return model, report, None
+        final_model = train_final_model(
+            params,
+            data,
+            label,
+            sensitive_features,
+            positive_label,
+            best_ris,
+            model,
+        )
+        return final_model, report, None
     elif pareto:
         agg_ris = ris.groupby(["fairness_method", "model"]).agg(np.mean)
         pareto_indexes = identify_pareto_front(agg_ris)
-        report = agg_ris.iloc[pareto_indexes]
-        return None, agg_ris.reset_index(), report.reset_index()
+        report = agg_ris.iloc[pareto_indexes].reset_index()
+        model_list = []
+        for row in report.iterrows():
+            model = ml_methods[row[1]["model"]]
+            final_model = train_final_model(
+                params,
+                data,
+                label,
+                sensitive_features,
+                positive_label,
+                row[1],
+                model,
+            )
+            model_list.append(final_model)
+        return model_list, agg_ris.reset_index(), report
     else:
         if params.get("fairness"):
             report = (
