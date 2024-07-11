@@ -212,6 +212,7 @@ function Form({ state, setState }) {
         setState={setState}
         handleChangeCheckbox={handleChangeCheckbox}
         handleChangeRadio={handleChangeRadio}
+        handleChangeText={handleChangeText}
         errors={errors}
       />
       <Validation

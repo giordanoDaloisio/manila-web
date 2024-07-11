@@ -8,7 +8,11 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  HStack,
+  Input,
   ListItem,
+  NumberInput,
+  NumberInputField,
   OrderedList,
   Radio,
   Stack,
@@ -23,6 +27,7 @@ function Metrics({
   setState,
   handleChangeCheckbox,
   handleChangeRadio,
+  handleChangeText,
   errors,
 }) {
   const handleChangeMetrics = (e) => {
@@ -83,24 +88,76 @@ function Metrics({
                   isChecked={state.accuracy !== undefined}>
                   Accuracy
                 </Checkbox>
+                {state.accuracy !== undefined ? (
+                  <HStack>
+                    <FormLabel>Weight:</FormLabel>
+                    <Input
+                      name='weight_accuracy'
+                      onChange={handleChangeText}
+                      value={state.weight_accuracy}
+                      defaultValue={state.weight_accuracy}
+                    />
+                  </HStack>
+                ) : (
+                  ""
+                )}
                 <Checkbox
                   value='precision'
                   onChange={handleChangeCheckbox}
                   isChecked={state.precision !== undefined}>
                   Precision
                 </Checkbox>
+                {state.precision !== undefined ? (
+                  <HStack>
+                    <FormLabel>Weight:</FormLabel>
+                    <Input
+                      name='weight_precision'
+                      onChange={handleChangeText}
+                      value={state.weight_precision}
+                      required
+                    />
+                  </HStack>
+                ) : (
+                  ""
+                )}
                 <Checkbox
                   value='recall'
                   onChange={handleChangeCheckbox}
                   isChecked={state.recall !== undefined}>
                   Recall
                 </Checkbox>
+                {state.recall !== undefined ? (
+                  <HStack>
+                    <FormLabel>Weight:</FormLabel>
+                    <Input
+                      name='weight_recall'
+                      onChange={handleChangeText}
+                      value={state.weight_recall}
+                      required
+                    />
+                  </HStack>
+                ) : (
+                  ""
+                )}
                 <Checkbox
                   value='f1_score'
                   onChange={handleChangeCheckbox}
                   isChecked={state.f1_score !== undefined}>
                   F1Score
                 </Checkbox>
+                {state.f1_score !== undefined ? (
+                  <HStack>
+                    <FormLabel>Weight:</FormLabel>
+                    <Input
+                      name='weight_f1_score'
+                      onChange={handleChangeText}
+                      value={state.weight_f1_score}
+                      required
+                    />
+                  </HStack>
+                ) : (
+                  ""
+                )}
                 <Checkbox
                   value='auc'
                   onChange={handleChangeCheckbox}
@@ -115,12 +172,38 @@ function Metrics({
                 ) : (
                   ""
                 )}
+                {state.auc !== undefined ? (
+                  <HStack>
+                    <FormLabel>Weight:</FormLabel>
+                    <Input
+                      name='weight_auc'
+                      onChange={handleChangeText}
+                      value={state.weight_auc}
+                      required
+                    />
+                  </HStack>
+                ) : (
+                  ""
+                )}
                 <Checkbox
                   value='zero_one_loss'
                   onChange={handleChangeCheckbox}
                   isChecked={state.zero_one_loss !== undefined}>
                   Zero One Loss
                 </Checkbox>
+                {state.zero_one_loss !== undefined ? (
+                  <HStack>
+                    <FormLabel>Weight:</FormLabel>
+                    <Input
+                      name='weight_zero_one_loss'
+                      onChange={handleChangeText}
+                      value={state.weight_zero_one_loss}
+                      required
+                    />
+                  </HStack>
+                ) : (
+                  ""
+                )}
               </VStack>
             </FormControl>
           </CardBody>
@@ -221,37 +304,80 @@ function Metrics({
                       {state.individual === "individual" ? (
                         <VStack pl='4' align='flex-start' spacing='2'>
                           <FormControl>
-                            {/* <Alert status='error'>
-                              <AlertIcon />
-                              These metrics are not implemented yet
-                            </Alert> */}
-                            <Checkbox
-                              value='euclidean_distance'
-                              onChange={handleChangeCheckbox}
-                              isChecked={
-                                state.euclidean_distance !== undefined
-                              }>
-                              Euclidean Distance
-                            </Checkbox>
-                            <FormHelperText>0 means fairness</FormHelperText>
-                            <Checkbox
-                              value='manhattan_distance'
-                              onChange={handleChangeCheckbox}
-                              isChecked={
-                                state.manhattan_distance !== undefined
-                              }>
-                              Manhattan Distance
-                            </Checkbox>
-                            <FormHelperText>0 means fairness</FormHelperText>
-                            <Checkbox
-                              value='mahalanobis_distance'
-                              onChange={handleChangeCheckbox}
-                              isChecked={
-                                state.mahalanobis_distance !== undefined
-                              }>
-                              Mahalanobis Distance
-                            </Checkbox>
-                            <FormHelperText>0 means fairness</FormHelperText>
+                            <HStack>
+                              <Checkbox
+                                value='euclidean_distance'
+                                onChange={handleChangeCheckbox}
+                                isChecked={
+                                  state.euclidean_distance !== undefined
+                                }>
+                                Euclidean Distance
+                              </Checkbox>
+                              <FormHelperText>0 means fairness</FormHelperText>
+                            </HStack>
+                            {state.euclidean_distance !== undefined ? (
+                              <HStack>
+                                <FormLabel>Weight:</FormLabel>
+                                <Input
+                                  name='weight_euclidean_distance'
+                                  onChange={handleChangeText}
+                                  value={state.weight_euclidean_distance}
+                                  defaultValue={state.weight_euclidean_distance}
+                                />
+                              </HStack>
+                            ) : (
+                              ""
+                            )}
+                            <HStack>
+                              <Checkbox
+                                value='manhattan_distance'
+                                onChange={handleChangeCheckbox}
+                                isChecked={
+                                  state.manhattan_distance !== undefined
+                                }>
+                                Manhattan Distance
+                              </Checkbox>
+                              <FormHelperText>0 means fairness</FormHelperText>
+                            </HStack>
+                            {state.manhattan_distance !== undefined ? (
+                              <HStack>
+                                <FormLabel>Weight:</FormLabel>
+                                <Input
+                                  name='weight_manhattan_distance'
+                                  onChange={handleChangeText}
+                                  value={state.weight_manhattan_distance}
+                                  defaultValue={state.weight_manhattan_distance}
+                                />
+                              </HStack>
+                            ) : (
+                              ""
+                            )}
+                            <HStack>
+                              <Checkbox
+                                value='mahalanobis_distance'
+                                onChange={handleChangeCheckbox}
+                                isChecked={
+                                  state.mahalanobis_distance !== undefined
+                                }>
+                                Mahalanobis Distance
+                              </Checkbox>
+                              <FormHelperText>0 means fairness</FormHelperText>
+                            </HStack>
+                            {state.mahalanobis_distance !== undefined ? (
+                              <HStack>
+                                <FormLabel>Weight:</FormLabel>
+                                <Input
+                                  name='weight_mahalanobis_distance'
+                                  onChange={handleChangeText}
+                                  value={state.weight_mahalanobis_distance}
+                                  defaultValue={
+                                    state.weight_mahalanobis_distance
+                                  }
+                                />
+                              </HStack>
+                            ) : (
+                              ""
+                            )}
                           </FormControl>
                         </VStack>
                       ) : (
@@ -291,17 +417,34 @@ function Metrics({
                             </Checkbox>
                             {state.equal === "equal" ? (
                               <VStack pl='4' align='flex-start'>
-                                <Checkbox
-                                  value='statistical_parity'
-                                  onChange={handleChangeCheckbox}
-                                  isChecked={
-                                    state.statistical_parity !== undefined
-                                  }>
-                                  Statistical Parity
-                                </Checkbox>
-                                <FormHelperText>
-                                  0 means fairness
-                                </FormHelperText>
+                                <HStack>
+                                  <Checkbox
+                                    value='statistical_parity'
+                                    onChange={handleChangeCheckbox}
+                                    isChecked={
+                                      state.statistical_parity !== undefined
+                                    }>
+                                    Statistical Parity
+                                  </Checkbox>
+                                  <FormHelperText>
+                                    0 means fairness
+                                  </FormHelperText>
+                                </HStack>
+                                {state.statistical_parity !== undefined ? (
+                                  <HStack>
+                                    <FormLabel>Weight:</FormLabel>
+                                    <Input
+                                      name='weight_statistical_parity'
+                                      onChange={handleChangeText}
+                                      value={state.weight_statistical_parity}
+                                      defaultValue={
+                                        state.weight_statistical_parity
+                                      }
+                                    />
+                                  </HStack>
+                                ) : (
+                                  ""
+                                )}
                                 <Checkbox
                                   value='disparate_impact'
                                   onChange={handleChangeCheckbox}

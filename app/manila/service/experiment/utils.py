@@ -96,7 +96,7 @@ def cross_val(
             fold = GroupKFold(n_splits=n_splits)
         elif validation == "stratified_group_k_fold":
             fold = StratifiedGroupKFold(n_splits=n_splits)
-
+    positive_label = float(positive_label)
     for train, test in fold.split(data_start):
         weights = None
         data = data_start.copy()
@@ -196,13 +196,10 @@ def cross_val(
                 sensitive_attr=sensitive_features[0], class_attr=label
             )
 
-        if any(
-            [
-                gerry_fair_classifier,
-                meta_fair_classifier,
-                prejudice_remover,
-                adversarial_debiasing,
-            ]
+        if (
+            inprocessor == FairnessMethods.GERRY
+            or inprocessor == FairnessMethods.META
+            or inprocessor == FairnessMethods.PREJ
         ):
             pred, model = _train_gerry_meta(
                 df_train, df_test, label, model, sensitive_features, positive_label
@@ -337,6 +334,7 @@ def _model_train(
 def _train_gerry_meta(
     df_train, df_test, label, model, sensitive_features, positive_label
 ):
+
     bin_train = BinaryLabelDataset(
         favorable_label=positive_label,
         unfavorable_label=1 - positive_label,
@@ -476,7 +474,7 @@ def compute_metrics(
 
     if f1_score_enabled:
         f1_score_val = f1(df_pred, label)
-        metrics["f1score"].append(f1_score_val)
+        metrics["f1_score"].append(f1_score_val)
 
     if auc_enabled:
         auc_score = auc(df_pred, label)
