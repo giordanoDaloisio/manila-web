@@ -29,7 +29,6 @@ from aif360.sklearn.postprocessing import RejectOptionClassifierCV
 from sklearn.neural_network import MLPClassifier
 import statistics
 from service.experiment.metrics import *
-from icecream import ic
 
 # import tensorflow as tf
 

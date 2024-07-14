@@ -8,7 +8,6 @@ from fairlearn.metrics import MetricFrame
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import roc_auc_score
-from icecream import ic
 
 
 def _get_groups(data, label_name, positive_label, group_condition):

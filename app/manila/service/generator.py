@@ -10,7 +10,6 @@ import requests
 import threading
 import pickle
 from service.experiment import experiment
-from icecream import ic
 
 import pandas as pd
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -141,7 +140,6 @@ def run_experiment(dataset, extension, params: dict):
         t = threading.Thread(target=keep_alive)
         t.start()
         model, metrics, pareto = experiment.run_exp(data, params)
-        ic(model)
         if type(model) == list:
             model_name = []
             for i, m in enumerate(model):
