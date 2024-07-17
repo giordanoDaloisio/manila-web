@@ -24,12 +24,14 @@ function Results() {
   const loc = useLocation();
   const results = loc.state.results;
   const model_link = loc.state.model_path;
+  const pareto = loc.state.pareto;
   const metrics = results.metrics;
   const models = results.models;
   const labels = [];
   const datasets = [];
   const csvdata = [];
   const navigate = useNavigate();
+  console.log(pareto);
 
   if (Object.keys(results.models).includes("fairness_method")) {
     for (let i = 0; i < Object.values(models.model).length; i++) {

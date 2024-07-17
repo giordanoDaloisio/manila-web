@@ -65,13 +65,17 @@ export const useValidation = (state) => {
           state.mean_squared_logaritmic_error ||
           state.mean_absolute_percentage_error
         ));
+    // One trade-off strategy must be selected
+    const trade_off_error = !(state.agg_func || state.pareto_front);
     // At least one aggregation function must be selected
-    const aggr_error = !(
-      state.min ||
-      state.max ||
-      state.statistical_mean ||
-      state.harmonic_mean
-    );
+    const aggr_error =
+      state.agg_func &&
+      !(
+        state.min ||
+        state.max ||
+        state.statistical_mean ||
+        state.harmonic_mean
+      );
     const fair_metric_err =
       state.fairness &&
       !(
@@ -132,7 +136,7 @@ export const useValidation = (state) => {
       errors_fairmethods: fair_method_error,
       class_metrics: metric_error,
       aggr_metrics: aggr_error,
-      // pres_error,
+      trade_off_error,
       eg_grid_error,
       box_cox_err,
       multi_vars_err,

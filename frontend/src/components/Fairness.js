@@ -15,13 +15,13 @@ import Container from "./Container";
 
 function Fairness({ state, setState, handleChangeCheckbox, errors }) {
   return (
-    <Container title='Quality Methods'>
+    <Container title='Fairness Methods'>
       <FormControl>
         <Checkbox
           value='fairness'
           onChange={handleChangeCheckbox}
           isDisabled={state.ml__task === "regression"}>
-          Fairness
+          Apply Fairness Methods
         </Checkbox>
         {state.ml__task === "regression" ? (
           <Alert status='error'>
