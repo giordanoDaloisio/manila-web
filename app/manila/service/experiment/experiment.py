@@ -6,6 +6,7 @@ from datetime import datetime
 from service.experiment.methods import FairnessMethods
 import pandas as pd
 import numpy as np
+import copy
 
 from service.experiment.charts import Charts
 from sklearn.linear_model import LogisticRegression
@@ -35,6 +36,7 @@ from service.experiment.model_trainer import ModelTrainer
 
 
 def identify_pareto_front(data):
+    data = copy.deepcopy(data)
     if "acc" in data.columns:
         data["acc"] = -data["acc"]
     if "f1_score" in data.columns:
@@ -421,7 +423,6 @@ def run_exp(data, params: dict):
                 ris_metrics, m, "None", save_data, save_model, model_fair
             )
             ris = ris.append(df_metrics)
-
     # Generate report
     if agg_metric:
         if params.get("fairness"):

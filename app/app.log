@@ -44,3 +44,20 @@ float() argument must be a string or a number, not 'BinaryLabelDataset'
 float() argument must be a string or a number, not 'BinaryLabelDataset'
 'f1score'
 'f1_ßscore'
+The favorable and unfavorable labels provided do not match the labels in the dataset.
+The favorable and unfavorable labels provided do not match the labels in the dataset.
+The favorable and unfavorable labels provided do not match the labels in the dataset.
+Can't pickle local object '_Lagrangian.best_h.<locals>.h'
+The favorable and unfavorable labels provided do not match the labels in the dataset.
+unsupported operand type(s) for -: 'int' and 'str'
+The favorable and unfavorable labels provided do not match the labels in the dataset.
+The favorable and unfavorable labels provided do not match the labels in the dataset.
+The favorable and unfavorable labels provided do not match the labels in the dataset.
+could not convert string to float: '0,8'
+unsupported operand type(s) for *: 'NoneType' and 'float'
+unsupported operand type(s) for *: 'NoneType' and 'float'
+unsupported operand type(s) for *: 'NoneType' and 'float'
+unsupported operand type(s) for *: 'NoneType' and 'float'
+unsupported operand type(s) for *: 'NoneType' and 'float'
+unsupported operand type(s) for -: 'int' and 'str'
+cannot evaluate scalar only bool ops

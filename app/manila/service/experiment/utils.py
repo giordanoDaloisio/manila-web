@@ -234,7 +234,6 @@ def cross_val(
             sensitive_features,
             params=params,
         )
-
     return model, metrics
 
 
@@ -595,5 +594,4 @@ def compute_metrics(
             ),
         }
         metrics["weighted_mean"].append(compute_weighted_mean(wm_metrics, weights))
-
     return metrics

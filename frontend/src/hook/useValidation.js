@@ -74,7 +74,8 @@ export const useValidation = (state) => {
         state.min ||
         state.max ||
         state.statistical_mean ||
-        state.harmonic_mean
+        state.harmonic_mean ||
+        state.weighted_mean
       );
     const fair_metric_err =
       state.fairness &&
