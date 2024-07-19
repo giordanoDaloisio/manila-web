@@ -127,7 +127,6 @@ function Form({ state, setState }) {
       setIsRunLoading(true);
       const ris = await run(state, file);
       const data = ris.data;
-      console.log(data);
       setFetchedData(data);
     } catch (exc) {
       console.log(exc);

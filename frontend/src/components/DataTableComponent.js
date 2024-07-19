@@ -2,7 +2,7 @@ import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import React from "react";
 import { labelMapper, parseData } from "../utils";
 
-function DataTableComponent({ models, metrics }) {
+function DataTableComponent({ models, metrics, isPareto, paretoData }) {
   const columns = [];
   const data = [];
   for (let i = 0; i < Object.keys(models).length; i++) {
@@ -26,6 +26,7 @@ function DataTableComponent({ models, metrics }) {
     }
     data.push(entry);
   }
+
   return (
     <Table>
       <Thead>
@@ -40,7 +41,7 @@ function DataTableComponent({ models, metrics }) {
           <Tr
             key={data.indexOf(row)}
             backgroundColor={
-              data.indexOf(row) === 0 ? "rgba(0, 200, 0, 0.2)" : ""
+              data.indexOf(row) === 0 && !isPareto ? "rgba(0, 200, 0, 0.2)" : ""
             }>
             {columns.map((column) => (
               <Td key={column}>{parseData(row[column])}</Td>

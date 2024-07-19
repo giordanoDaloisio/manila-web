@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Alert, AlertIcon, Button, VStack } from "@chakra-ui/react";
 import { downloadModel } from "../api";
 
-function DownloadButton({ name }) {
+function DownloadButton({ name, buttonLabel }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,7 +33,7 @@ function DownloadButton({ name }) {
   return (
     <>
       <Button onClick={download} isLoading={isLoading} colorScheme='teal'>
-        Download Model
+        {buttonLabel}
       </Button>
       {error !== "" ? (
         <Alert status='error'>

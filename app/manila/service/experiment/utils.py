@@ -375,10 +375,13 @@ def get_weights(params: dict):
 
 def compute_weighted_mean(metrics: dict, weights: dict):
     weighted_mean = 0
+    weight_sum = 0
     for key in metrics.keys():
         if key in weights.keys():
-            weighted_mean += metrics[key] * weights[key]
-    return weighted_mean / sum(weights.values())
+            if metrics[key] is not None and weights[key] is not None:
+                weighted_mean += metrics[key] * weights[key]
+                weight_sum += weights[key]
+    return weighted_mean / weight_sum
 
 
 def compute_metrics(

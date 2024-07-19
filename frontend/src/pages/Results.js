@@ -8,65 +8,20 @@ import {
   Text,
   UnorderedList,
   useColorModeValue,
-  VStack,
 } from "@chakra-ui/react";
 
 import { useLocation, useNavigate } from "react-router-dom";
-import BarChart from "../components/BarChart";
+import AggregationResults from "../components/AggregationResults";
 import Container from "../components/Container";
-import DataTableComponent from "../components/DataTableComponent";
-import ExportButton from "../components/ExportButton";
 import { HOME } from "../routes";
-import { downloadCSV, parseData } from "../utils";
-import DownloadButton from "../components/DownloadButton";
+import ParetoResults from "../components/ParetoResults";
 
 function Results() {
   const loc = useLocation();
   const results = loc.state.results;
   const model_link = loc.state.model_path;
   const pareto = loc.state.pareto;
-  const metrics = results.metrics;
-  const models = results.models;
-  const labels = [];
-  const datasets = [];
-  const csvdata = [];
   const navigate = useNavigate();
-  console.log(pareto);
-
-  if (Object.keys(results.models).includes("fairness_method")) {
-    for (let i = 0; i < Object.values(models.model).length; i++) {
-      const combo =
-        parseData(models.model[i]) + "+" + parseData(models.fairness_method[i]);
-      labels.push(combo);
-    }
-  } else {
-    labels.push(Object.values(models.model));
-  }
-
-  for (let i = 0; i < labels.length; i++) {
-    const subdata = [];
-    Object.keys(metrics).forEach((k) => {
-      subdata.push(metrics[k][i]);
-    });
-    datasets.push({
-      label: labels[i],
-      data: subdata,
-    });
-  }
-
-  for (let i = 0; i < Object.values(models.model).length; i++) {
-    let entry = {};
-    entry["id"] = i;
-    for (let j = 0; j < Object.keys(models).length; j++) {
-      const key = Object.keys(models)[j];
-      entry[key] = models[key][i];
-    }
-    for (let j = 0; j < Object.keys(metrics).length; j++) {
-      const key = Object.keys(metrics)[j];
-      entry[key] = metrics[key][i];
-    }
-    csvdata.push(entry);
-  }
 
   return (
     <Box
@@ -86,21 +41,15 @@ function Results() {
           </Heading>
         </GridItem>
       </Grid>
-      <Container title='Bar Chart'>
-        <VStack>
-          <DownloadButton name={model_link} />
-        </VStack>
-        <VStack align='flex-start'>
-          <ExportButton
-            label='Export Metrics to CSV'
-            onExport={() => downloadCSV(csvdata)}
-          />
-        </VStack>
-        <BarChart metrics={metrics} datasets={datasets} />
-      </Container>
-      <Container title='Raw results'>
-        <DataTableComponent models={models} metrics={metrics} />
-      </Container>
+      {pareto ? (
+        <ParetoResults
+          pareto={pareto}
+          model_link={model_link}
+          results={results}
+        />
+      ) : (
+        <AggregationResults model_link={model_link} results={results} />
+      )}
       <Container title='How to read the metrics'>
         <UnorderedList>
           <ListItem>

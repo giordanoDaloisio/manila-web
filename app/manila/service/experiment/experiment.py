@@ -49,11 +49,23 @@ def identify_pareto_front(data):
         data["recall"] = -data["recall"]
     if "disp_imp" in data.columns:
         data["disp_imp"] = -data["disp_imp"]
+    if "stat_par" in data.columns:
+        data["stat_par"] = data["stat_par"].abs()
+    if "eq_odds" in data.columns:
+        data["eq_odds"] = data["eq_odds"].abs()
+    if "ao" in data.columns:
+        data["ao"] = data["ao"].abs()
+    if "zero_one_loss" in data.columns:
+        data["zero_one_loss"] = data["zero_one_loss"].abs()
+    if "tpr_diff" in data.columns:
+        data["tpr_diff"] = data["tpr_diff"].abs()
+    if "fpr_diff" in data.columns:
+        data["fpr_diff"] = data["fpr_diff"].abs()
     is_pareto = np.ones(data.shape[0], dtype=bool)
     for i in range(data.shape[0]):
         for j in range(data.shape[0]):
-            if all(data.iloc[j].abs() <= data.iloc[i].abs()) and any(
-                data.iloc[j].abs() < data.iloc[i].abs()
+            if all(data.iloc[j].round(2) <= data.iloc[i].round(2)) and any(
+                data.iloc[j].round(2) < data.iloc[i].round(2)
             ):
                 is_pareto[i] = False
                 break

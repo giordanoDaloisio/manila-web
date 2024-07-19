@@ -61,3 +61,6 @@ unsupported operand type(s) for *: 'NoneType' and 'float'
 unsupported operand type(s) for *: 'NoneType' and 'float'
 unsupported operand type(s) for -: 'int' and 'str'
 cannot evaluate scalar only bool ops
+unsupported operand type(s) for *: 'NoneType' and 'float'
+unsupported operand type(s) for *: 'NoneType' and 'float'
+unsupported operand type(s) for *: 'NoneType' and 'float'

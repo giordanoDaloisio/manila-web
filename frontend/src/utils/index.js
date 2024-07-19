@@ -73,6 +73,9 @@ export function labelMapper(value) {
   if (value === "mahalanobis_distance") {
     return "Mahalanobis Distance";
   }
+  if (value === "weighted_mean") {
+    return "Weighted Mean";
+  }
   return value;
 }
 

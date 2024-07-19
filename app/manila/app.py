@@ -81,6 +81,7 @@ class KeepAlive(Resource):
 
 class Model(Resource):
     def get(self, model_name):
+        print(model_name)
         return send_from_directory("models", model_name + ".pkl")
 
 
