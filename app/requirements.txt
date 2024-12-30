@@ -70,7 +70,7 @@ seaborn==0.13.2
 shap==0.41.0
 six==1.16.0
 slicer==0.0.7
-tempeh==0.1.12
+#tempeh==0.1.12
 termcolor==2.2.0
 threadpoolctl==3.1.0
 tomli==2.0.1
