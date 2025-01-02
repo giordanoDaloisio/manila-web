@@ -12,4 +12,6 @@ COPY . .
 
 EXPOSE 5000
 
+RUN celery -A manila.celery worker --loglevel=info --detach
+
 CMD ["python", "manila/app.py"]

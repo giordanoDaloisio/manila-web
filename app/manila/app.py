@@ -28,6 +28,11 @@ app.logger.setLevel(logging.INFO)  # Set log level to INFO
 handler = logging.FileHandler("app.log")  # Log to a file
 app.logger.addHandler(handler)
 
+app.config.update(
+    CELERY_BROKER_URL='pyamqp://guest@localhost//',  
+    CELERY_RESULT_BACKEND='rpc://'
+)
+
 
 def parse_results(metrics):
     results = {"models": {}, "metrics": {}}
@@ -58,17 +63,17 @@ class Run(Resource):
         data_extension = params.get("extension")
         data = request.files["dataset"].read()
         try:
-            metrics, model, pareto = run_experiment(data, data_extension, params)
+            exp_res = run_experiment.delay(data, data_extension, params)
         except Exception as e:
             app.logger.error(e.with_traceback(traceback.print_exc()))
             message = json.dumps({"error": str(e)})
             return Response(message, status=500, mimetype="application/json")
-        results = parse_results(metrics)
+        results = parse_results(exp_res.metrics)
         pareto_results = None
-        if pareto is not None:
-            pareto_results = parse_results(pareto)
+        if exp_res.pareto is not None:
+            pareto_results = parse_results(exp_res.pareto)
         response = make_response(
-            {"results": results, "pareto": pareto_results, "model_path": model}, 200
+            {"results": results, "pareto": pareto_results, "model_path": exp_res.model_name}, 200
         )
         response.headers["Content-Type"] = "application/json"
         return response

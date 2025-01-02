@@ -64,3 +64,4 @@ cannot evaluate scalar only bool ops
 unsupported operand type(s) for *: 'NoneType' and 'float'
 unsupported operand type(s) for *: 'NoneType' and 'float'
 unsupported operand type(s) for *: 'NoneType' and 'float'
+cannot unpack non-iterable ExperimentResult object
