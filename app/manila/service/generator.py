@@ -13,7 +13,6 @@ from celery import shared_task as celery
 import pandas as pd
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-# THREAD_RUN = True
 
 @dataclass
 class ExperimentResult:
@@ -26,17 +25,6 @@ class ExperimentResult:
     metrics: dict
     model_name: Union[str, List[str]]
     pareto: Optional[dict] = None
-
-# def keep_alive():
-#     global THREAD_RUN
-#     while THREAD_RUN:
-#         try:
-#             response = requests.get("https://manila-sobigdata.d4science.org/keepalive")
-#             response.raise_for_status()
-#         except requests.exceptions.RequestException:
-#             pass
-#         time.sleep(100)
-
 
 def load_templates():
     env = Environment(
@@ -172,7 +160,7 @@ def save_model(model, model_name: str, directory: str = "models") -> None:
     with open(filepath, "wb") as f:
         pickle.dump(model, f)
 
-@celery(ignore_result=False)
+@celery
 def run_experiment(dataset_bytes: bytes, extension: str, params: dict) -> ExperimentResult:
     """
     High-level function that:

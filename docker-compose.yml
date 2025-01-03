@@ -9,6 +9,13 @@ services:
       - 5672:5672
       - 15672:15672
 
+  redis:
+    image: redis:alpine
+    container_name: "redis"
+    hostname: "redis"
+    ports:
+      - 6379:6379
+
   app:
     build:
       context: ./app
@@ -19,6 +26,9 @@ services:
       - 5000:5000
     volumes:
       - ./app:/app
+    environment:
+      CELERY_BROKER_URL: "pyamqp://guest@rabbitmq//"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
 
   worker:
     build:
@@ -31,7 +41,7 @@ services:
       - rabbitmq
     environment:
       CELERY_BROKER_URL: "pyamqp://guest@rabbitmq//"
-      CELERY_RESULT_BACKEND: "rpc://"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
 
   frontend:
     build:
