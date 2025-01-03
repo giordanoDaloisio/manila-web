@@ -34,6 +34,7 @@ function Form({ state, setState }) {
   const [isGenLoading, setIsGenLoading] = useState(false);
   const [fetchedData, setFetchedData] = useState(null);
   const [fileError, setFileError] = useState("");
+  const [taskId, setTaskId] = useState(null);
 
   const errors = useValidation(state);
   const navigate = useNavigate();

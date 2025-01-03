@@ -25,7 +25,8 @@ services:
       context: ./app
       dockerfile: Dockerfile.dev
     container_name: "my_app_celery_worker"
-    command: ["python", "manila/run_celery.py"]
+    working_dir: /app/manila
+    command: ["celery", "-A", "run_celery.celery", "worker", "--loglevel=info"]
     depends_on:
       - rabbitmq
     environment:

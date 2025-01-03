@@ -2,22 +2,18 @@ import calendar
 import importlib
 import io
 import os
-import shutil
 import sys
 import time
 import zipfile
-import requests
-import threading
 import pickle
 from service.experiment import experiment
 from typing import List, Union, Optional
 from dataclasses import dataclass
-from celery import current_app as celery
-
+from celery import shared_task as celery
 import pandas as pd
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-THREAD_RUN = True
+# THREAD_RUN = True
 
 @dataclass
 class ExperimentResult:
@@ -31,15 +27,15 @@ class ExperimentResult:
     model_name: Union[str, List[str]]
     pareto: Optional[dict] = None
 
-def keep_alive():
-    global THREAD_RUN
-    while THREAD_RUN:
-        try:
-            response = requests.get("https://manila-sobigdata.d4science.org/keepalive")
-            response.raise_for_status()
-        except requests.exceptions.RequestException:
-            pass
-        time.sleep(100)
+# def keep_alive():
+#     global THREAD_RUN
+#     while THREAD_RUN:
+#         try:
+#             response = requests.get("https://manila-sobigdata.d4science.org/keepalive")
+#             response.raise_for_status()
+#         except requests.exceptions.RequestException:
+#             pass
+#         time.sleep(100)
 
 
 def load_templates():
@@ -176,7 +172,7 @@ def save_model(model, model_name: str, directory: str = "models") -> None:
     with open(filepath, "wb") as f:
         pickle.dump(model, f)
 
-@celery.task(name="run_experiment", bind=True)
+@celery(ignore_result=False)
 def run_experiment(dataset_bytes: bytes, extension: str, params: dict) -> ExperimentResult:
     """
     High-level function that:
@@ -191,12 +187,6 @@ def run_experiment(dataset_bytes: bytes, extension: str, params: dict) -> Experi
     try:
         # 1) Load Data
         data = load_data(dataset_bytes, extension)
-
-        # 2) Start background thread if needed
-        global THREAD_RUN
-        THREAD_RUN = True
-        t = threading.Thread(target=keep_alive, daemon=True)
-        t.start()
 
         # 3) Run the experiment
         model, metrics, pareto = experiment.run_exp(data, params)
@@ -234,17 +224,22 @@ def run_experiment(dataset_bytes: bytes, extension: str, params: dict) -> Experi
 
         # 7) Build return object
         if pareto is not None:
-            return ExperimentResult(
+            res = ExperimentResult(
                 metrics=metrics.to_dict(),
                 model_name=final_model_name,
                 pareto=pareto.to_dict()
             )
         else:
-            return ExperimentResult(
+            res = ExperimentResult(
                 metrics=metrics.to_dict() if metrics is not None else {},
                 model_name=final_model_name,
                 pareto=None
             )
+        return {
+            "metrics": res.metrics,
+            "model_name": res.model_name,
+            "pareto": res.pareto
+        }
 
     except ValueError as ve:
         # Handle known data loading or value errors

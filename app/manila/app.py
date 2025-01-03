@@ -4,7 +4,7 @@ from flask_restful import Api
 from werkzeug.serving import WSGIRequestHandler
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-from routes import Homepage, Generator, Run, KeepAlive, Model
+from routes import Homepage, Generator, Run, KeepAlive, Model, Status
 from create_flask_app import create_flask_app
 
 WSGIRequestHandler.protocol_version = "HTTP/1.1"
@@ -16,8 +16,10 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 api.add_resource(Homepage, "/")
 api.add_resource(Generator, "/generate")
 api.add_resource(Run, "/run")
+api.add_resource(Status, "/run/<string:exp_id>")
 api.add_resource(KeepAlive, "/keepalive")
 api.add_resource(Model, "/model/<string:model_name>")
+
 
 
 def clean_models():
