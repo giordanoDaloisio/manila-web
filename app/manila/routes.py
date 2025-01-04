@@ -46,7 +46,7 @@ class Status(Resource):
     def get(self, exp_id):
         exp_res = AsyncResult(exp_id, app=celery)
         if exp_res.failed():
-            response = make_response(jsonify({"state": exp_res.info}), 500)
+            response = make_response(jsonify({"state": str(exp_res.info)}), 500)
         elif exp_res.ready():
             exp_res = exp_res.result
             results = parse_results(exp_res['metrics'])
@@ -57,7 +57,9 @@ class Status(Resource):
                 {"results": results, "pareto": pareto_results, "model_path": exp_res['model_name']}, 200
             )
         else:
-            response = make_response(jsonify({"state": exp_res.state}), 200)
+            response = make_response(jsonify({"state": exp_res.state, 
+                                              "current": exp_res.info.get('progress', 0)
+                                              }), 200)
         response.headers["Content-Type"] = "application/json"
         return response
 

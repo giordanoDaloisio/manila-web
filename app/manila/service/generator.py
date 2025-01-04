@@ -9,7 +9,7 @@ import pickle
 from service.experiment import experiment
 from typing import List, Union, Optional
 from dataclasses import dataclass
-from celery import shared_task as celery
+from celery import shared_task, current_task
 import pandas as pd
 from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -160,8 +160,8 @@ def save_model(model, model_name: str, directory: str = "models") -> None:
     with open(filepath, "wb") as f:
         pickle.dump(model, f)
 
-@celery
-def run_experiment(dataset_bytes: bytes, extension: str, params: dict) -> ExperimentResult:
+@shared_task(bind=True)
+def run_experiment(self, dataset_bytes: bytes, extension: str, params: dict) -> ExperimentResult:
     """
     High-level function that:
       1. Loads the data into a Pandas DataFrame.
@@ -177,7 +177,7 @@ def run_experiment(dataset_bytes: bytes, extension: str, params: dict) -> Experi
         data = load_data(dataset_bytes, extension)
 
         # 3) Run the experiment
-        model, metrics, pareto = experiment.run_exp(data, params)
+        model, metrics, pareto = experiment.run_exp(data, self, params)
 
         # 4) Generate a timestamp for unique file naming
         current_gmt = time.gmtime()
@@ -206,9 +206,6 @@ def run_experiment(dataset_bytes: bytes, extension: str, params: dict) -> Experi
 
             save_model(model, model_name)
             final_model_name = model_name
-
-        # 6) Mark the thread as finished
-        THREAD_RUN = False
 
         # 7) Build return object
         if pareto is not None:
