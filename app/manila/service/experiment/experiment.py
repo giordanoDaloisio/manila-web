@@ -316,7 +316,6 @@ def run_exp(data, task, params: dict):
         # Training-testing
         if params.get("fairness"):
             for f in fairness_methods.keys():
-                step += 1
                 model = deepcopy(model)
                 data_copy = data.copy()
                 if f == "preprocessing":
@@ -417,9 +416,9 @@ def run_exp(data, task, params: dict):
                         model_fair,
                     )
                     ris = ris.append(df_metrics)
+                step += 1
                 task.update_state(state="PROGRESS", meta={"current": step, "progress": step/total_runs * 100})
         else:
-            step += 1
             model = deepcopy(model)
             data_copy = data.copy()
             metrics = deepcopy(base_metrics)
@@ -439,6 +438,7 @@ def run_exp(data, task, params: dict):
                 ris_metrics, m, "None", save_data, save_model, model_fair
             )
             ris = ris.append(df_metrics)
+            step += 1
             task.update_state(state="PROGRESS", meta={"progress": step/total_runs * 100})
     # Generate report
     if agg_metric:
