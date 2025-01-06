@@ -44,29 +44,26 @@ class Run(Resource):
 
 class Status(Resource):
     def get(self, exp_id):
-        exp_res = AsyncResult(exp_id, app=celery)
-        if exp_res.failed():
-            response = make_response(jsonify({"state": str(exp_res.info)}), 500)
-        elif exp_res.ready():
-            exp_res = exp_res.result
+        exp = AsyncResult(exp_id, app=celery)
+        if exp.failed():
+            response = make_response(jsonify({"state": exp.state, "message": str(exp.info)}), 500)
+        elif exp.ready():
+            exp_res = exp.result
             results = parse_results(exp_res['metrics'])
             pareto_results = exp_res['pareto']
             if pareto_results is not None:
                 pareto_results = parse_results(pareto_results)
             response = make_response(
-                {"results": results, "pareto": pareto_results, "model_path": exp_res['model_name']}, 200
+                {"state": exp.state, 
+                 "results": results, "pareto": pareto_results, "model_path": exp_res['model_name']
+                 }, 200
             )
         else:
-            response = make_response(jsonify({"state": exp_res.state, 
-                                              "current": exp_res.info.get('progress', 0)
+            response = make_response(jsonify({"state": exp.state, 
+                                              "current": exp.info.get('progress', 0)
                                               }), 200)
         response.headers["Content-Type"] = "application/json"
         return response
-
-
-class KeepAlive(Resource):
-    def get(self):
-        return jsonify({"status": "alive"})
 
 
 class Model(Resource):

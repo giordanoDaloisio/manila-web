@@ -4,16 +4,13 @@ channels:
   - defaults
 dependencies:
 {%if exponentiated_gradient or grid_search%}
-  - fairlearn
+  - fairlearn==0.8.0
 {%endif%}
 {%if excel%}
   - openpyxl
 {%endif%}
-  - pandas
+  - pandas=1.5.3
   - python=3.9
-{%if demv%}
-  - imbalanced-learn
-{%endif%}
 {%if chart%}
   - matplotlib
   - seaborn
@@ -22,10 +19,11 @@ dependencies:
   - pyarrow
 {%endif%}
   - pip
-  - scikit-learn
-  - scipy
+  - scikit-learn=1.2.1
+  - scipy=1.10.0
   - pip:
     {%if hdf5%}
     - tables
     {%endif%}
     - aif360[{%if adversarial_debiasing%}AdversarialDebiasing,{%endif%}DisparateImpactRemover,Reductions]
+    - demv

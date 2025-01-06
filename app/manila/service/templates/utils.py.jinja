@@ -63,8 +63,11 @@ def cross_val(classifier, data, label, unpriv_group, priv_group, sensitive_featu
         {%endif%}
         {%if demv %}
         if preprocessor == FairnessMethods.DEMV:
-            demv = DEMV(round_level=1)
-            df_train = demv.fit_transform(df_train, [keys for keys in unpriv_group.keys()], label)
+            demv = DEMV(sensitive_vars=sensitive_features)
+            df_train, y = demv.fit_transform(
+                df_train.drop(columns=label), df_train[label]
+            )
+            df_train[label] = y
         {%endif%}
         {%if exponentiated_gradient%}
         if inprocessor == FairnessMethods.EG:
