@@ -16,7 +16,7 @@ import FilePicker from "chakra-ui-file-picker";
 import download from "downloadjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { generate, run } from "../api";
+import { generate, run, getStatus } from "../api";
 import Container from "../components/Container";
 import Dataset from "../components/Dataset";
 import Fairness from "../components/Fairness";
@@ -34,6 +34,8 @@ function Form({ state, setState }) {
   const [isGenLoading, setIsGenLoading] = useState(false);
   const [fetchedData, setFetchedData] = useState(null);
   const [fileError, setFileError] = useState("");
+  const [taskId, setTaskId] = useState(null);
+  const [progress, setProgress] = useState("0%");
 
   const errors = useValidation(state);
   const navigate = useNavigate();
@@ -122,19 +124,19 @@ function Form({ state, setState }) {
 
   const handleRun = async (e) => {
     e.preventDefault();
+    setNetworkError("");
+    setIsRunLoading(true);
     try {
-      setNetworkError("");
-      setIsRunLoading(true);
       const ris = await run(state, file);
-      const data = ris.data;
-      setFetchedData(data);
+      const id = ris.data.exp_id;
+      setTaskId(id);
     } catch (exc) {
       console.log(exc);
       exc.response && exc.response.data && exc.response.data.error
         ? setNetworkError(exc.response.data.error)
         : setNetworkError(exc.message);
+      setIsRunLoading(false);
     }
-    setIsRunLoading(false);
   };
 
   const handleSubmit = async (e) => {
@@ -148,6 +150,36 @@ function Form({ state, setState }) {
     }
     setIsGenLoading(false);
   };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (taskId !== null && taskId !== undefined) {
+        try {
+          const ris = await getStatus(taskId);
+          const data = ris.data;
+          console.log(data);
+          if (data.state === "PROGRESS") {
+            setProgress(data.current.toFixed(2) + "%");
+          } else if (data.state === "FAILURE") {
+            setNetworkError(data.message);
+            setIsRunLoading(false);
+            clearInterval(interval);
+          }
+          if (data.state === "SUCCESS") {
+            setFetchedData(data);
+            setIsRunLoading(false);
+            clearInterval(interval);
+          }
+        } catch (e) {
+          console.log(e);
+          setNetworkError(e.message);
+          setIsRunLoading(false);
+          clearInterval(interval);
+        }
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [taskId]);
 
   useEffect(() => {
     if (fetchedData !== null) {
@@ -258,7 +290,7 @@ function Form({ state, setState }) {
       {isRunLoading ? (
         <Alert status='info'>
           <AlertIcon />
-          The experiment is running. Please wait.
+          The experiment is running. Progress: {progress}
         </Alert>
       ) : (
         ""

@@ -201,7 +201,7 @@ def _store_metrics(metrics, method, fairness, save_data, save_model, model_fair)
     return df_metrics
 
 
-def run_exp(data, params: dict):
+def run_exp(data, task, params: dict):
     label = params["name"]
     positive_label = params["positive_value"]
     base_metrics = get_base_metrics(params)
@@ -294,9 +294,10 @@ def run_exp(data, params: dict):
 
     agg_metric = params.get("agg_metric")
     pareto = params.get("pareto_front")
-    dataset_label = "multi-class" if params.get("multi_class") else "binary"
 
+    total_runs = len(ml_methods.keys()) * len(fairness_methods.keys()) if len(fairness_methods.keys()) > 0 else len(ml_methods.keys())
     ris = pd.DataFrame()
+    step = 0
     for m in ml_methods.keys():
         if (
             params.get("standard_scaler")
@@ -415,6 +416,8 @@ def run_exp(data, params: dict):
                         model_fair,
                     )
                     ris = ris.append(df_metrics)
+                step += 1
+                task.update_state(state="PROGRESS", meta={"current": step, "progress": step/total_runs * 100})
         else:
             model = deepcopy(model)
             data_copy = data.copy()
@@ -435,6 +438,8 @@ def run_exp(data, params: dict):
                 ris_metrics, m, "None", save_data, save_model, model_fair
             )
             ris = ris.append(df_metrics)
+            step += 1
+            task.update_state(state="PROGRESS", meta={"progress": step/total_runs * 100})
     # Generate report
     if agg_metric:
         if params.get("fairness"):

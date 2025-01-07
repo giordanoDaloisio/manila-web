@@ -19,6 +19,44 @@ model_trainer = importlib.reload(model_trainer)
 from utils import *
 from model_trainer import ModelTrainer
 
+{%if pareto%}
+def identify_pareto_front(data):
+    data = copy.deepcopy(data)
+    if "acc" in data.columns:
+        data["acc"] = -data["acc"]
+    if "f1_score" in data.columns:
+        data["f1_score"] = -data["f1_score"]
+    if "auc" in data.columns:
+        data["auc"] = -data["auc"]
+    if "precision" in data.columns:
+        data["precision"] = -data["precision"]
+    if "recall" in data.columns:
+        data["recall"] = -data["recall"]
+    if "disp_imp" in data.columns:
+        data["disp_imp"] = -data["disp_imp"]
+    if "stat_par" in data.columns:
+        data["stat_par"] = data["stat_par"].abs()
+    if "eq_odds" in data.columns:
+        data["eq_odds"] = data["eq_odds"].abs()
+    if "ao" in data.columns:
+        data["ao"] = data["ao"].abs()
+    if "zero_one_loss" in data.columns:
+        data["zero_one_loss"] = data["zero_one_loss"].abs()
+    if "tpr_diff" in data.columns:
+        data["tpr_diff"] = data["tpr_diff"].abs()
+    if "fpr_diff" in data.columns:
+        data["fpr_diff"] = data["fpr_diff"].abs()
+    is_pareto = np.ones(data.shape[0], dtype=bool)
+    for i in range(data.shape[0]):
+        for j in range(data.shape[0]):
+            if all(data.iloc[j].round(2) <= data.iloc[i].round(2)) and any(
+                data.iloc[j].round(2) < data.iloc[i].round(2)
+            ):
+                is_pareto[i] = False
+                break
+    return np.where(is_pareto)[0]
+{%endif%}
+
 base_metrics = {
     {%if precision %}
     'precision': [],
@@ -271,7 +309,7 @@ def run_exp(data):
         df_metrics = _store_metrics(ris_metrics, m, 'None', save_data, save_model, model_fair)
         ris = ris.append(df_metrics)
         {%endif%}
-
+    {%if agg_metric%}
     {%if fairness%}
     report = ris.groupby(['fairness_method', 'model']).agg(
         np.mean).sort_values(agg_metric, ascending=False).reset_index()
@@ -327,4 +365,25 @@ def run_exp(data):
     {%else%}
     model.fit(data.drop(label,axis=1).values, data[label].values.ravel())
     return model, report
+    {%endif%}
+    {%else%}
+    {%if pareto%}
+    agg_ris = ris.groupby(["fairness_method", "model"]).agg(np.mean)
+    pareto_indexes = identify_pareto_front(agg_ris)
+    report = agg_ris.iloc[pareto_indexes].reset_index()
+    model_list = []
+    for row in report.iterrows():
+        model = ml_methods[row[1]["model"]]
+        final_model = train_final_model(
+            params,
+            data,
+            label,
+            sensitive_features,
+            positive_label,
+            row[1],
+            model,
+        )
+        model_list.append(final_model)
+    return model_list, agg_ris.reset_index(), report
+    {%endif%}
     {%endif%}

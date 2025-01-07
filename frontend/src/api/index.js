@@ -3,7 +3,7 @@ import axios from "axios";
 let baseURL = "";
 
 if (process.env.NODE_ENV === "development") {
-  baseURL = "http://127.0.0.1:5000/";
+  baseURL = "http://127.0.0.1:5001/";
 } else if (process.env.NODE_ENV === "production") {
   baseURL = "https://manila-sobigdata.d4science.org/";
 }
@@ -26,6 +26,11 @@ export const run = async (data, file) => {
       "Content-Type": "multipart/form-data",
     },
   });
+  return ris;
+};
+
+export const getStatus = async (id) => {
+  const ris = await api.get("/run/" + id);
   return ris;
 };
 

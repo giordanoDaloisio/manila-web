@@ -1,12 +1,45 @@
 version: "3.8"
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: "rabbitmq"
+    hostname: "rabbitmq"
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  redis:
+    image: redis:alpine
+    container_name: "redis"
+    hostname: "redis"
+    ports:
+      - 6379:6379
+
   app:
     build:
       context: ./app
       dockerfile: Dockerfile.dev
     ports:
-      - 5000:5000
+      - 5001:5000
+    volumes:
+      - ./app:/app
+    environment:
+      CELERY_BROKER_URL: "pyamqp://guest@rabbitmq//"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+
+  worker:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.dev
+    container_name: "my_app_celery_worker"
+    working_dir: /app/manila
+    command: ["celery", "-A", "run_celery.celery", "worker", "--loglevel=info"]
+    depends_on:
+      - rabbitmq
+    environment:
+      CELERY_BROKER_URL: "pyamqp://guest@rabbitmq//"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
     volumes:
       - ./app:/app
 
