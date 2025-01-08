@@ -15,6 +15,17 @@ import dill
 
 logger = get_task_logger(__name__)
 
+@dataclass
+class ExperimentResult:
+    """
+    Holds the final results of the experiment:
+      - metrics: dict of metrics
+      - model_name: either a single model name or a list of model names
+      - pareto: dict (or None) for the Pareto data
+    """
+    metrics: dict
+    model_name: Union[str, List[str]]
+    pareto: Optional[dict] = None
 
 def load_templates():
     env = Environment(
@@ -94,23 +105,31 @@ def generate_code(params):
             f.write(charts.render())
     return folder_name
 
+def load_data(dataset_bytes: bytes, extension: str) -> pd.DataFrame:
+    """
+    Loads a dataset from raw bytes into a Pandas DataFrame, based on file extension.
+    Raises ValueError if the extension is unsupported or if dataset_bytes is empty.
+    """
+    if not dataset_bytes:
+        raise ValueError("No dataset bytes provided or dataset is None.")
 
-def run_experiment(dataset, extension, params: dict):
-    data = None
+    extension = extension.lower()
+
     if extension == "csv":
-        data = pd.read_csv(io.BytesIO(dataset), encoding="latin1")
+        return pd.read_csv(io.BytesIO(dataset_bytes), encoding="latin1")
     elif extension == "parquet":
-        data = pd.read_parquet(io.BytesIO(dataset), encoding="latin1")
+        return pd.read_parquet(io.BytesIO(dataset_bytes))
     elif extension == "excel":
-        data = pd.read_excel(io.BytesIO(dataset))
+        return pd.read_excel(io.BytesIO(dataset_bytes))
     elif extension == "json":
-        data = pd.read_json(io.BytesIO(dataset), encoding="latin1")
+        return pd.read_json(io.BytesIO(dataset_bytes), encoding="latin1")
     elif extension == "text":
-        data = pd.read_fwf(io.BytesIO(dataset), encoding="latin1")
+        return pd.read_fwf(io.BytesIO(dataset_bytes), encoding="latin1")
     elif extension == "html":
-        data = pd.read_html(io.StringIO(dataset), encoding="latin1")
+        # read_html requires a text buffer, so decode the bytes
+        return pd.read_html(io.StringIO(dataset_bytes.decode("latin1")))[0]
     elif extension == "xml":
-        data = pd.read_xml(io.BytesIO(dataset), encoding="latin1")
+        return pd.read_xml(io.BytesIO(dataset_bytes))
     elif extension == "hdf5":
         # For HDF5, you typically need a file-like object. 
         # If your dataset_bytes is truly an HDF5 file, something like this might work:
@@ -163,19 +182,18 @@ def run_experiment(self, dataset_bytes: bytes, extension: str, params: dict) -> 
             # Multiple models scenario
             model_names = []
             for i, m in enumerate(model):
-                current_GMT = time.gmtime()
-                time_stamp = calendar.timegm(current_GMT)
-                if "fairness_method" in pareto.columns:
-                    m_name = f"{pareto.loc[i,'model']}_{pareto.loc[i,'fairness_method']}_{time_stamp}"
+                if pareto is not None and "fairness_method" in pareto.columns:
+                    model_name = f"{pareto.loc[i,'model']}_{pareto.loc[i,'fairness_method']}_{time_stamp}"
                 else:
-                    m_name = pareto.loc[i, "model"] + "_" + str(time_stamp)
-                model_name.append(m_name)
-                os.makedirs("models", exist_ok=True)
-                pickle.dump(m, open(os.path.join("models", m_name + ".pkl"), "wb"))
+                    model_name = f"{pareto.loc[i,'model']}_{time_stamp}" if pareto is not None else f"model_{i}_{time_stamp}"
+
+                save_model(m, model_name)
+                model_names.append(model_name)
+
+            final_model_name = model_names  # could be a list
         else:
-            current_GMT = time.gmtime()
-            time_stamp = calendar.timegm(current_GMT)
-            if "fairness_method" in metrics.columns:
+            # Single model scenario
+            if metrics is not None and "fairness_method" in metrics.columns:
                 model_name = f"{metrics.loc[0,'model']}_{metrics.loc[0,'fairness_method']}_{time_stamp}"
             else:
                 model_name = f"{metrics.loc[0,'model']}_{time_stamp}" if metrics is not None else f"model_{time_stamp}"
@@ -211,5 +229,6 @@ def run_experiment(self, dataset_bytes: bytes, extension: str, params: dict) -> 
         sys.modules.pop(experiment.__name__, None)
         raise ioe
     except Exception as e:
+        # Log or handle unexpected errors
         sys.modules.pop(experiment.__name__, None)
         raise e
