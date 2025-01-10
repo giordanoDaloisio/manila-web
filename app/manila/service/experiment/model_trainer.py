@@ -1,6 +1,6 @@
 import pandas as pd
 from aif360.sklearn.preprocessing import Reweighing
-from aif360.algorithms.preprocessing import DisparateImpactRemover, LFR
+from aif360.algorithms.preprocessing import DisparateImpactRemover
 from aif360.algorithms.inprocessing import (
     GerryFairClassifier,
     MetaFairClassifier,
@@ -30,8 +30,9 @@ class ModelTrainer:
         self.dataset = dataset
         self.label = label
         self.sensitive_features = sensitive_features
-        self.positive_label = positive_label
+        self.positive_label = float(positive_label)
         self.params = params
+        print(self.positive_label)
 
     def use_rw(self, model):
         data = self.dataset.set_index(self.sensitive_features)
@@ -55,7 +56,7 @@ class ModelTrainer:
     def use_dir(self, model):
         bin_data = BinaryLabelDataset(
             favorable_label=self.positive_label,
-            unfavorable_label=1 - self.positive_label,
+            unfavorable_label=1 - int(self.positive_label),
             df=self.dataset,
             label_names=[self.label],
             protected_attribute_names=self.sensitive_features,

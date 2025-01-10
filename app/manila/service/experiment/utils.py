@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import logging
 from sklearn.model_selection import KFold
 from sklearn.model_selection import LeaveOneOut
 from sklearn.model_selection import LeavePOut
@@ -29,12 +30,11 @@ from aif360.sklearn.postprocessing import RejectOptionClassifierCV
 from sklearn.neural_network import MLPClassifier
 import statistics
 from service.experiment.metrics import *
-
-# import tensorflow as tf
-
 from service.experiment.methods import FairnessMethods
 
 np.random.seed(2)
+
+logger = logging.getLogger(__name__)
 
 # TRAINING FUNCTIONS
 
@@ -102,11 +102,14 @@ def cross_val(
                 label_names=[label],
                 protected_attribute_names=sensitive_features,
             )
+            logger.info(unpriv_group)
+            logger.info(priv_group)
             rw = Reweighing(
                 unprivileged_groups=[unpriv_group], privileged_groups=[priv_group]
             )
             rw_data = rw.fit_transform(bin_data)
             weights = rw_data.instance_weights
+            logger.info(weights)
             df_train, _ = rw_data.convert_to_dataframe()
 
         if preprocessor == FairnessMethods.DIR:
@@ -167,13 +170,6 @@ def cross_val(
                 model = GridSearch(
                     model, constraints=constr, sample_weight_name="sample_weight"
                 )
-
-        # if adversarial_debiasing:
-        #     if inprocessor == 'FairnessMethods.AD':
-        #         tf.reset_default_graph()
-        #         sess = tf.Session()
-        #         model = AdversarialDebiasing(privileged_groups=[priv_group], unprivileged_groups=[unpriv_group], scope_name='debiased_classifier', debias=True, sess=sess)
-        #         tf.disable_eager_execution()
 
         if inprocessor == FairnessMethods.GERRY:
             model = GerryFairClassifier(fairness_def="FP")

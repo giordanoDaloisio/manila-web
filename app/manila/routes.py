@@ -46,7 +46,7 @@ class Status(Resource):
     def get(self, exp_id):
         exp = AsyncResult(exp_id, app=celery)
         if exp.failed():
-            response = make_response(jsonify({"state": exp.state, "message": str(exp.info)}), 500)
+            response = make_response(jsonify({"state": exp.state, "message": str(exp.result)}), 500)
         elif exp.ready():
             exp_res = exp.result
             results = parse_results(exp_res['metrics'])
