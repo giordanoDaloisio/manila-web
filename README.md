@@ -9,3 +9,7 @@ The repository is structured as follows:
 - `application/`: contains the source code of the MANILA application. Refer to the [README.md](./application/README.md) file in this folder for more information.
 
 - `replication-package/`: contains the replication package of the performed evaluation. Refer to the [README.md](./replication-package/README.md) file in this folder for more information.
+
+### License
+
+This project is licensed under the GPL-3.0 license - see the [LICENSE](LICENSE) file for details.
