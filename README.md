@@ -6,5 +6,6 @@ This is the main repository of the MANILA, a low code application to benchmark d
 
 The repository is structured as follows:
 
-- `application/`: contains the source code of the MANILA application.
-- `replication-package/`: contains the replication package of the performed evaluation.
+- `application/`: contains the source code of the MANILA application. Refer to the [README.md](./application/README.md) file in this folder for more information.
+
+- `replication-package/`: contains the replication package of the performed evaluation. Refer to the [README.md](./replication-package/README.md) file in this folder for more information.
