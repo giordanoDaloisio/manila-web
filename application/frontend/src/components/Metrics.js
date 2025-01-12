@@ -412,9 +412,11 @@ function Metrics({
                                   }>
                                   Euclidean Distance
                                 </Checkbox>
-                                <FormHelperText>
-                                  0 means fairness
-                                </FormHelperText>
+                                <Tooltip label='Euclidean Distance measures the straight line distance between two points (0 means fairness)'>
+                                  <span>
+                                    <Icon as={FaQuestionCircle} ml={2} />
+                                  </span>
+                                </Tooltip>
                               </HStack>
                               {state.euclidean_distance !== undefined ? (
                                 <HStack>

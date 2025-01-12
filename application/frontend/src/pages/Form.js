@@ -200,6 +200,10 @@ function Form({ state, setState }) {
       <VStack>
         <Heading>MANILA</Heading>
         <Text>
+          Welcome to MANILA! A tool to benchmark different combinations of
+          Machine Learning models and fairness-enhancing methods.
+        </Text>
+        <Text>
           At this link you can find the documentation and a step-by-step guide
           on how to use the tool:{" "}
           <Link
