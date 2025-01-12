@@ -86,7 +86,8 @@ def cross_val(
             fold = GroupKFold(n_splits=n_splits)
         elif validation == "stratified_group_k_fold":
             fold = StratifiedGroupKFold(n_splits=n_splits)
-    positive_label = float(positive_label)
+    if(isinstance(positive_label, str)):
+        positive_label = int(positive_label)
     for train, test in fold.split(data_start):
         weights = None
         data = data_start.copy()
@@ -102,8 +103,6 @@ def cross_val(
                 label_names=[label],
                 protected_attribute_names=sensitive_features,
             )
-            logger.info(unpriv_group)
-            logger.info(priv_group)
             rw = Reweighing(
                 unprivileged_groups=[unpriv_group], privileged_groups=[priv_group]
             )

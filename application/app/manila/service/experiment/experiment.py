@@ -207,8 +207,8 @@ def run_exp(data, task, params: dict):
     base_metrics = get_base_metrics(params)
 
     if "single_sensitive_var" in params:
-        unpriv_group = {params["variable_name"]: params["unprivileged_value"]}
-        priv_group = {params["variable_name"]: params["privileged_value"]}
+        unpriv_group = {params["variable_name"]: int(params["unprivileged_value"])}
+        priv_group = {params["variable_name"]: int(params["privileged_value"])}
         sensitive_features = [params["variable_name"]]
     elif "multiple_sensitive_vars" in params:
         variables = params["variable_names"].split(",")
