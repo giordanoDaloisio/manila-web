@@ -252,11 +252,6 @@ function Form({ state, setState }) {
         handleChangeRadio={handleChangeRadio}
         setState={setState}
       />
-      {/* <Presentation
-        state={state}
-        handleChangeCheckbox={handleChangeCheckbox}
-        errors={errors}
-      /> */}
       <Container title='Upload dataset'>
         <FormControl>
           <FilePicker

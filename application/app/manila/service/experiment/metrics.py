@@ -55,6 +55,31 @@ def _compute_tpr_fpr(y_true, y_pred, positive_label):
         FPR = FP / (FP + TN)
     return FPR, TPR
 
+def _compute_fpr_fnr(y_true, y_pred, positive_label):
+    TN = 0
+    TP = 0
+    FP = 0
+    FN = 0
+    for i in range(len(y_true)):
+        if y_true[i] == float(positive_label):
+            if y_true[i] == y_pred[i]:
+                TP += 1
+            else:
+                FN += 1
+        else:
+            if y_pred[i] == float(positive_label):
+                FP += 1
+            else:
+                TN += 1
+    if TP + FN == 0:
+        FNR = 0
+    else:
+        FNR = FN / (TP + FN)
+    if FP + TN == 0:
+        FPR = 0
+    else:
+        FPR = FP / (FP + TN)
+    return FNR, FPR
 
 def _compute_tpr_fpr_groups(data_pred, label, group_condition, positive_label):
     query = "&".join([f"{k}=={v}" for k, v in group_condition.items()])
@@ -70,6 +95,19 @@ def _compute_tpr_fpr_groups(data_pred, label, group_condition, positive_label):
     fpr_priv, tpr_priv = _compute_tpr_fpr(y_true_priv, y_pred_priv, positive_label)
     return fpr_unpriv, tpr_unpriv, fpr_priv, tpr_priv
 
+def _compute_fnr_fpr_groups(data_pred, label, group_condition, positive_label):
+    query = "&".join([f"{k}=={v}" for k, v in group_condition.items()])
+    unpriv_group = data_pred.query(query)
+    priv_group = data_pred.drop(unpriv_group.index)
+    y_true_unpriv = unpriv_group["y_true"].values.ravel()
+    y_pred_unpric = unpriv_group[label].values.ravel()
+    y_true_priv = priv_group["y_true"].values.ravel()
+    y_pred_priv = priv_group[label].values.ravel()
+    fnr_unpriv, fpr_unpriv = _compute_fpr_fnr(
+        y_true_unpriv, y_pred_unpric, positive_label
+    )
+    fnr_priv, fpr_priv = _compute_fpr_fnr(y_true_priv, y_pred_priv, positive_label)
+    return fnr_unpriv, fpr_unpriv, fnr_priv, fpr_priv
 
 def disparate_impact(data_pred, group_condition, label_name, positive_label):
     unpriv_group_prob, priv_group_prob = _compute_probs(
@@ -120,7 +158,7 @@ def true_pos_diff(
     fpr_unpriv, tpr_unpriv, fpr_priv, tpr_priv = _compute_tpr_fpr_groups(
         data_pred, label, group_condition, positive_label
     )
-    return tpr_unpriv - tpr_priv
+    return fpr_unpriv - fpr_priv
 
 
 def false_pos_diff(

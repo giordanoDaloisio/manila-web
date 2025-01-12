@@ -11,16 +11,17 @@ import {
   HStack,
   Input,
   ListItem,
-  NumberInput,
-  NumberInputField,
   OrderedList,
   Radio,
   Stack,
   Text,
   VStack,
+  Icon,
 } from "@chakra-ui/react";
 import React from "react";
 import Container from "./Container";
+import { Tooltip } from "@chakra-ui/react";
+import { FaQuestionCircle } from "react-icons/fa";
 
 function Metrics({
   state,
@@ -205,6 +206,101 @@ function Metrics({
                   ) : (
                     ""
                   )}
+                  <Checkbox
+                    value='mcc'
+                    onChange={handleChangeCheckbox}
+                    isChecked={state.mcc !== undefined}>
+                    Matthews Correlation Coefficient
+                  </Checkbox>
+                  {state.mcc !== undefined ? (
+                    <HStack>
+                      <FormLabel>Weight:</FormLabel>
+                      <Input
+                        name='weight_mcc'
+                        onChange={handleChangeText}
+                        value={state.weight_mcc}
+                        required
+                      />
+                    </HStack>
+                  ) : (
+                    ""
+                  )}
+                  <Checkbox
+                    value='class_likelihood'
+                    onChange={handleChangeCheckbox}
+                    isChecked={state.class_likelihood !== undefined}>
+                    Class Likelihood
+                  </Checkbox>
+                  {state.class_likelihood !== undefined ? (
+                    <HStack>
+                      <FormLabel>Weight:</FormLabel>
+                      <Input
+                        name='weight_class_likelihood'
+                        onChange={handleChangeText}
+                        value={state.weight_class_likelihood}
+                        required
+                      />
+                    </HStack>
+                  ) : (
+                    ""
+                  )}
+                  <Checkbox
+                    value='hamming_loss'
+                    onChange={handleChangeCheckbox}
+                    isChecked={state.hamming_loss !== undefined}>
+                    Hamming Loss
+                  </Checkbox>
+                  {state.hamming_loss !== undefined ? (
+                    <HStack>
+                      <FormLabel>Weight:</FormLabel>
+                      <Input
+                        name='weight_hamming_loss'
+                        onChange={handleChangeText}
+                        value={state.weight_hamming_loss}
+                        required
+                      />
+                    </HStack>
+                  ) : (
+                    ""
+                  )}
+                  <Checkbox
+                    value='jaccard_score'
+                    onChange={handleChangeCheckbox}
+                    isChecked={state.jaccard_score !== undefined}>
+                    Jaccard Score
+                  </Checkbox>
+                  {state.jaccard_score !== undefined ? (
+                    <HStack>
+                      <FormLabel>Weight:</FormLabel>
+                      <Input
+                        name='weight_jaccard_score'
+                        onChange={handleChangeText}
+                        value={state.weight_jaccard_score}
+                        required
+                      />
+                    </HStack>
+                  ) : (
+                    ""
+                  )}
+                  <Checkbox
+                    value='log_loss'
+                    onChange={handleChangeCheckbox}
+                    isChecked={state.log_loss !== undefined}>
+                    Log Loss
+                  </Checkbox>
+                  {state.log_loss !== undefined ? (
+                    <HStack>
+                      <FormLabel>Weight:</FormLabel>
+                      <Input
+                        name='weight_log_loss'
+                        onChange={handleChangeText}
+                        value={state.weight_log_loss}
+                        required
+                      />
+                    </HStack>
+                  ) : (
+                    ""
+                  )}
                 </VStack>
               </FormControl>
             </CardBody>
@@ -344,9 +440,11 @@ function Metrics({
                                   }>
                                   Manhattan Distance
                                 </Checkbox>
-                                <FormHelperText>
-                                  0 means fairness
-                                </FormHelperText>
+                                <Tooltip label='Manhattan Distance measures the sum of absolute differences between coordinates (0 means fairness)'>
+                                  <span>
+                                    <Icon as={FaQuestionCircle} ml={2} />
+                                  </span>
+                                </Tooltip>
                               </HStack>
                               {state.manhattan_distance !== undefined ? (
                                 <HStack>
@@ -372,9 +470,11 @@ function Metrics({
                                   }>
                                   Mahalanobis Distance
                                 </Checkbox>
-                                <FormHelperText>
-                                  0 means fairness
-                                </FormHelperText>
+                                <Tooltip label='Mahalanobis Distance measures the distance between a point and a distribution (0 means fairness)'>
+                                  <span>
+                                    <Icon as={FaQuestionCircle} ml={2} />
+                                  </span>
+                                </Tooltip>
                               </HStack>
                               {state.mahalanobis_distance !== undefined ? (
                                 <HStack>
@@ -438,10 +538,12 @@ function Metrics({
                                         state.statistical_parity !== undefined
                                       }>
                                       Statistical Parity
+                                      <Tooltip label='Statistical Parity measures the difference in positive outcome rates between groups (0 means fairness)'>
+                                        <span>
+                                          <Icon as={FaQuestionCircle} ml={2} />
+                                        </span>
+                                      </Tooltip>
                                     </Checkbox>
-                                    <FormHelperText>
-                                      0 means fairness
-                                    </FormHelperText>
                                   </HStack>
                                   {state.statistical_parity !== undefined ? (
                                     <HStack>
@@ -464,10 +566,12 @@ function Metrics({
                                         state.disparate_impact !== undefined
                                       }>
                                       Disparate Impact
+                                      <Tooltip label='Disparate Impact measures the ratio of positive outcome rates between groups (1 means fairness)'>
+                                        <span>
+                                          <Icon as={FaQuestionCircle} ml={2} />
+                                        </span>
+                                      </Tooltip>
                                     </Checkbox>
-                                    <FormHelperText>
-                                      1 means fairness
-                                    </FormHelperText>
                                   </HStack>
                                   {state.disparate_impact !== undefined ? (
                                     <HStack>
@@ -509,9 +613,11 @@ function Metrics({
                                       }>
                                       Equalized Odds Difference
                                     </Checkbox>
-                                    <FormHelperText>
-                                      0 means fairness
-                                    </FormHelperText>
+                                    <Tooltip label='Equalized Odds Difference measures the difference in true positive rates between groups (0 means fairness)'>
+                                      <span>
+                                        <Icon as={FaQuestionCircle} ml={2} />
+                                      </span>
+                                    </Tooltip>
                                   </HStack>
                                   {state.equalized_odds !== undefined ? (
                                     <HStack>
@@ -536,9 +642,11 @@ function Metrics({
                                       }>
                                       Average Odds Difference
                                     </Checkbox>
-                                    <FormHelperText>
-                                      0 means fairness
-                                    </FormHelperText>
+                                    <Tooltip label='Average Odds Difference measures the difference in true and false positive rates between groups (0 means fairness)'>
+                                      <span>
+                                        <Icon as={FaQuestionCircle} ml={2} />
+                                      </span>
+                                    </Tooltip>
                                   </HStack>
                                   {state.average_odds !== undefined ? (
                                     <HStack>
@@ -577,11 +685,13 @@ function Metrics({
                                         state.true_positive_difference !==
                                         undefined
                                       }>
-                                      True Positive Difference
+                                      Error Rate Difference
                                     </Checkbox>
-                                    <FormHelperText>
-                                      0 means fairness
-                                    </FormHelperText>
+                                    <Tooltip label='Error Rate Difference measures the difference in false positive and false negative rates between groups (0 means fairness)'>
+                                      <span>
+                                        <Icon as={FaQuestionCircle} ml={2} />
+                                      </span>
+                                    </Tooltip>
                                   </HStack>
                                   {state.true_positive_difference !==
                                   undefined ? (
@@ -608,9 +718,11 @@ function Metrics({
                                       }>
                                       False Positive Difference
                                     </Checkbox>
-                                    <FormHelperText>
-                                      0 means fairness
-                                    </FormHelperText>
+                                    <Tooltip label='False Positive Difference measures the difference in false positive rates between groups (0 means fairness)'>
+                                      <span>
+                                        <Icon as={FaQuestionCircle} ml={2} />
+                                      </span>
+                                    </Tooltip>
                                   </HStack>
                                   {state.false_positive_difference !==
                                   undefined ? (
