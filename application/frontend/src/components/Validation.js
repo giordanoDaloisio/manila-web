@@ -21,11 +21,11 @@ import Container from "./Container";
 function Validation({ state, handleChangeRadio, setState }) {
   return (
     <Container title='Validation'>
-      <Alert status='warning'>
+      {/* <Alert status='warning'>
         <AlertIcon />
         If you select cross-validation, you can not run the experiment on the
         server.
-      </Alert>
+      </Alert> */}
       <FormControl>
         <Checkbox
           name='use_validation'

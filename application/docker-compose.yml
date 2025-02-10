@@ -19,7 +19,7 @@ services:
   app:
     build:
       context: ./app
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - 5001:5000
     volumes:
@@ -31,7 +31,7 @@ services:
   worker:
     build:
       context: ./app
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: "my_app_celery_worker"
     working_dir: /app/manila
     command: ["celery", "-A", "run_celery.celery", "worker", "--loglevel=info"]
