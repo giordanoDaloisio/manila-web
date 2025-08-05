@@ -68,6 +68,29 @@ npm start
 
 The application will be available at `http://localhost:3000`.
 
+## Citation
+
+Please cite our papers if you use MANILA in your works:
+
+```bibtex
+@inproceedings{d2023democratizing,
+  title={Democratizing quality-based machine learning development through extended feature models},
+  author={d’Aloisio, Giordano and Di Marco, Antinisca and Stilo, Giovanni},
+  booktitle={International Conference on Fundamental Approaches to Software Engineering},
+  pages={88--110},
+  year={2023},
+  organization={Springer Nature Switzerland Cham}
+}
+
+@inproceedings{d2025manila,
+  title={MANILA: A Low-Code Application to Benchmark Machine Learning Models and Fairness-Enhancing Methods},
+  author={d'Aloisio, Giordano},
+  booktitle={Proceedings of the 33rd ACM International Conference on the Foundations of Software Engineering},
+  pages={1153--1157},
+  year={2025}
+}
+```
+
 ## License
 
 This project is licensed under the GPL-3.0 license - see the [LICENSE](LICENSE) file for details.
