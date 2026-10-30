@@ -1,0 +1,39 @@
+{
+  "summary": "Iteration 3 — CSV upload + real parsing + print/PDF report. Backend: 17/17 pytest cases pass (10 regression from iter 2 + 7 new: upload success/reject-non-csv/reject-empty, run on uploaded dataset uses real records with label='income' + sensitive=['sex'], invalid dataset_id returns 400 with 'not found' detail, regression + Equalized Odds Difference no crash + backfilled metric). Frontend end-to-end: real CSV uploaded via wizard Step 1 dropzone (upload-file-input), 'Uploading & parsing…' spinner observed, success toast with row/column counts, label-column dropdown populated with real headers (age/sex/race/income), sensitive attr toggles work, preview renders real rows. Full wizard 1→7 with uploaded CSV + LogisticRegression + NoMethod + Accuracy + Statistical Parity Difference runs on server (~1s) and navigates to /experiments/{id} with real metrics rendered. Print report: window.print() invoked on click; under page.emulate_media('print') all 3 data-print='hide' nodes collapse (back-to-dashboard link, action button bar, run-another block) AND header element becomes display:none, while best-combination-card, results-chart-card, metrics-table-card (.print-card class) remain visible.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_experiments.py",
+    "/app/backend/tests/test_uploads_and_print.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/iteration_3.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py:341 uses `logger.warning(...)` but `logger` is defined further down at line 433. Works at runtime because module-level code runs before requests, but visually confusing — move `logging.basicConfig` + `logger = getLogger` to the top of the file (right after imports).",
+    "server.py: silent-backfill loop at lines 344-348 (`for m in eff_names + fair_names: if m not in metrics: fallback = generate_metrics(...); metrics[m] = fallback.get(m, 0.0)`) is a genuine silent fallback path with NO log message. Requested P2 fix asked to log warnings on 'silent fairness-metric fallbacks' — training.py now does but server.py does not. Consider logging a warning here so demo runs are transparent when the returned metric came from mock generate_metrics rather than fairlearn (e.g. the regression + Equalized Odds Difference case).",
+    "server.py /api/datasets/upload: no size/row limit is enforced beyond nrows=5000 in pd.read_csv — but the raw bytes are read first (`raw = await file.read()`), so a multi-GB upload will exhaust RAM before pandas caps at 5k rows. Add UploadFile.spool + file.size guard or stream via file.file in a bounded chunk read.",
+    "server.py /api/datasets/upload stores the ENTIRE parsed dataset (up to 5k rows) inside the Mongo document. This will hit the 16MB BSON document limit on wide/long CSVs. Consider chunking rows into a subcollection keyed by dataset_id, or capping (columns × rows) more aggressively.",
+    "training.py load_dataset_from_records tries `pd.to_numeric(df[col])` on every column with a bare `except (ValueError, TypeError)`. If the CSV has mixed-type columns (e.g., a column that is mostly numeric but has 1 stray string), the whole column stays as object — silently. Consider `pd.to_numeric(errors='coerce')` and then filling NaN, or logging the count of failed coercions.",
+    "training.py: warning coverage for silent fallbacks is now good (fairness metric except -> logger.warning; Reweighing/DEMV sample_weight TypeError -> warning; ExponentiatedGradient/ThresholdOptimizer failure -> warning). One remaining silent branch: line 466-469 the `except Exception: y_pred = model.predict(X_test_arr); y_proba = None` swallows without logging.",
+    "ResultsPage.jsx download-csv-btn and download-model-btn are still mocked (toast only) as flagged in mocked_apis — visible to end users as buttons; consider a subtle 'prototype' pill next to them or disabling them until the real endpoints exist.",
+    "index.css @media print block hides `.App > .sticky` — this depends on the App shell class being '.App' with a sticky child; fragile if the shell CSS class ever changes. Adding data-print='hide' to the shell nav would be more robust than the CSS selector."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_uploads_and_print.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "none — app is open",
+  "seed_data_creation": "None persisted — all TEST_ experiments and uploaded CSVs created during test runs were cleaned up.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend regression suite is now split across two files: /app/backend/tests/test_experiments.py (iter 1+2) and /app/backend/tests/test_uploads_and_print.py (iter 3). Run with `pytest backend/tests/ -n 0` to avoid xdist race on cleanup class. New endpoint /api/datasets/upload accepts multipart .csv (nrows capped at 5000), returns {dataset_id, name, columns, preview[0:5], row_count} and stores full rows in db.uploaded_datasets. Run-experiment path: source='upload' + dataset_id -> loads from Mongo via load_dataset_from_records (numeric coercion column-by-column). Missing/invalid dataset_id -> 400 'Uploaded dataset not found. Please re-upload the CSV.'. Frontend Step1 upload-dropzone shows spinner + 'Uploading & parsing…' text while awaiting the POST. Print report emulation-verified via page.emulate_media('print').",
+  "rca_of_the_issue": "N/A — no bugs found. All three requested enhancements (fairness-fallback logger.warning in training.py, real CSV parsing in /api/datasets/upload, print-friendly Results page) work end-to-end."
+}

@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;600;700;800&family=Work+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    margin: 0;
+    font-family: 'Work Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #f8fafc; /* slate-50 */
+    color: #0f172a; /* slate-900 */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Chivo', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+    :root {
+        --background: 210 40% 98%;
+        --foreground: 222 47% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 47% 11%;
+        --primary: 222 47% 11%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 222 47% 11%;
+        --muted: 210 40% 96%;
+        --muted-foreground: 215 16% 47%;
+        --accent: 210 40% 96%;
+        --accent-foreground: 222 47% 11%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 222 47% 11%;
+        --chart-1: 173 80% 30%;
+        --chart-2: 221 83% 45%;
+        --chart-3: 27 87% 60%;
+        --chart-4: 262 60% 50%;
+        --chart-5: 340 75% 55%;
+        --radius: 0.5rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+}
+
+/* Custom scrollbar for code preview */
+.code-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+.code-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+.code-scroll::-webkit-scrollbar-track { background: #0f172a; }
+
+/* Print / PDF-friendly report styling */
+@media print {
+    @page {
+        size: A4;
+        margin: 14mm 12mm;
+    }
+    html, body {
+        background: #ffffff !important;
+    }
+    body * {
+        color: #0f172a !important;
+        box-shadow: none !important;
+    }
+    /* Hide anything explicitly marked as non-print (nav, buttons, etc.) */
+    [data-print="hide"], header, footer, .no-print {
+        display: none !important;
+    }
+    /* Keep cards flat and avoid mid-card page breaks */
+    .print-card {
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    /* Force the report container to full width and remove animations */
+    main, .print-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+        animation: none !important;
+    }
+    /* Recharts SVG scales cleanly to print */
+    .recharts-wrapper, .recharts-surface {
+        overflow: visible !important;
+    }
+    /* Hide dashboard/wizard nav bar and app shell chrome */
+    .App > .sticky {
+        display: none !important;
+    }
+}
+
+/* Selection color */
+::selection {
+    background-color: #0f766e;
+    color: white;
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit; margin-right: inherit; margin-top: inherit; margin-bottom: inherit;
+        padding-left: inherit; padding-right: inherit; padding-top: inherit; padding-bottom: inherit;
+        column-gap: inherit; row-gap: inherit; gap: inherit;
+        border-left-width: inherit; border-right-width: inherit; border-top-width: inherit; border-bottom-width: inherit;
+        border-left-style: inherit; border-right-style: inherit; border-top-style: inherit; border-bottom-style: inherit;
+        border-left-color: inherit; border-right-color: inherit; border-top-color: inherit; border-bottom-color: inherit;
+    }
+}

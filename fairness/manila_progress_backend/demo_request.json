@@ -1,0 +1,23 @@
+{
+  "name": "Hiring fairness meeting demo",
+  "dataset": {
+    "dataset_id": "REPLACE_WITH_DATASET_ID",
+    "label_column": "qualified",
+    "positive_label": "1",
+    "sensitive_attrs": ["gender", "region"]
+  },
+  "scaler": "StandardScaler",
+  "models": ["Logistic Regression", "Random Forest Classifier"],
+  "mitigation_methods": ["No Method", "Reweighing"],
+  "effectiveness_metrics": [
+    {"name": "Accuracy", "weight": 1.0},
+    {"name": "Recall", "weight": 1.2}
+  ],
+  "fairness_metrics": [
+    {"name": "Equal Opportunity Difference", "weight": 1.5},
+    {"name": "False Negative Rate Difference", "weight": 1.5}
+  ],
+  "test_size": 0.25,
+  "bootstrap_iterations": 100,
+  "exclude_sensitive_from_features": true
+}

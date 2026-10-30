@@ -1,0 +1,476 @@
+{
+  "disclosure": "Synthetic demonstration dataset; no metric values are mocked.",
+  "data_readiness": {
+    "ready": true,
+    "row_count": 1600,
+    "column_count": 8,
+    "missing_percentage_by_column": {},
+    "label_distribution": {
+      "negative": 845,
+      "positive": 755
+    },
+    "intersectional_group_counts": {
+      "gender=Man | region=EU": 632,
+      "gender=Woman | region=EU": 509,
+      "gender=Man | region=Non-EU": 244,
+      "gender=Woman | region=Non-EU": 215
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "recommendation": {
+    "rule_id": "RULE-FN-001",
+    "rule_version": "1.0.0",
+    "recommended_metrics": [
+      "Equal Opportunity Difference",
+      "False Negative Rate Difference"
+    ],
+    "rejected_metrics": [
+      {
+        "metric": "Demographic Parity Difference",
+        "reason": "Selection-rate equality does not directly measure missed qualified individuals."
+      }
+    ],
+    "interpretation_note": "A positive decision represents access to a benefit.",
+    "human_review_required": true
+  },
+  "ranked_combinations": [
+    {
+      "model": "Logistic Regression",
+      "mitigation_method": "No Method",
+      "tradeoff_score": 0.783765,
+      "result": {
+        "model": "Logistic Regression",
+        "mitigation": {
+          "method": "No Method",
+          "applied": false
+        },
+        "test_size": 400,
+        "sensitive_group_definition": "gender \u00d7 region",
+        "effectiveness_metrics": {
+          "Accuracy": 0.6375,
+          "Recall": 0.587302
+        },
+        "fairness_metrics": {
+          "Equal Opportunity Difference": 0.088894,
+          "False Negative Rate Difference": 0.088894
+        },
+        "group_metrics": {
+          "gender=Man | region=EU": {
+            "sample_size": 158,
+            "actual_positive_rate": 0.487342,
+            "selection_rate": 0.5,
+            "accuracy": 0.620253,
+            "true_positive_rate": 0.6233766233766234,
+            "false_positive_rate": 0.38271604938271603,
+            "false_negative_rate": 0.37662337662337664,
+            "precision": 0.6075949367088608,
+            "confusion_matrix": {
+              "tp": 48,
+              "tn": 50,
+              "fp": 31,
+              "fn": 29
+            }
+          },
+          "gender=Man | region=Non-EU": {
+            "sample_size": 61,
+            "actual_positive_rate": 0.47541,
+            "selection_rate": 0.508197,
+            "accuracy": 0.57377,
+            "true_positive_rate": 0.5862068965517241,
+            "false_positive_rate": 0.4375,
+            "false_negative_rate": 0.41379310344827586,
+            "precision": 0.5483870967741935,
+            "confusion_matrix": {
+              "tp": 17,
+              "tn": 18,
+              "fp": 14,
+              "fn": 12
+            }
+          },
+          "gender=Woman | region=EU": {
+            "sample_size": 127,
+            "actual_positive_rate": 0.456693,
+            "selection_rate": 0.370079,
+            "accuracy": 0.661417,
+            "true_positive_rate": 0.5344827586206896,
+            "false_positive_rate": 0.2318840579710145,
+            "false_negative_rate": 0.46551724137931033,
+            "precision": 0.6595744680851063,
+            "confusion_matrix": {
+              "tp": 31,
+              "tn": 53,
+              "fp": 16,
+              "fn": 27
+            }
+          },
+          "gender=Woman | region=Non-EU": {
+            "sample_size": 54,
+            "actual_positive_rate": 0.462963,
+            "selection_rate": 0.388889,
+            "accuracy": 0.703704,
+            "true_positive_rate": 0.6,
+            "false_positive_rate": 0.20689655172413793,
+            "false_negative_rate": 0.4,
+            "precision": 0.7142857142857143,
+            "confusion_matrix": {
+              "tp": 15,
+              "tn": 23,
+              "fp": 6,
+              "fn": 10
+            }
+          }
+        },
+        "confidence_intervals": {
+          "Equal Opportunity Difference": {
+            "lower_95": 0.068172,
+            "upper_95": 0.373952,
+            "successful_iterations": 50
+          },
+          "False Negative Rate Difference": {
+            "lower_95": 0.068172,
+            "upper_95": 0.373952,
+            "successful_iterations": 50
+          }
+        },
+        "warnings": [],
+        "result_provenance": {
+          "random_state": 42,
+          "exclude_sensitive_from_features": true,
+          "metrics_are_computed": true,
+          "mock_values_used": false
+        }
+      }
+    },
+    {
+      "model": "Logistic Regression",
+      "mitigation_method": "Reweighing",
+      "tradeoff_score": 0.783765,
+      "result": {
+        "model": "Logistic Regression",
+        "mitigation": {
+          "method": "Reweighing",
+          "applied": true,
+          "weight_min": 0.96661,
+          "weight_max": 1.040251
+        },
+        "test_size": 400,
+        "sensitive_group_definition": "gender \u00d7 region",
+        "effectiveness_metrics": {
+          "Accuracy": 0.6375,
+          "Recall": 0.587302
+        },
+        "fairness_metrics": {
+          "Equal Opportunity Difference": 0.088894,
+          "False Negative Rate Difference": 0.088894
+        },
+        "group_metrics": {
+          "gender=Man | region=EU": {
+            "sample_size": 158,
+            "actual_positive_rate": 0.487342,
+            "selection_rate": 0.5,
+            "accuracy": 0.620253,
+            "true_positive_rate": 0.6233766233766234,
+            "false_positive_rate": 0.38271604938271603,
+            "false_negative_rate": 0.37662337662337664,
+            "precision": 0.6075949367088608,
+            "confusion_matrix": {
+              "tp": 48,
+              "tn": 50,
+              "fp": 31,
+              "fn": 29
+            }
+          },
+          "gender=Man | region=Non-EU": {
+            "sample_size": 61,
+            "actual_positive_rate": 0.47541,
+            "selection_rate": 0.508197,
+            "accuracy": 0.57377,
+            "true_positive_rate": 0.5862068965517241,
+            "false_positive_rate": 0.4375,
+            "false_negative_rate": 0.41379310344827586,
+            "precision": 0.5483870967741935,
+            "confusion_matrix": {
+              "tp": 17,
+              "tn": 18,
+              "fp": 14,
+              "fn": 12
+            }
+          },
+          "gender=Woman | region=EU": {
+            "sample_size": 127,
+            "actual_positive_rate": 0.456693,
+            "selection_rate": 0.370079,
+            "accuracy": 0.661417,
+            "true_positive_rate": 0.5344827586206896,
+            "false_positive_rate": 0.2318840579710145,
+            "false_negative_rate": 0.46551724137931033,
+            "precision": 0.6595744680851063,
+            "confusion_matrix": {
+              "tp": 31,
+              "tn": 53,
+              "fp": 16,
+              "fn": 27
+            }
+          },
+          "gender=Woman | region=Non-EU": {
+            "sample_size": 54,
+            "actual_positive_rate": 0.462963,
+            "selection_rate": 0.388889,
+            "accuracy": 0.703704,
+            "true_positive_rate": 0.6,
+            "false_positive_rate": 0.20689655172413793,
+            "false_negative_rate": 0.4,
+            "precision": 0.7142857142857143,
+            "confusion_matrix": {
+              "tp": 15,
+              "tn": 23,
+              "fp": 6,
+              "fn": 10
+            }
+          }
+        },
+        "confidence_intervals": {
+          "Equal Opportunity Difference": {
+            "lower_95": 0.068172,
+            "upper_95": 0.373952,
+            "successful_iterations": 50
+          },
+          "False Negative Rate Difference": {
+            "lower_95": 0.068172,
+            "upper_95": 0.373952,
+            "successful_iterations": 50
+          }
+        },
+        "warnings": [],
+        "result_provenance": {
+          "random_state": 42,
+          "exclude_sensitive_from_features": true,
+          "metrics_are_computed": true,
+          "mock_values_used": false
+        }
+      }
+    },
+    {
+      "model": "Random Forest Classifier",
+      "mitigation_method": "No Method",
+      "tradeoff_score": 0.703021,
+      "result": {
+        "model": "Random Forest Classifier",
+        "mitigation": {
+          "method": "No Method",
+          "applied": false
+        },
+        "test_size": 400,
+        "sensitive_group_definition": "gender \u00d7 region",
+        "effectiveness_metrics": {
+          "Accuracy": 0.625,
+          "Recall": 0.603175
+        },
+        "fairness_metrics": {
+          "Equal Opportunity Difference": 0.231034,
+          "False Negative Rate Difference": 0.231034
+        },
+        "group_metrics": {
+          "gender=Man | region=EU": {
+            "sample_size": 158,
+            "actual_positive_rate": 0.487342,
+            "selection_rate": 0.493671,
+            "accuracy": 0.575949,
+            "true_positive_rate": 0.5714285714285714,
+            "false_positive_rate": 0.41975308641975306,
+            "false_negative_rate": 0.42857142857142855,
+            "precision": 0.5641025641025641,
+            "confusion_matrix": {
+              "tp": 44,
+              "tn": 47,
+              "fp": 34,
+              "fn": 33
+            }
+          },
+          "gender=Man | region=Non-EU": {
+            "sample_size": 61,
+            "actual_positive_rate": 0.47541,
+            "selection_rate": 0.52459,
+            "accuracy": 0.557377,
+            "true_positive_rate": 0.5862068965517241,
+            "false_positive_rate": 0.46875,
+            "false_negative_rate": 0.41379310344827586,
+            "precision": 0.53125,
+            "confusion_matrix": {
+              "tp": 17,
+              "tn": 17,
+              "fp": 15,
+              "fn": 12
+            }
+          },
+          "gender=Woman | region=EU": {
+            "sample_size": 127,
+            "actual_positive_rate": 0.456693,
+            "selection_rate": 0.401575,
+            "accuracy": 0.661417,
+            "true_positive_rate": 0.5689655172413793,
+            "false_positive_rate": 0.2608695652173913,
+            "false_negative_rate": 0.43103448275862066,
+            "precision": 0.6470588235294118,
+            "confusion_matrix": {
+              "tp": 33,
+              "tn": 51,
+              "fp": 18,
+              "fn": 25
+            }
+          },
+          "gender=Woman | region=Non-EU": {
+            "sample_size": 54,
+            "actual_positive_rate": 0.462963,
+            "selection_rate": 0.518519,
+            "accuracy": 0.759259,
+            "true_positive_rate": 0.8,
+            "false_positive_rate": 0.27586206896551724,
+            "false_negative_rate": 0.2,
+            "precision": 0.7142857142857143,
+            "confusion_matrix": {
+              "tp": 20,
+              "tn": 21,
+              "fp": 8,
+              "fn": 5
+            }
+          }
+        },
+        "confidence_intervals": {
+          "Equal Opportunity Difference": {
+            "lower_95": 0.112206,
+            "upper_95": 0.476812,
+            "successful_iterations": 50
+          },
+          "False Negative Rate Difference": {
+            "lower_95": 0.112206,
+            "upper_95": 0.476812,
+            "successful_iterations": 50
+          }
+        },
+        "warnings": [],
+        "result_provenance": {
+          "random_state": 42,
+          "exclude_sensitive_from_features": true,
+          "metrics_are_computed": true,
+          "mock_values_used": false
+        }
+      }
+    },
+    {
+      "model": "Random Forest Classifier",
+      "mitigation_method": "Reweighing",
+      "tradeoff_score": 0.688228,
+      "result": {
+        "model": "Random Forest Classifier",
+        "mitigation": {
+          "method": "Reweighing",
+          "applied": true,
+          "weight_min": 0.96661,
+          "weight_max": 1.040251
+        },
+        "test_size": 400,
+        "sensitive_group_definition": "gender \u00d7 region",
+        "effectiveness_metrics": {
+          "Accuracy": 0.6125,
+          "Recall": 0.592593
+        },
+        "fairness_metrics": {
+          "Equal Opportunity Difference": 0.248276,
+          "False Negative Rate Difference": 0.248276
+        },
+        "group_metrics": {
+          "gender=Man | region=EU": {
+            "sample_size": 158,
+            "actual_positive_rate": 0.487342,
+            "selection_rate": 0.506329,
+            "accuracy": 0.563291,
+            "true_positive_rate": 0.5714285714285714,
+            "false_positive_rate": 0.4444444444444444,
+            "false_negative_rate": 0.42857142857142855,
+            "precision": 0.55,
+            "confusion_matrix": {
+              "tp": 44,
+              "tn": 45,
+              "fp": 36,
+              "fn": 33
+            }
+          },
+          "gender=Man | region=Non-EU": {
+            "sample_size": 61,
+            "actual_positive_rate": 0.47541,
+            "selection_rate": 0.508197,
+            "accuracy": 0.540984,
+            "true_positive_rate": 0.5517241379310345,
+            "false_positive_rate": 0.46875,
+            "false_negative_rate": 0.4482758620689655,
+            "precision": 0.5161290322580645,
+            "confusion_matrix": {
+              "tp": 16,
+              "tn": 17,
+              "fp": 15,
+              "fn": 13
+            }
+          },
+          "gender=Woman | region=EU": {
+            "sample_size": 127,
+            "actual_positive_rate": 0.456693,
+            "selection_rate": 0.401575,
+            "accuracy": 0.645669,
+            "true_positive_rate": 0.5517241379310345,
+            "false_positive_rate": 0.2753623188405797,
+            "false_negative_rate": 0.4482758620689655,
+            "precision": 0.6274509803921569,
+            "confusion_matrix": {
+              "tp": 32,
+              "tn": 50,
+              "fp": 19,
+              "fn": 26
+            }
+          },
+          "gender=Woman | region=Non-EU": {
+            "sample_size": 54,
+            "actual_positive_rate": 0.462963,
+            "selection_rate": 0.518519,
+            "accuracy": 0.759259,
+            "true_positive_rate": 0.8,
+            "false_positive_rate": 0.27586206896551724,
+            "false_negative_rate": 0.2,
+            "precision": 0.7142857142857143,
+            "confusion_matrix": {
+              "tp": 20,
+              "tn": 21,
+              "fp": 8,
+              "fn": 5
+            }
+          }
+        },
+        "confidence_intervals": {
+          "Equal Opportunity Difference": {
+            "lower_95": 0.127757,
+            "upper_95": 0.500994,
+            "successful_iterations": 50
+          },
+          "False Negative Rate Difference": {
+            "lower_95": 0.127757,
+            "upper_95": 0.500994,
+            "successful_iterations": 50
+          }
+        },
+        "warnings": [],
+        "result_provenance": {
+          "random_state": 42,
+          "exclude_sensitive_from_features": true,
+          "metrics_are_computed": true,
+          "mock_values_used": false
+        }
+      }
+    }
+  ],
+  "best_combination": {
+    "model": "Logistic Regression",
+    "mitigation_method": "No Method",
+    "tradeoff_score": 0.783765
+  }
+}

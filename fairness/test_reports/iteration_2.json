@@ -1,0 +1,37 @@
+{
+  "summary": "Iteration 2 — REAL sklearn+fairlearn training + Compare mode. Backend: 10/10 pytest cases pass (root, list, real classification 11-combo grid with MLP×Reweighing skipped, real regression, pareto real, requires-models, SVC upload fallback safety, 404 get, 404 delete, cleanup). Real 12-combination training (Adult Income, 3 models × 4 methods) completes in <2s on the preview backend — well under the 10s budget. Accuracies vary across combos (real, not placeholder), 0.55–0.99 range, and No-Method fairness gaps are non-zero. Frontend: /compare route loads, both pickers work, chart + table + best-card A/B render; dashboard compare-btn navigates to /compare when >=2 experiments; /compare?a=<id> pre-fills slot A; Results page compare-with-btn navigates to /compare?a=<current-id> and pre-loads correctly; backwards-compat Results page (best trade-off card, chart, table) still renders with real metrics.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "ComparePage BarChart", "issues": ["Recharts prints repeated width(-1)/height(-1) warnings during initial mount when the flex container size hasn't been measured yet. Chart still renders correctly in the final DOM; purely a console-noise issue. Consider giving the ResponsiveContainer wrapper a fixed min-height on first paint to silence it."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_experiments.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "training.py:428 — condition `hasattr(model, 'predict') and not hasattr(model, 'predict_proba') and not isinstance(model, ThresholdOptimizer)` is dead-branch for classification: every sklearn classifier used here defines both predict and predict_proba, and ThresholdOptimizer/ExponentiatedGradient are covered by the else branch. Harmless but confusing; consider removing.",
+    "training.py: exception handling around fairlearn calls (`except Exception: silent zero`) can hide real errors during development. Consider logging.warning() the exception so failed fairness computations don't silently return 0.",
+    "server.py: no fallback path from run_experiment to generate_metrics on train_combination exception — task statement says 'fallback to mock generate_metrics()' but the code path calls train_combination directly and any thrown exception will 500. Verified with SVC on the upload-fallback dataset that it doesn't crash today (SVC still trains fine on the synthetic 800-row set), but a defensive try/except around the asyncio.to_thread(train_combination,...) call would make the fallback promise real.",
+    "ComparePage.jsx:40 — the useEffect that seeds slots A and B has an empty [] dependency array but references `params` from useSearchParams(); if a user visits /compare?a=<id>&b=<id> then navigates within the SPA to a different /compare query, slots won't re-seed. Acceptable for MVP but worth noting.",
+    "ComparePage.jsx: chartData joins combinations by 'model · method' string keys — if two experiments use the same model/method but different scalers/datasets, they will be visually merged into one bar. For MVP this is acceptable but could confuse users.",
+    "training.py fairness metric coverage: 'Consistency' is approximated as 1-variance-per-group rather than the true kNN individual-consistency; document this caveat in the UI or rename to avoid misleading readers."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_experiments.py (rewrote for real-training + fallback tests)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "Created SEED_A_LogReg (Adult Income · LogReg+RF · 4 combos) and SEED_B_MLP (COMPAS · MLP+DT · 4 combos) via curl to seed Compare mode. Both left in DB; can be cleaned up by main agent if desired. The pytest cleanup fixture only removes TEST_-prefixed rows.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend regression suite lives at /app/backend/tests/test_experiments.py. Must run with `-n 0` (or a session-scoped teardown fixture) — the default pytest.ini enables xdist with loadscope, which will run the TEST_ cleanup class in parallel with the create classes and cause GET-after-POST tests in the same worker fine, but on different workers the cleanup can race. Real training grid of 3×4 = 11 combos completes in ~1s server-side. Seeded compare-page fixtures: SEED_A_LogReg (id b0d07d0e-e151-404e-aa03-60917af5d96a), SEED_B_MLP (id 2e7267eb-0ed4-438f-9cb3-1ff375302d11). Recharts width(-1) console warnings are cosmetic — not a bug.",
+  "rca_of_the_issue": "N/A — no bugs found. One initial pytest failure was a pytest-xdist race condition where the cleanup class deleted the newly-created TEST_real_classification experiment on a parallel worker before the create test's follow-up GET; resolved by re-running with `-n 0`."
+}

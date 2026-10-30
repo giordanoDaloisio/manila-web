@@ -1,0 +1,9 @@
+timestamp,sensor_id,location,pm25,pm10,temperature,humidity,status
+2026-09-01 08:00:00,BZ_SENSOR_001,Bolzano_Center,11.8,20.5,17.4,68,active
+2026-09-01 09:00:00,BZ_SENSOR_001,Bolzano_Center,13.2,23.1,18.6,65,active
+2026-09-01 10:00:00,BZ_SENSOR_001,Bolzano_Center,16.5,28.4,20.1,61,active
+2026-09-01 11:00:00,BZ_SENSOR_001,Bolzano_Center,21.7,35.2,22.0,56,active
+2026-09-01 12:00:00,BZ_SENSOR_001,Bolzano_Center,,39.8,23.4,53,inactive
+2026-09-01 13:00:00,BZ_SENSOR_001,Bolzano_Center,,41.2,24.1,50,inactive
+2026-09-01 14:00:00,BZ_SENSOR_001,Bolzano_Center,19.3,33.6,24.8,48,active
+2026-09-01 15:00:00,BZ_SENSOR_001,Bolzano_Center,15.9,29.7,24.2,51,active

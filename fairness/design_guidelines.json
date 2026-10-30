@@ -1,0 +1,111 @@
+{
+  "theme_and_archetype": {
+    "theme": "Light",
+    "archetype": "4 (Swiss & High-Contrast)",
+    "description": "A clean, modern research-tool aesthetic combining the structure of a data science notebook with the clarity of a SaaS dashboard. Calm neutral background, one confident accent color, generous white space, and clear structural lines.",
+    "emotional_tone": "Academic, precise, trustworthy, calm, analytical"
+  },
+  "typography": {
+    "rules": [
+      "Use Chivo for all Headings (High-contrast, authority, clean).",
+      "Use Work Sans for Body text (Readable, functional).",
+      "Use JetBrains Mono for code blocks and data metrics (Technical precision)."
+    ],
+    "hierarchy": {
+      "h1": "font-sans font-bold tracking-tight text-4xl sm:text-5xl text-slate-900",
+      "h2": "font-sans font-semibold tracking-tight text-2xl sm:text-3xl text-slate-900",
+      "h3": "font-sans font-medium tracking-tight text-xl text-slate-800",
+      "h4": "font-sans font-medium text-lg text-slate-800",
+      "body": "font-body text-base leading-relaxed text-slate-600",
+      "small_label": "font-body text-xs font-semibold uppercase tracking-[0.2em] text-slate-500",
+      "code": "font-mono text-sm text-slate-800"
+    },
+    "font_families": {
+      "sans": "Chivo, sans-serif",
+      "body": "Work Sans, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    }
+  },
+  "color_system": {
+    "background": {
+      "main": "bg-slate-50",
+      "surface": "bg-white",
+      "surface_alt": "bg-slate-100"
+    },
+    "text": {
+      "primary": "text-slate-900",
+      "secondary": "text-slate-600",
+      "muted": "text-slate-500",
+      "inverse": "text-white"
+    },
+    "accents": {
+      "primary_confident": "bg-slate-900 hover:bg-slate-800 text-white",
+      "fairness": {
+        "text": "text-teal-700",
+        "bg": "bg-teal-50",
+        "border": "border-teal-200",
+        "chart_fill": "#0f766e"
+      },
+      "effectiveness": {
+        "text": "text-blue-700",
+        "bg": "bg-blue-50",
+        "border": "border-blue-200",
+        "chart_fill": "#1d4ed8"
+      }
+    },
+    "states": {
+      "disabled_bg": "bg-slate-100",
+      "disabled_text": "text-slate-400",
+      "disabled_border": "border-slate-200"
+    },
+    "rules": [
+      "Use Slate-900 as the primary Call-To-Action color (e.g., 'Next Step', 'Run Experiment').",
+      "Use the Fairness (Teal) and Effectiveness (Blue) colors ONLY for semantic color-coding of metrics, badges, and chart elements. Do NOT use them for primary navigation or generic CTAs.",
+      "Disabled options must look explicitly disabled (reduced opacity, greyed out) but still readable."
+    ]
+  },
+  "layout_and_spacing": {
+    "grid_system": "Use The 'Control Room' Grid for dashboard areas (grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6). Use generous single-column or 2-column layouts for the Wizard steps.",
+    "spacing_scale": {
+      "section_padding": "py-12 px-6 md:px-12",
+      "card_padding": "p-6 md:p-8",
+      "element_gap": "gap-6"
+    },
+    "surface_styles": {
+      "card": "bg-white border border-slate-200 rounded-lg shadow-sm",
+      "notebook_cell": "bg-white border-l-4 border border-slate-200 rounded-r-lg p-6 shadow-sm",
+      "glass": "backdrop-blur-xl bg-white/80 border-b border-slate-200"
+    }
+  },
+  "components": {
+    "wizard_header": "Horizontal progress bar at the top of the container. Show 'Step X of 7' explicitly with a Shadcn Progress bar.",
+    "disabled_options_with_tooltip": "Wrap disabled standard elements in a Shadcn Tooltip. The tooltip MUST explain the constraint reason (e.g., 'Not compatible with categorical data').",
+    "multi_select_chips": "Use small rounded badges (bg-slate-100 text-slate-700) with an 'x' to remove, for sensitive attribute selection.",
+    "script_preview_modal": "Shadcn Dialog containing a pre formatted code block with `font-mono`, `bg-slate-900`, `text-slate-50` and basic syntax highlighting colors.",
+    "simulated_progress": "A Shadcn Progress bar that auto-increments via state, showing text phases: 'Queued' -> 'Running' -> 'Computing metrics' -> 'Done'.",
+    "results_dashboard": "Use Recharts. Bar chart or Pareto scatter plot utilizing the two-tone color coding (Teal for fairness metrics, Blue for effectiveness). Highlight the 'Best Trade-off' in a prominent Card.",
+    "tables": "Shadcn Table with sortable headers. Use monospace fonts for numerical data.",
+    "buttons": "Shadcn Button. Default to variant='outline' for secondary actions, variant='default' (Slate-900) for primary."
+  },
+  "visual_enhancers": {
+    "icons": "Use lucide-react icons. Keep stroke width to 1.5 for a clean, technical look.",
+    "borders": "Use 1px solid borders (border-slate-200) instead of heavy drop shadows to create structure.",
+    "hover_effects": "Subtle background color shifts on hover (e.g., hover:bg-slate-50) rather than scale transforms."
+  },
+  "media": {
+    "empty_state_image": {
+      "url": "https://images.pexels.com/photos/25626448/pexels-photo-25626448.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Abstract geometric data visualization for the Dashboard empty state."
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. Ensure all interactive and key informational elements have a `data-testid` attribute (kebab-case, role-based).",
+    "2. Implement a robust 7-step wizard state machine. Steps: 1:Dataset, 2:Data Scaler, 3:ML Model & Task Type, 4:Fairness Methods, 5:Fairness Metrics, 6:Tradeoff Strategy, 7:Validation/Review.",
+    "3. Enforce constraint logic: E.g., if a certain Data Scaler is selected, specific ML Models might be disabled. Show the disabled model with a Tooltip explaining why.",
+    "4. Step 5 must use plain-language guided questions that progressively reveal metric checkboxes with associated weight input fields.",
+    "5. Use the specific two-tone color palette (Teal-700 for Fairness, Blue-700 for Effectiveness) to distinguish metrics in the Results page charts and tables.",
+    "6. Build a simulated run process using a timeout-based state progression for the Progress bar.",
+    "7. Include mock export buttons ('Export .csv', 'Export .dill') on the results page that trigger a toast notification instead of actual download.",
+    "8. Load required Google Fonts (Chivo, Work Sans, JetBrains Mono) via Google Fonts import in the main CSS file."
+  ]
+}
